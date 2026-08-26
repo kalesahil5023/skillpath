@@ -1331,6 +1331,7 @@ function showRoadmap(skill) {
     result.hidden = false;
     result.scrollIntoView({ behavior: "smooth", block: "start" });
     result.focus();
+    trackProductEvent("roadmap_opened", { skill });
 }
 
 document.querySelectorAll("[data-roadmap]").forEach((button) => {
@@ -1616,7 +1617,6 @@ document.getElementById("pathFinderForm").addEventListener("submit", function (e
     `;
     result.hidden = false;
     result.focus();
-    trackProductEvent("roadmap_opened", { skill });
     trackProductEvent("path_finder_completed", { recommended_path: recommendation });
 
     document.getElementById("startPathButton").addEventListener("click", function () {
