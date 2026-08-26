@@ -774,9 +774,12 @@
         .roadmap-progress h4,.roadmap-actions-intro h4,.roadmap-projects > h4 { color:var(--text); margin:0 0 6px; }.roadmap-progress p,.roadmap-actions-intro p,.roadmap-project p,.my-plan-roadmap p { color:var(--muted); line-height:1.55; margin:0; }
         .roadmap-progress-track { background:rgba(255,255,255,.1); border-radius:99px; height:9px; overflow:hidden; }.roadmap-progress-track span { background:linear-gradient(90deg,var(--primary),var(--accent)); display:block; height:100%; transition:width .25s ease; }
         .roadmap-actions { display:grid; gap:14px; }.roadmap-actions-intro { margin:8px 0 2px; }.roadmap-stage { background:rgba(255,255,255,.035); border:1px solid var(--border); border-radius:13px; padding:20px; }.roadmap-stage-heading { align-items:flex-start; display:flex; gap:13px; }.roadmap-stage-heading > span { align-items:center; background:rgba(115,215,255,.14); border:1px solid rgba(115,215,255,.25); border-radius:9px; color:var(--primary); display:inline-flex; font-size:12px; font-weight:800; height:31px; justify-content:center; min-width:31px; }.roadmap-stage-heading h4 { color:var(--text); margin:0 0 4px; }.roadmap-stage-heading p { color:var(--muted); font-size:14px; line-height:1.45; margin:0; }.roadmap-task-list { display:grid; gap:8px; margin:17px 0; }.roadmap-task { align-items:flex-start; background:rgba(255,255,255,.025); border:1px solid transparent; border-radius:9px; color:var(--muted); cursor:pointer; display:flex; gap:10px; line-height:1.45; padding:10px; }.roadmap-task:hover { border-color:rgba(115,215,255,.3); }.roadmap-task input { accent-color:var(--primary); margin-top:3px; }.roadmap-task.is-complete { color:var(--text); opacity:.7; text-decoration:line-through; }.roadmap-stage-action { margin:0; }
+        .roadmap-task { align-items:center; justify-content:space-between; }.roadmap-task-copy { align-items:flex-start; display:flex; gap:10px; }.roadmap-task input { cursor:default; pointer-events:none; }.roadmap-task button { flex:0 0 auto; font-size:12px; margin:0; padding:8px 10px; }.roadmap-task button[disabled] { cursor:default; opacity:.62; }
+        .task-modal[hidden] { display:none; }.task-modal { align-items:center; background:rgba(3,9,18,.76); display:flex; inset:0; justify-content:center; padding:18px; position:fixed; z-index:100; }.task-modal-dialog { background:linear-gradient(145deg,#14253a,#091521); border:1px solid rgba(115,215,255,.38); border-radius:18px; box-shadow:0 32px 80px rgba(0,0,0,.48); max-height:min(760px,calc(100vh - 36px)); max-width:720px; overflow:auto; padding:28px; width:100%; }.task-modal-header { align-items:flex-start; display:flex; gap:15px; justify-content:space-between; }.task-modal h3 { color:var(--text); margin:4px 0 8px; }.task-modal h4 { color:var(--primary); margin:24px 0 8px; }.task-modal p,.task-modal li { color:var(--muted); line-height:1.6; }.task-modal ol { padding-left:22px; }.task-modal-close { background:transparent; border:1px solid var(--border); border-radius:8px; color:var(--text); cursor:pointer; font-size:20px; line-height:1; margin:0; padding:7px 10px; }.task-modal-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:26px; }.task-modal-actions button { margin:0; }.task-modal .recommended-resources { margin-top:20px; }
         .roadmap-projects { margin:30px 0; }.roadmap-project-grid { display:grid; gap:14px; grid-template-columns:repeat(3,minmax(0,1fr)); }.roadmap-project { background:rgba(255,255,255,.035); border:1px solid var(--border); border-radius:13px; padding:19px; }.roadmap-project > span { color:var(--primary); font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }.roadmap-project h4 { color:var(--text); margin:10px 0; }.roadmap-project strong { color:var(--text); }.roadmap-project button { font-size:13px; margin-top:10px; padding:10px 12px; }
         .my-plan-roadmap { align-items:center; background:rgba(115,215,255,.06); border:1px solid rgba(115,215,255,.2); border-radius:12px; display:flex; gap:16px; justify-content:space-between; margin:20px 0; padding:15px; }.my-plan-roadmap span { color:var(--primary); display:block; font-size:11px; font-weight:800; letter-spacing:.08em; margin-bottom:5px; text-transform:uppercase; }.my-plan-roadmap strong { color:var(--text); }.my-plan-roadmap button { margin:0; white-space:nowrap; }
         @media (max-width:700px) { .roadmap-progress { grid-template-columns:1fr; }.roadmap-project-grid { grid-template-columns:1fr; }.my-plan-roadmap { align-items:stretch; flex-direction:column; }.my-plan-roadmap button { width:100%; } }
+        @media (max-width:700px) { .roadmap-task { align-items:stretch; flex-direction:column; }.roadmap-task button { width:100%; }.task-modal { padding:10px; }.task-modal-dialog { max-height:calc(100vh - 20px); padding:22px; } }
     </style>
 </head>
 
@@ -921,6 +924,7 @@
             </div>
 
             <div id="roadmapResult" class="roadmap-result" aria-live="polite" tabindex="-1" hidden></div>
+            <div id="roadmapTaskModal" class="task-modal" role="dialog" aria-modal="true" aria-labelledby="roadmapTaskModalTitle" hidden></div>
         </section>
 
         <section class="earning-paths reveal" id="earning-paths" aria-labelledby="earning-paths-title">
@@ -1391,6 +1395,62 @@ function getRoadmapProgress(skill) {
     return { tasks, total, completed, percent: total ? Math.round((completed / total) * 100) : 0 };
 }
 
+const roadmapStageDetailGuidance = {
+    Learn: { why: "Understanding the fundamentals first helps you make deliberate choices instead of copying code or advice without knowing why it works.", steps: (task) => ["Set aside a focused 30–45 minute session and write down the specific concepts in this task.", `Use a reliable beginner reference to study: ${task}`, "Make a short set of notes in your own words and test one example yourself."], outcome: (task) => `A short set of notes and one completed example that demonstrates: ${task}` },
+    Practice: { why: "Practice turns a concept into a repeatable skill and exposes the parts that still need attention before you use it in a real project.", steps: (task) => ["Choose a small, low-stakes practice brief and define what a finished attempt will look like.", `Complete the exercise: ${task}`, "Review the result against the brief, note one improvement, and save the before-and-after evidence."], outcome: (task) => `A finished practice exercise plus one note about what you improved while completing: ${task}` },
+    Build: { why: "A finished build gives you concrete evidence of your ability and creates material you can later refine for a portfolio.", steps: (task) => ["Write a one-sentence project brief identifying the audience, problem, and success criteria.", `Build the project described in this task: ${task}`, "Test the finished work, fix the most important issue you find, and save a shareable version or screenshots."], outcome: (task) => `A working beginner project, tested and saved with evidence of the work completed for: ${task}` },
+    Portfolio: { why: "Clear presentation helps someone understand what you can do, what you contributed, and how your work relates to their needs.", steps: (task) => ["Choose only work you completed yourself and gather the final files, link, and process notes.", `Prepare the portfolio evidence for: ${task}`, "Write a concise description covering the audience, your decisions, and the outcome without overstating results."], outcome: (task) => `A truthful, shareable portfolio entry that documents: ${task}` },
+    "Find Work": { why: "Careful preparation protects you from unclear scope, unpaid speculative work, and opportunities that are not a good fit.", steps: (task) => ["Choose a legitimate, clearly scoped opportunity or create a focused service outline for the work you can honestly offer.", `Complete the preparation task: ${task}`, "Check the scope, payment expectations, deadlines, and any requested access before you apply or agree to work."], outcome: (task) => `A ready-to-use, honest application or service-preparation document for: ${task}` }
+};
+
+function getRoadmapTaskDetail(skill, stage, task, taskIndex) {
+    const guide = roadmapStageDetailGuidance[stage];
+    return {
+        title: task,
+        objective: `${task} This is a focused ${stage.toLowerCase()} milestone in your ${skill} roadmap.`,
+        why: guide.why,
+        steps: guide.steps(task),
+        outcome: guide.outcome(task),
+        taskIndex
+    };
+}
+
+function setRoadmapTaskCompletion(skill, taskIndex, completed) {
+    const updated = readRoadmapProgress(skill);
+    updated[taskIndex] = completed;
+    return writeRoadmapProgress(skill, updated);
+}
+
+let lastRoadmapTaskTrigger = null;
+function openRoadmapTaskModal(skill, taskIndex, trigger) {
+    const actionPlan = roadmapActionPlans[skill];
+    let currentIndex = 0;
+    let selected;
+    actionPlan.stages.some(([stage, tasks]) => tasks.some((task) => {
+        if (currentIndex++ === taskIndex) { selected = { stage, task }; return true; }
+        return false;
+    }));
+    if (!selected) return;
+    const detail = getRoadmapTaskDetail(skill, selected.stage, selected.task, taskIndex);
+    const modal = document.getElementById("roadmapTaskModal");
+    const completed = readRoadmapProgress(skill)[taskIndex];
+    lastRoadmapTaskTrigger = trigger;
+    modal.innerHTML = `<div class="task-modal-dialog" tabindex="-1"><div class="task-modal-header"><div><p class="eyebrow">${escapeHtml(selected.stage)} task · ${escapeHtml(skill)}</p><h3 id="roadmapTaskModalTitle">${escapeHtml(detail.title)}</h3></div><button type="button" class="task-modal-close" aria-label="Close task details">×</button></div><h4>Objective</h4><p>${escapeHtml(detail.objective)}</p><h4>Why this matters</h4><p>${escapeHtml(detail.why)}</p><h4>Step-by-step instructions</h4><ol>${detail.steps.map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol><h4>Expected outcome</h4><p>${escapeHtml(detail.outcome)}</p>${renderRecommendedResources(roadmapResources[skill].slice(0, 2), { skill, placement: "roadmap_task" })}<div class="task-modal-actions"><button type="button" class="secondary-button" data-close-task>Continue working</button><button type="button" ${completed ? "disabled" : ""} data-complete-task>${completed ? "Task completed" : "Mark as Complete"}</button></div></div>`;
+    modal.hidden = false;
+    const dialog = modal.querySelector(".task-modal-dialog");
+    const close = () => { modal.hidden = true; modal.innerHTML = ""; lastRoadmapTaskTrigger?.focus(); };
+    modal.querySelectorAll("[data-close-task], .task-modal-close").forEach((button) => button.addEventListener("click", close));
+    modal.addEventListener("click", (event) => { if (event.target === modal) close(); }, { once: true });
+    dialog.addEventListener("keydown", (event) => { if (event.key === "Escape") close(); });
+    modal.querySelector("[data-complete-task]")?.addEventListener("click", () => {
+        if (!setRoadmapTaskCompletion(skill, taskIndex, true)) return;
+        close();
+        showRoadmap(skill);
+        if (currentMyPlan && currentMyPlan.roadmapName === skill) renderMyPlan();
+    });
+    dialog.focus();
+}
+
 function showRoadmap(skill) {
     const roadmap = skillRoadmaps[skill];
     const actionPlan = roadmapActionPlans[skill];
@@ -1401,9 +1461,10 @@ function showRoadmap(skill) {
     const stages = actionPlan.stages.map(([stage, tasks], stageIndex) => {
         const taskMarkup = tasks.map((task) => {
             const index = taskIndex++;
-            return `<label class="roadmap-task ${progress.tasks[index] ? "is-complete" : ""}"><input type="checkbox" data-roadmap-task="${index}" ${progress.tasks[index] ? "checked" : ""}><span>${escapeHtml(task)}</span></label>`;
+            const actionLabel = stage === "Build" ? "Build this project" : stage === "Portfolio" ? "Add to Portfolio" : stage === "Find Work" ? "Prepare to apply" : "Start this task";
+            return `<div class="roadmap-task ${progress.tasks[index] ? "is-complete" : ""}"><div class="roadmap-task-copy"><input type="checkbox" tabindex="-1" aria-hidden="true" ${progress.tasks[index] ? "checked" : ""} disabled><span>${escapeHtml(task)}</span></div><button type="button" class="secondary-button" data-roadmap-task-detail="${index}">${progress.tasks[index] ? "Review task" : actionLabel}</button></div>`;
         }).join("");
-        return `<section class="roadmap-stage" aria-labelledby="${skill.replace(/[^a-z0-9]/gi, "").toLowerCase()}-stage-${stageIndex}"><div class="roadmap-stage-heading"><span>0${stageIndex + 1}</span><div><h4 id="${skill.replace(/[^a-z0-9]/gi, "").toLowerCase()}-stage-${stageIndex}">${stage}</h4><p>${stage === "Find Work" ? "Prepare carefully, apply honestly, and keep expectations realistic." : "Complete the focused tasks below before moving on."}</p></div></div><div class="roadmap-task-list">${taskMarkup}</div><button type="button" class="secondary-button roadmap-stage-action" data-stage-action="${stageIndex}">${stage === "Build" ? "Build this project" : stage === "Portfolio" ? "Add to Portfolio" : stage === "Find Work" ? "Prepare to apply" : "Start this task"}</button></section>`;
+        return `<section class="roadmap-stage" aria-labelledby="${skill.replace(/[^a-z0-9]/gi, "").toLowerCase()}-stage-${stageIndex}"><div class="roadmap-stage-heading"><span>0${stageIndex + 1}</span><div><h4 id="${skill.replace(/[^a-z0-9]/gi, "").toLowerCase()}-stage-${stageIndex}">${stage}</h4><p>${stage === "Find Work" ? "Prepare carefully, apply honestly, and keep expectations realistic." : "Open a task for clear instructions, then mark it complete only after you finish the work."}</p></div></div><div class="roadmap-task-list">${taskMarkup}</div></section>`;
     }).join("");
     const projects = actionPlan.projects.map(([title, build, demonstrates, portfolio], index) => `<article class="roadmap-project"><span>Project ${index + 1}</span><h4>${escapeHtml(title)}</h4><p><strong>Build:</strong> ${escapeHtml(build)}</p><p><strong>Demonstrates:</strong> ${escapeHtml(demonstrates)}</p><p><strong>Add to your portfolio:</strong> ${escapeHtml(portfolio)}</p><button type="button" class="secondary-button" data-portfolio-project="${index}">Add this project to Portfolio Builder</button></article>`).join("");
 
@@ -1436,26 +1497,8 @@ function showRoadmap(skill) {
         </div>
     `;
     result.hidden = false;
-    result.querySelectorAll("[data-roadmap-task]").forEach((input) => {
-        input.addEventListener("change", function () {
-            const updated = readRoadmapProgress(skill);
-            updated[Number(this.dataset.roadmapTask)] = this.checked;
-            if (!writeRoadmapProgress(skill, updated)) { this.checked = !this.checked; return; }
-            const next = getRoadmapProgress(skill);
-            result.querySelector("#roadmapProgressPercent").textContent = `${next.percent}%`;
-            result.querySelector("#roadmapProgressCount").textContent = `${next.completed} of ${next.total} tasks completed`;
-            result.querySelector("#roadmapProgressBar").style.width = `${next.percent}%`;
-            this.closest(".roadmap-task").classList.toggle("is-complete", this.checked);
-            if (currentMyPlan && currentMyPlan.roadmapName === skill) renderMyPlan();
-        });
-    });
-    result.querySelectorAll("[data-stage-action]").forEach((button) => {
-        button.addEventListener("click", function () {
-            const stage = this.closest(".roadmap-stage");
-            const target = stage.querySelector('input:not(:checked)') || stage.querySelector("input");
-            target.focus();
-            stage.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
-        });
+    result.querySelectorAll("[data-roadmap-task-detail]").forEach((button) => {
+        button.addEventListener("click", function () { openRoadmapTaskModal(skill, Number(this.dataset.roadmapTaskDetail), this); });
     });
     result.querySelectorAll("[data-portfolio-project]").forEach((button) => {
         button.addEventListener("click", function () {
