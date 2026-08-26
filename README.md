@@ -11,9 +11,14 @@ npm start
 
 Open `http://localhost:3000`.
 
+Create `.env` from `.env.example` and set server-only values there. Never put
+API keys in `public/index.html`; browser code and static files are visible to every visitor.
+
 ## Production configuration
 
 Set `SKILLPATH_SITE_URL` to the public HTTPS origin before launch. This enables absolute URLs in `robots.txt` and `sitemap.xml`. Analytics is deliberately disabled by default in `public/index.html`; configure a reviewed provider only after updating the privacy policy.
+
+For Render, add `SKILLPATH_SITE_URL` and `SKILLPATH_API_KEY` under the service's Environment settings. Render injects them at runtime and they take precedence over local development values.
 
 ## Monetization configuration
 

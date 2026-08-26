@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="SkillPath helps beginners choose an online earning direction, build practical skills, create portfolio projects, and find legitimate next steps.">
+    <meta name="description" content="SkillSprint helps beginners choose an online earning direction, build practical skills, create portfolio projects, and find legitimate next steps.">
     <meta name="robots" content="index,follow,max-image-preview:large">
     <link rel="canonical" href="/">
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="SkillPath">
-    <meta property="og:title" content="SkillPath | Build Skills for Legitimate Online Work">
+    <meta property="og:site_name" content="SkillSprint">
+    <meta property="og:title" content="SkillSprint | Build Skills for Legitimate Online Work">
     <meta property="og:description" content="Choose a practical earning path, follow beginner-friendly skill roadmaps, and find legitimate next steps.">
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="SkillPath | Build Skills for Legitimate Online Work">
+    <meta name="twitter:title" content="SkillSprint | Build Skills for Legitimate Online Work">
     <meta name="twitter:description" content="Practical guidance for choosing skills, building a portfolio, and exploring legitimate online work.">
-    <title>SkillPath | Build Skills for Legitimate Online Work</title>
+    <title>SkillSprint | Build Skills for Legitimate Online Work</title>
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      "name": "SkillPath",
+      "name": "SkillSprint",
       "description": "Practical guidance for choosing skills, building a portfolio, and exploring legitimate online work."
     }
     </script>
@@ -785,7 +785,7 @@
     <a class="skip-link" href="#main-content">Skip to content</a>
 
     <nav class="site-nav" aria-label="Primary navigation">
-        <a class="brand" href="#home" aria-label="SkillPath home"><span class="brand-mark">S</span> SkillPath</a>
+        <a class="brand" href="#home" aria-label="SkillSprint home"><span class="brand-mark">S</span> SkillSprint</a>
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span><span class="sr-only">Open navigation</span></button>
         <div class="nav-links" id="nav-links">
             <a href="#home">Home</a>
@@ -1023,8 +1023,8 @@
     </main>
 
     <footer id="about">
-        <div class="footer-grid"><div><a class="brand" href="#home"><span class="brand-mark">S</span> SkillPath</a><p>Practical guidance for building useful online skills and finding legitimate earning paths.</p></div><div><h3>Explore</h3><a href="#path-finder">Path Finder</a><a href="#skill-roadmaps">Skill Roadmaps</a><a href="#project-builder">Project Builder</a><a href="#earning-paths">Earning Paths</a><a href="#resources">Resources</a><a href="beginner-skill-roadmaps.html">Beginner Skill Guides</a></div><div><h3>About &amp; policies</h3><a href="about.html">About SkillPath</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Use</a><a href="affiliate-disclosure.html">Affiliate Disclosure</a><a href="resource-standards.html">Resource Standards</a></div></div>
-        <p class="footer-bottom">© 2026 SkillPath. Guidance is educational; outcomes and income are never guaranteed.</p>
+        <div class="footer-grid"><div><a class="brand" href="#home"><span class="brand-mark">S</span> SkillSprint</a><p>Practical guidance for building useful online skills and finding legitimate earning paths.</p></div><div><h3>Explore</h3><a href="#path-finder">Path Finder</a><a href="#skill-roadmaps">Skill Roadmaps</a><a href="#project-builder">Project Builder</a><a href="#earning-paths">Earning Paths</a><a href="#resources">Resources</a><a href="beginner-skill-roadmaps.html">Beginner Skill Guides</a></div><div><h3>About &amp; policies</h3><a href="about.html">About SkillSprint</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Use</a><a href="affiliate-disclosure.html">Affiliate Disclosure</a><a href="resource-standards.html">Resource Standards</a></div></div>
+        <p class="footer-bottom">© 2026 SkillSprint. Guidance is educational; outcomes and income are never guaranteed.</p>
     </footer>
 
    <script>
@@ -1152,7 +1152,7 @@ function trackProductEvent(name, properties = {}) {
     }
 }
 
-// Reserved for future SkillPath-owned products. Nothing here is displayed,
+// Reserved for future SkillSprint-owned products. Nothing here is displayed,
 // priced, or purchasable until a real product and checkout are approved.
 const FUTURE_PRODUCT_CONFIG = [];
 
@@ -1204,14 +1204,14 @@ function renderRecommendedResources(resourceIds, context = {}) {
                 <p>${resource.description}</p>
                 <p class="resource-why"><strong>Why we recommend it:</strong> ${resource.whyRecommended}</p>
                 <p class="builder-note"><strong>For:</strong> ${resource.recommendedFor}<br><strong>Free alternative:</strong> ${resource.freeAlternative}<br><strong>Limitations:</strong> ${resource.limitations}<br>Affiliate status: ${resource.isAffiliate ? "active" : resource.affiliateStatus} · Checked: ${resource.dateChecked}</p>
-                ${resource.isAffiliate ? `<p class="builder-note">SkillPath may earn a commission if you purchase through this link, at no additional cost to you. <a href="affiliate-disclosure.html">Affiliate Disclosure</a></p>` : ""}
+                ${resource.isAffiliate ? `<p class="builder-note">SkillSprint may earn a commission if you purchase through this link, at no additional cost to you. <a href="affiliate-disclosure.html">Affiliate Disclosure</a></p>` : ""}
                 <a class="resource-button" data-resource-id="${resource.id}" data-resource-category="${escapeHtml(resource.category)}" data-resource-context="${escapeHtml(context.skill || "")}" data-resource-placement="${escapeHtml(context.placement || "general")}" href="${resource.url}" target="_blank" rel="noopener noreferrer">Visit Resource</a>
             </article>
         `;
     }).join("");
 
     const disclosure = resources.some((resource) => resource.isAffiliate)
-        ? `<aside class="affiliate-disclosure" aria-label="Affiliate disclosure"><h5>Affiliate Disclosure</h5><p>Some links in this section are affiliate links. SkillPath may earn a commission at no additional cost to you. <a href="affiliate-disclosure.html">Read the full Affiliate Disclosure.</a></p></aside>`
+        ? `<aside class="affiliate-disclosure" aria-label="Affiliate disclosure"><h5>Affiliate Disclosure</h5><p>Some links in this section are affiliate links. SkillSprint may earn a commission at no additional cost to you. <a href="affiliate-disclosure.html">Read the full Affiliate Disclosure.</a></p></aside>`
         : "";
 
     return `
@@ -1622,7 +1622,7 @@ function renderMyPlan() {
         showRoadmap(currentMyPlan.roadmapName);
     });
     document.getElementById("resetPlanButton").addEventListener("click", function () {
-        if (!window.confirm("Reset your saved SkillPath plan? Your completed checklist items will be cleared from this device.")) return;
+        if (!window.confirm("Reset your saved SkillSprint plan? Your completed checklist items will be cleared from this device.")) return;
         try {
             window.localStorage.removeItem(MY_PLAN_STORAGE_KEY);
             currentMyPlan = null;
@@ -1945,7 +1945,7 @@ function initialiseBuilders() {
         output.innerHTML = `<h3>${escapeHtml(value("portfolioTitle"))}</h3><p>${escapeHtml(value("portfolioDescription"))}</p><h4>Skills used</h4><p>${escapeHtml(value("portfolioSkills"))}</p><h4>Tools used</h4><p>${escapeHtml(value("portfolioTools"))}</p><h4>Outcome</h4><p>${escapeHtml(value("portfolioOutcome"))}</p>${safeLink ? `<p><a class="resource-button" href="${escapeHtml(safeLink)}" target="_blank" rel="noopener noreferrer">View project</a></p>` : ""}<p class="builder-note">Use this entry only for work you completed. It does not represent employment history or client work unless that is true.</p>${renderRecommendedResources(["googleDocs"], { placement: "portfolio_builder" }).replace("Recommended Tools &amp; Resources", "Helpful resources for presenting your work")}<div class="builder-actions"><button type="button" id="downloadPortfolioEntry">Download text</button></div>`;
         output.hidden = false;
         output.querySelector("#downloadPortfolioEntry").addEventListener("click", () => {
-            const blob = new Blob([output.innerText], { type: "text/plain" }); const url = URL.createObjectURL(blob); const anchor = document.createElement("a"); anchor.href = url; anchor.download = "skillpath-portfolio-entry.txt"; anchor.click(); URL.revokeObjectURL(url);
+            const blob = new Blob([output.innerText], { type: "text/plain" }); const url = URL.createObjectURL(blob); const anchor = document.createElement("a"); anchor.href = url; anchor.download = "skillsprint-portfolio-entry.txt"; anchor.click(); URL.revokeObjectURL(url);
         });
         trackProductEvent("portfolio_builder_used");
     });
