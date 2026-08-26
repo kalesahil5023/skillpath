@@ -48,6 +48,15 @@ export const AuthProvider = ({ children }) => {
     return userData;
   };
 
+  const loginWithGoogle = async (credential) => {
+    const res = await authApi.googleLogin(credential);
+    const { access, refresh, user: userData } = res.data;
+    tokenStorage.setTokens(access, refresh, userData);
+    setUser(userData);
+    setAuthModalOpen(false);
+    return userData;
+  };
+
   const logout = () => {
     tokenStorage.clear();
     setUser(null);
@@ -70,6 +79,7 @@ export const AuthProvider = ({ children }) => {
         isLoading,
         login,
         register,
+        loginWithGoogle,
         logout,
         authModalOpen,
         authModalMode,

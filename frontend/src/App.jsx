@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -113,10 +114,14 @@ function MainContent() {
   );
 }
 
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "skillsprint-client.apps.googleusercontent.com";
+
 export default function App() {
   return (
-    <AuthProvider>
-      <MainContent />
-    </AuthProvider>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <AuthProvider>
+        <MainContent />
+      </AuthProvider>
+    </GoogleOAuthProvider>
   );
 }

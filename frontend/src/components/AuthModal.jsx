@@ -1,9 +1,18 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { GoogleLogin } from "@react-oauth/google";
 import { X, LogIn, UserPlus, AlertCircle, Sparkles } from "lucide-react";
 
 export default function AuthModal() {
-  const { authModalOpen, authModalMode, closeAuthModal, setAuthModalMode, login, register } = useAuth();
+  const {
+    authModalOpen,
+    authModalMode,
+    closeAuthModal,
+    setAuthModalMode,
+    login,
+    register,
+    loginWithGoogle,
+  } = useAuth();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -38,7 +47,6 @@ export default function AuthModal() {
         } else if (data.error) {
           setError(data.error);
         } else {
-          // Flatten field errors
           const messages = Object.entries(data)
             .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(" ") : msgs}`)
             .join(" | ");
@@ -47,6 +55,20 @@ export default function AuthModal() {
       } else {
         setError("Network error connecting to Django backend. Is the server running?");
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setLoading(true);
+      setError("");
+      await loginWithGoogle(credentialResponse.credential);
+    } catch (err) {
+      console.error("Google login error:", err);
+      const errMsg = err.response?.data?.error || "Google authentication failed. Please try again.";
+      setError(errMsg);
     } finally {
       setLoading(false);
     }
@@ -69,7 +91,7 @@ export default function AuthModal() {
         </button>
 
         {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: "28px" }}>
+        <div style={{ textAlign: "center", marginBottom: "24px" }}>
           <div
             style={{
               width: "48px",
@@ -90,7 +112,7 @@ export default function AuthModal() {
           <h3 style={{ fontSize: "1.65rem", marginBottom: "6px" }}>
             {isLogin ? "Welcome back" : "Create your account"}
           </h3>
-          <p style={{ fontSize: "0.95rem" }}>
+          <p style={{ fontSize: "0.92rem", color: "var(--text-secondary)" }}>
             {isLogin
               ? "Access your saved starter plans and progress across devices."
               : "Sync your learning checklists and portfolio case studies to PostgreSQL."}
@@ -105,7 +127,7 @@ export default function AuthModal() {
             background: "rgba(255, 255, 255, 0.04)",
             padding: "4px",
             borderRadius: "var(--radius-md)",
-            marginBottom: "24px",
+            marginBottom: "20px",
           }}
         >
           <button
@@ -151,6 +173,27 @@ export default function AuthModal() {
           >
             Register
           </button>
+        </div>
+
+        {/* Google One-Tap / Sign-In Button */}
+        <div style={{ display: "flex", justifyContent: "center", width: "100%", marginBottom: "6px" }}>
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => setError("Google Sign-In was cancelled or unavailable.")}
+            theme="filled_black"
+            shape="pill"
+            text={isLogin ? "signin_with" : "signup_with"}
+            width="380"
+          />
+        </div>
+
+        {/* Divider */}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", margin: "18px 0" }}>
+          <div style={{ flex: 1, height: "1px", background: "var(--border)" }} />
+          <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.05em" }}>
+            or continue with email
+          </span>
+          <div style={{ flex: 1, height: "1px", background: "var(--border)" }} />
         </div>
 
         {/* Form */}
@@ -231,7 +274,7 @@ export default function AuthModal() {
           <button
             type="submit"
             className="btn btn-primary"
-            style={{ width: "100%", padding: "14px", marginTop: "8px" }}
+            style={{ width: "100%", padding: "14px", marginTop: "4px" }}
             disabled={loading}
           >
             {loading ? (

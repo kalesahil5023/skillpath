@@ -132,3 +132,7 @@ SIMPLE_JWT = {
 # CORS Settings (Allow Vite React development)
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+
+# Google OAuth2 Client Configuration
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
+
