@@ -1,0 +1,255 @@
+import React, { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { X, LogIn, UserPlus, AlertCircle, Sparkles } from "lucide-react";
+
+export default function AuthModal() {
+  const { authModalOpen, authModalMode, closeAuthModal, setAuthModalMode, login, register } = useAuth();
+
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  if (!authModalOpen) return null;
+
+  const isLogin = authModalMode === "login";
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      if (isLogin) {
+        await login(username, password);
+      } else {
+        await register(username, email, password, displayName);
+      }
+    } catch (err) {
+      console.error("Auth error:", err);
+      const data = err.response?.data;
+      if (data) {
+        if (typeof data === "string") {
+          setError(data);
+        } else if (data.detail) {
+          setError(data.detail);
+        } else if (data.error) {
+          setError(data.error);
+        } else {
+          // Flatten field errors
+          const messages = Object.entries(data)
+            .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(" ") : msgs}`)
+            .join(" | ");
+          setError(messages || "Authentication failed. Please verify credentials.");
+        }
+      } else {
+        setError("Network error connecting to Django backend. Is the server running?");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="modal-backdrop" onClick={closeAuthModal}>
+      <div
+        className="modal-container"
+        style={{ maxWidth: "460px" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          className="modal-close"
+          onClick={closeAuthModal}
+          aria-label="Close authentication modal"
+        >
+          <X size={18} />
+        </button>
+
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: "28px" }}>
+          <div
+            style={{
+              width: "48px",
+              height: "48px",
+              borderRadius: "12px",
+              background: "linear-gradient(135deg, var(--primary), var(--secondary))",
+              color: "#08111f",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: 900,
+              fontSize: "1.3rem",
+              marginBottom: "12px",
+            }}
+          >
+            S
+          </div>
+          <h3 style={{ fontSize: "1.65rem", marginBottom: "6px" }}>
+            {isLogin ? "Welcome back" : "Create your account"}
+          </h3>
+          <p style={{ fontSize: "0.95rem" }}>
+            {isLogin
+              ? "Access your saved starter plans and progress across devices."
+              : "Sync your learning checklists and portfolio case studies to PostgreSQL."}
+          </p>
+        </div>
+
+        {/* Tab Switcher */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            background: "rgba(255, 255, 255, 0.04)",
+            padding: "4px",
+            borderRadius: "var(--radius-md)",
+            marginBottom: "24px",
+          }}
+        >
+          <button
+            type="button"
+            onClick={() => {
+              setAuthModalMode("login");
+              setError("");
+            }}
+            style={{
+              padding: "10px",
+              borderRadius: "var(--radius-sm)",
+              background: isLogin ? "var(--surface)" : "transparent",
+              color: isLogin ? "var(--text)" : "var(--text-muted)",
+              border: isLogin ? "1px solid var(--border)" : "none",
+              fontWeight: isLogin ? 700 : 500,
+              cursor: "pointer",
+              fontFamily: "inherit",
+              fontSize: "0.9rem",
+              transition: "all 0.2s",
+            }}
+          >
+            Log In
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setAuthModalMode("register");
+              setError("");
+            }}
+            style={{
+              padding: "10px",
+              borderRadius: "var(--radius-sm)",
+              background: !isLogin ? "var(--surface)" : "transparent",
+              color: !isLogin ? "var(--text)" : "var(--text-muted)",
+              border: !isLogin ? "1px solid var(--border)" : "none",
+              fontWeight: !isLogin ? 700 : 500,
+              cursor: "pointer",
+              fontFamily: "inherit",
+              fontSize: "0.9rem",
+              transition: "all 0.2s",
+            }}
+          >
+            Register
+          </button>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit}>
+          {!isLogin && (
+            <div className="form-group">
+              <label className="form-label">Full Name / Display Name</label>
+              <input
+                className="form-input"
+                type="text"
+                placeholder="e.g. Alex River"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                maxLength={100}
+              />
+            </div>
+          )}
+
+          <div className="form-group">
+            <label className="form-label">Username</label>
+            <input
+              className="form-input"
+              type="text"
+              placeholder="e.g. alexriver"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+
+          {!isLogin && (
+            <div className="form-group">
+              <label className="form-label">Email Address</label>
+              <input
+                className="form-input"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+          )}
+
+          <div className="form-group">
+            <label className="form-label">Password</label>
+            <input
+              className="form-input"
+              type="password"
+              placeholder="At least 8 characters"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={8}
+            />
+          </div>
+
+          {error && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: "8px",
+                color: "var(--danger)",
+                fontSize: "0.88rem",
+                padding: "10px 14px",
+                borderRadius: "var(--radius-sm)",
+                background: "rgba(255, 107, 139, 0.08)",
+                border: "1px solid rgba(255, 107, 139, 0.3)",
+                marginBottom: "20px",
+              }}
+            >
+              <AlertCircle size={16} style={{ flexShrink: 0, marginTop: "2px" }} />
+              <span>{error}</span>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="btn btn-primary"
+            style={{ width: "100%", padding: "14px", marginTop: "8px" }}
+            disabled={loading}
+          >
+            {loading ? (
+              <span>Connecting to Backend...</span>
+            ) : isLogin ? (
+              <>
+                <LogIn size={16} />
+                <span>Log In to Account</span>
+              </>
+            ) : (
+              <>
+                <UserPlus size={16} />
+                <span>Create Free Account</span>
+              </>
+            )}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}

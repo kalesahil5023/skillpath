@@ -1,0 +1,500 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+/* ==========================================================================
+   SkillSprint Premium Design System & Tokens
+   ========================================================================== */
+
+:root {
+  --background: #070d18;
+  --background-elevated: #0d1728;
+  --surface: #111e33;
+  --surface-hover: #162640;
+  --surface-glass: rgba(16, 29, 49, 0.72);
+  --surface-glass-border: rgba(115, 215, 255, 0.14);
+  
+  --primary: #73d7ff;
+  --primary-glow: rgba(115, 215, 255, 0.35);
+  --secondary: #8b7cff;
+  --secondary-glow: rgba(139, 124, 255, 0.35);
+  --accent: #4de1b2;
+  --accent-glow: rgba(77, 225, 178, 0.3);
+  --warning: #f4c66b;
+  --danger: #ff6b8b;
+  
+  --text: #f0f6fc;
+  --text-secondary: #9bb0c9;
+  --text-muted: #647b97;
+  
+  --border: rgba(157, 190, 225, 0.12);
+  --border-active: rgba(115, 215, 255, 0.4);
+  
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+  
+  --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 35px var(--primary-glow);
+}
+
+/* ==========================================================================
+   Reset & Base Styles
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--background);
+  background-image: 
+    radial-gradient(circle at 15% 5%, rgba(115, 215, 255, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 85% 15%, rgba(139, 124, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 50% 60%, rgba(77, 225, 178, 0.05) 0%, transparent 60%);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: var(--font-main);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Cybernetic Grid Overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(157, 190, 225, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(157, 190, 225, 0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(circle at 50% 30%, black 40%, transparent 85%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(115, 215, 255, 0.2);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(115, 215, 255, 0.4);
+}
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+
+h1, h2, h3, h4, .brand, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+  font-weight: 700;
+  color: var(--text);
+}
+
+h1 {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 1.05;
+}
+
+h2 {
+  font-size: clamp(1.85rem, 4vw, 2.75rem);
+  line-height: 1.15;
+}
+
+h3 {
+  font-size: 1.35rem;
+  line-height: 1.3;
+}
+
+p {
+  color: var(--text-secondary);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #73d7ff 0%, #a79aff 50%, #4de1b2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.eyebrow {
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+/* ==========================================================================
+   Containers & Layouts
+   ========================================================================== */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section-spacing {
+  padding: 80px 0;
+}
+
+.section-header {
+  max-width: 680px;
+  margin-bottom: 48px;
+}
+
+.section-header p {
+  margin-top: 14px;
+  font-size: 1.1rem;
+}
+
+/* ==========================================================================
+   Glassmorphic Cards & Badges
+   ========================================================================== */
+
+.glass-card {
+  background: var(--surface-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--surface-glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: var(--border-active);
+  box-shadow: var(--shadow-lg), 0 0 20px rgba(115, 215, 255, 0.08);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.badge-primary {
+  background: rgba(115, 215, 255, 0.12);
+  color: var(--primary);
+  border: 1px solid rgba(115, 215, 255, 0.3);
+}
+
+.badge-accent {
+  background: rgba(77, 225, 178, 0.12);
+  color: var(--accent);
+  border: 1px solid rgba(77, 225, 178, 0.3);
+}
+
+.badge-warning {
+  background: rgba(244, 198, 107, 0.12);
+  color: var(--warning);
+  border: 1px solid rgba(244, 198, 107, 0.3);
+}
+
+.badge-secondary {
+  background: rgba(139, 124, 255, 0.12);
+  color: var(--secondary);
+  border: 1px solid rgba(139, 124, 255, 0.3);
+}
+
+/* ==========================================================================
+   Buttons & Interactive Elements
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 22px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #73d7ff 0%, #8b7cff 100%);
+  color: #07111d;
+  box-shadow: 0 6px 20px rgba(115, 215, 255, 0.25);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #8fe0ff 0%, #9e91ff 100%);
+  box-shadow: 0 8px 28px rgba(115, 215, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(115, 215, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-accent {
+  background: linear-gradient(135deg, #4de1b2 0%, #73d7ff 100%);
+  color: #07111d;
+  box-shadow: 0 6px 20px rgba(77, 225, 178, 0.25);
+}
+
+.btn-accent:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(77, 225, 178, 0.4);
+}
+
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 0.85rem;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Accessible focus ring */
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+/* ==========================================================================
+   Form Controls
+   ========================================================================== */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.form-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.form-input, .form-select, .form-textarea {
+  background: rgba(13, 23, 40, 0.75);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(115, 215, 255, 0.15);
+  outline: none;
+}
+
+.form-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* ==========================================================================
+   Hero Visual Elements & 3D Orb
+   ========================================================================== */
+
+.hero-orb {
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%, #d2f4ff 0%, #70d5ff 20%, #4b55d6 55%, #141d53 85%);
+  box-shadow: 
+    0 0 0 16px rgba(115, 215, 255, 0.04),
+    0 0 80px rgba(97, 157, 255, 0.4),
+    inset -25px -30px 50px rgba(5, 8, 42, 0.7);
+  animation: orb-pulse 6s ease-in-out infinite;
+}
+
+.orbital-ring {
+  position: absolute;
+  border: 1px solid rgba(115, 215, 255, 0.2);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.orbital-ring-1 {
+  width: 320px;
+  height: 220px;
+  transform: rotateX(65deg) rotateZ(15deg);
+}
+
+.orbital-ring-2 {
+  width: 380px;
+  height: 260px;
+  transform: rotateX(65deg) rotateZ(-35deg);
+}
+
+.floating-badge {
+  position: absolute;
+  padding: 12px 18px;
+  background: rgba(17, 30, 51, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(115, 215, 255, 0.28);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-md);
+  animation: badge-float 5s ease-in-out infinite alternate;
+}
+
+@keyframes orb-pulse {
+  0%, 100% {
+    transform: scale(1) translateY(0);
+  }
+  50% {
+    transform: scale(1.04) translateY(-8px);
+  }
+}
+
+@keyframes badge-float {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-12px); }
+}
+
+/* ==========================================================================
+   Modals
+   ========================================================================== */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 9, 18, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 20px;
+  animation: fade-in 0.2s ease-out;
+}
+
+.modal-container {
+  background: linear-gradient(145deg, #132238, #0b1524);
+  border: 1px solid rgba(115, 215, 255, 0.25);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6);
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 32px;
+  position: relative;
+  animation: scale-up 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scale-up {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ==========================================================================
+   Responsive Adjustments
+   ========================================================================== */
+
+@media (max-width: 900px) {
+  .section-spacing {
+    padding: 60px 0;
+  }
+  .hero-grid {
+    grid-template-columns: 1fr !important;
+    gap: 48px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0 16px;
+  }
+  .modal-container {
+    padding: 24px 18px;
+  }
+}
