@@ -770,6 +770,13 @@
         .builder-output ul,.builder-output ol { padding-left:20px; }.builder-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
         .builder-actions button { margin:0; }.builder-note { color:var(--muted); font-size:13px; margin-top:12px; }
         @media (max-width:700px) { .builder-grid { grid-template-columns:1fr; }.builder-card { padding:23px; } .builder-actions { flex-direction:column; } .builder-actions button { width:100%; } }
+        .roadmap-progress { align-items:center; background:rgba(115,215,255,.07); border:1px solid rgba(115,215,255,.27); border-radius:14px; display:grid; gap:18px; grid-template-columns:1fr minmax(150px,.8fr); margin-bottom:24px; padding:20px; }
+        .roadmap-progress h4,.roadmap-actions-intro h4,.roadmap-projects > h4 { color:var(--text); margin:0 0 6px; }.roadmap-progress p,.roadmap-actions-intro p,.roadmap-project p,.my-plan-roadmap p { color:var(--muted); line-height:1.55; margin:0; }
+        .roadmap-progress-track { background:rgba(255,255,255,.1); border-radius:99px; height:9px; overflow:hidden; }.roadmap-progress-track span { background:linear-gradient(90deg,var(--primary),var(--accent)); display:block; height:100%; transition:width .25s ease; }
+        .roadmap-actions { display:grid; gap:14px; }.roadmap-actions-intro { margin:8px 0 2px; }.roadmap-stage { background:rgba(255,255,255,.035); border:1px solid var(--border); border-radius:13px; padding:20px; }.roadmap-stage-heading { align-items:flex-start; display:flex; gap:13px; }.roadmap-stage-heading > span { align-items:center; background:rgba(115,215,255,.14); border:1px solid rgba(115,215,255,.25); border-radius:9px; color:var(--primary); display:inline-flex; font-size:12px; font-weight:800; height:31px; justify-content:center; min-width:31px; }.roadmap-stage-heading h4 { color:var(--text); margin:0 0 4px; }.roadmap-stage-heading p { color:var(--muted); font-size:14px; line-height:1.45; margin:0; }.roadmap-task-list { display:grid; gap:8px; margin:17px 0; }.roadmap-task { align-items:flex-start; background:rgba(255,255,255,.025); border:1px solid transparent; border-radius:9px; color:var(--muted); cursor:pointer; display:flex; gap:10px; line-height:1.45; padding:10px; }.roadmap-task:hover { border-color:rgba(115,215,255,.3); }.roadmap-task input { accent-color:var(--primary); margin-top:3px; }.roadmap-task.is-complete { color:var(--text); opacity:.7; text-decoration:line-through; }.roadmap-stage-action { margin:0; }
+        .roadmap-projects { margin:30px 0; }.roadmap-project-grid { display:grid; gap:14px; grid-template-columns:repeat(3,minmax(0,1fr)); }.roadmap-project { background:rgba(255,255,255,.035); border:1px solid var(--border); border-radius:13px; padding:19px; }.roadmap-project > span { color:var(--primary); font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }.roadmap-project h4 { color:var(--text); margin:10px 0; }.roadmap-project strong { color:var(--text); }.roadmap-project button { font-size:13px; margin-top:10px; padding:10px 12px; }
+        .my-plan-roadmap { align-items:center; background:rgba(115,215,255,.06); border:1px solid rgba(115,215,255,.2); border-radius:12px; display:flex; gap:16px; justify-content:space-between; margin:20px 0; padding:15px; }.my-plan-roadmap span { color:var(--primary); display:block; font-size:11px; font-weight:800; letter-spacing:.08em; margin-bottom:5px; text-transform:uppercase; }.my-plan-roadmap strong { color:var(--text); }.my-plan-roadmap button { margin:0; white-space:nowrap; }
+        @media (max-width:700px) { .roadmap-progress { grid-template-columns:1fr; }.roadmap-project-grid { grid-template-columns:1fr; }.my-plan-roadmap { align-items:stretch; flex-direction:column; }.my-plan-roadmap button { width:100%; } }
     </style>
 </head>
 
@@ -1298,10 +1305,107 @@ const skillRoadmaps = {
     }
 };
 
+const ROADMAP_PROGRESS_STORAGE_PREFIX = "skillpath_roadmap_progress_v1:";
+const roadmapActionPlans = {
+    "Web Development": { stages:[
+        ["Learn", ["Learn basic HTML structure with headings, links, images, and forms.", "Learn CSS selectors, Flexbox, and responsive layout basics."]],
+        ["Practice", ["Recreate a simple public webpage layout without copying its code.", "Add a working, browser-validated contact form to a practice page."]],
+        ["Build", ["Build a responsive landing page for a fictional local business.", "Build a small interactive calculator or expense tracker with JavaScript."]],
+        ["Portfolio", ["Publish one finished project with a live link and screenshots.", "Write a short case study explaining the problem, solution, and testing."]],
+        ["Find Work", ["Prepare a focused service description for landing-page or website-update work.", "Review one clearly scoped opportunity and list its requirements before applying."]]
+    ], projects:[
+        ["Responsive local-business landing page", "Build a mobile-friendly page with services, testimonials marked as placeholder content, and a contact call to action.", "HTML, CSS, responsive design, and accessibility.", "Screenshots, a live link, and a brief explanation of the audience and layout choices."],
+        ["Personal expense tracker", "Build a small browser-based tracker that adds and totals expenses.", "JavaScript events, DOM updates, and form handling.", "A live link, feature list, and one note about how you tested edge cases."],
+        ["Portfolio website", "Create a simple site to present your own completed projects.", "Information architecture, responsive design, and project presentation.", "The live portfolio link and screenshots of the project pages."]
+    ] },
+    "Graphic Design": { stages:[
+        ["Learn", ["Study typography, alignment, contrast, and visual hierarchy using three example designs.", "Create a small color and type reference for one fictional brand."]],
+        ["Practice", ["Redesign a crowded social post so its main message is clear in three seconds.", "Create one design in square and vertical formats while keeping the hierarchy intact."]],
+        ["Build", ["Create a three-post social campaign for a fictional business.", "Design a simple brand identity concept with logo direction, colors, and type."]],
+        ["Portfolio", ["Export your strongest pieces and add a short brief for each.", "Explain the audience, goal, and design decisions behind one project."]],
+        ["Find Work", ["Prepare a focused offer for social graphics, flyers, or presentation design.", "Review a brief and note scope, revisions, assets, and usage rights before applying."]]
+    ], projects:[
+        ["Three-post social campaign", "Create three coordinated posts for a fictional campaign.", "Visual hierarchy, brand consistency, and social formats.", "The brief, all three posts, and a note on the audience."],
+        ["Small-business flyer", "Design a clear event or service flyer for a fictional business.", "Layout, typography, and call-to-action design.", "The final export plus a before-and-after explanation of your layout."],
+        ["Mini brand kit", "Create a logo concept, color palette, typography, and two sample applications.", "Brand-system thinking and consistency.", "A brand board and the two applied examples."]
+    ] },
+    "Content Writing": { stages:[
+        ["Learn", ["Choose a reader question and outline a helpful answer before drafting.", "Learn to use headings, introductions, and transitions for scannable articles."]],
+        ["Practice", ["Turn one dense paragraph into a clear, accurate bullet list.", "Edit a draft after a break for clarity, accuracy, and tone."]],
+        ["Build", ["Write an 800-word how-to article for a defined reader.", "Write a homepage and five-email welcome sequence for a fictional business."]],
+        ["Portfolio", ["Select three focused samples and label each sample's reader and goal.", "Proofread every sample and verify factual claims before sharing it."]],
+        ["Find Work", ["Prepare a service description for articles, web copy, or email writing.", "Review a writing brief and confirm whether any test assignment is paid and reasonably sized."]]
+    ], projects:[
+        ["Helpful how-to article", "Write a researched article that answers one beginner question.", "Research, outlining, drafting, and editing.", "The article, target-reader note, and source list where appropriate."],
+        ["Fictional business homepage", "Write concise homepage copy for a fictional local service.", "Audience awareness, benefits, and calls to action.", "The brief and final page copy with a short rationale."],
+        ["Welcome email sequence", "Write five emails that introduce a fictional service.", "Tone, structure, and reader journey planning.", "All five emails and a note on each email's purpose."]
+    ] },
+    "Video Editing": { stages:[
+        ["Learn", ["Learn timeline editing, file organization, and export settings in one editor.", "Practice basic audio levels, captions, and clean cuts."]],
+        ["Practice", ["Edit the same short clip into two different pacing styles.", "Create readable captions and review them on a phone screen."]],
+        ["Build", ["Edit a 30-second promotional video using permitted footage and audio.", "Create a talking-head edit with captions, cutaways, and clean sound."]],
+        ["Portfolio", ["Export three distinct samples and label exactly what you edited.", "Create a short showreel using only work you have permission to show."]],
+        ["Find Work", ["Prepare a focused offer for short-form edits or captioned talking-head videos.", "Confirm footage rights, revision limits, deadlines, and source-file needs before applying."]]
+    ], projects:[
+        ["Short promotional video", "Edit a 30-second video for a fictional event or product.", "Pacing, captions, audio, and export quality.", "The final video, a captioned version, and a short editing note."],
+        ["Talking-head edit", "Turn a short spoken clip into a concise, captioned edit.", "Story structure, cutaways, and audio cleanup.", "The final edit and a note on your editing decisions."],
+        ["One-minute highlight reel", "Create a highlight sequence from permitted event or product footage.", "Clip selection, rhythm, and visual storytelling.", "The video plus a list of the permitted assets used."]
+    ] },
+    "Excel & Data": { stages:[
+        ["Learn", ["Create a clean table using consistent dates, names, and number formats.", "Practice SUM, IF, COUNTIF, and a lookup formula with sample data."]],
+        ["Practice", ["Clean an inconsistent contact list and explain your changes.", "Turn a sales table into a summary using filters and a pivot table."]],
+        ["Build", ["Build a monthly budget or expense tracker with formulas.", "Build a sales dashboard with charts using anonymized sample data."]],
+        ["Portfolio", ["Capture before-and-after screenshots for three anonymized spreadsheet projects.", "Write the business question and useful finding for each sample."]],
+        ["Find Work", ["Prepare a service description for spreadsheet cleanup, tracking, or reporting support.", "Check that a role is legitimate and never share confidential data in an application sample."]]
+    ], projects:[
+        ["Expense tracker", "Build a monthly tracker with categories, totals, and a simple chart.", "Tables, formulas, and data organization.", "Screenshots, the anonymized sheet, and the question it helps answer."],
+        ["Sales dashboard", "Turn a sample sales dataset into a dashboard with two useful charts.", "Data cleanup, pivots or formulas, and reporting.", "The dashboard and two honest observations from the data."],
+        ["Inventory tracker", "Create a simple inventory table with status or reorder prompts.", "Structured data, conditional formulas, and usability.", "The anonymized file and an explanation of the workflow."]
+    ] },
+    "Social Media Management": { stages:[
+        ["Learn", ["Define three content pillars and one audience for a fictional business.", "Study a platform's basic post formats and responsible use of metrics."]],
+        ["Practice", ["Create a one-week calendar with captions and clear post goals.", "Write the same message in three different, appropriate brand voices."]],
+        ["Build", ["Create a 7-day campaign for a fictional café, service, or creator.", "Create a simple sample performance report using clearly labelled sample metrics."]],
+        ["Portfolio", ["Present a calendar, sample posts, and campaign rationale as practice work.", "Explain the audience, business goal, and approval process for one campaign."]],
+        ["Find Work", ["Prepare a focused offer for content planning or community-support assistance.", "Confirm approval workflow, posting access, assets, and scope before applying."]]
+    ], projects:[
+        ["7-day café content plan", "Plan seven posts for a fictional café with captions and visual directions.", "Content planning, audience focus, and brand voice.", "The calendar, three sample posts, and campaign goal."],
+        ["Fitness coach content ideas", "Create a month of post ideas for a fictional coach.", "Content pillars, variety, and audience research.", "The idea bank and a note explaining the audience."],
+        ["Sample performance report", "Turn labelled sample metrics into a concise report.", "Basic analysis and clear communication of results.", "The report, sample data note, and two careful observations."]
+    ] }
+};
+
+function roadmapProgressKey(skill) { return `${ROADMAP_PROGRESS_STORAGE_PREFIX}${skill}`; }
+function roadmapTaskCount(skill) { return roadmapActionPlans[skill].stages.reduce((total, [, tasks]) => total + tasks.length, 0); }
+function readRoadmapProgress(skill) {
+    try {
+        const saved = JSON.parse(window.localStorage.getItem(roadmapProgressKey(skill)));
+        return Array.isArray(saved) && saved.length === roadmapTaskCount(skill) && saved.every((value) => typeof value === "boolean") ? saved : Array(roadmapTaskCount(skill)).fill(false);
+    } catch (error) { return Array(roadmapTaskCount(skill)).fill(false); }
+}
+function writeRoadmapProgress(skill, progress) {
+    try { window.localStorage.setItem(roadmapProgressKey(skill), JSON.stringify(progress)); return true; } catch (error) { return false; }
+}
+function getRoadmapProgress(skill) {
+    const tasks = readRoadmapProgress(skill); const total = tasks.length; const completed = tasks.filter(Boolean).length;
+    return { tasks, total, completed, percent: total ? Math.round((completed / total) * 100) : 0 };
+}
+
 function showRoadmap(skill) {
     const roadmap = skillRoadmaps[skill];
+    const actionPlan = roadmapActionPlans[skill];
     const result = document.getElementById("roadmapResult");
     const list = (items) => `<ul>${items.map((item) => `<li>${item}</li>`).join("")}</ul>`;
+    const progress = getRoadmapProgress(skill);
+    let taskIndex = 0;
+    const stages = actionPlan.stages.map(([stage, tasks], stageIndex) => {
+        const taskMarkup = tasks.map((task) => {
+            const index = taskIndex++;
+            return `<label class="roadmap-task ${progress.tasks[index] ? "is-complete" : ""}"><input type="checkbox" data-roadmap-task="${index}" ${progress.tasks[index] ? "checked" : ""}><span>${escapeHtml(task)}</span></label>`;
+        }).join("");
+        return `<section class="roadmap-stage" aria-labelledby="${skill.replace(/[^a-z0-9]/gi, "").toLowerCase()}-stage-${stageIndex}"><div class="roadmap-stage-heading"><span>0${stageIndex + 1}</span><div><h4 id="${skill.replace(/[^a-z0-9]/gi, "").toLowerCase()}-stage-${stageIndex}">${stage}</h4><p>${stage === "Find Work" ? "Prepare carefully, apply honestly, and keep expectations realistic." : "Complete the focused tasks below before moving on."}</p></div></div><div class="roadmap-task-list">${taskMarkup}</div><button type="button" class="secondary-button roadmap-stage-action" data-stage-action="${stageIndex}">${stage === "Build" ? "Build this project" : stage === "Portfolio" ? "Add to Portfolio" : stage === "Find Work" ? "Prepare to apply" : "Start this task"}</button></section>`;
+    }).join("");
+    const projects = actionPlan.projects.map(([title, build, demonstrates, portfolio], index) => `<article class="roadmap-project"><span>Project ${index + 1}</span><h4>${escapeHtml(title)}</h4><p><strong>Build:</strong> ${escapeHtml(build)}</p><p><strong>Demonstrates:</strong> ${escapeHtml(demonstrates)}</p><p><strong>Add to your portfolio:</strong> ${escapeHtml(portfolio)}</p><button type="button" class="secondary-button" data-portfolio-project="${index}">Add this project to Portfolio Builder</button></article>`).join("");
 
     result.innerHTML = `
         <div class="roadmap-header">
@@ -1309,6 +1413,9 @@ function showRoadmap(skill) {
             <p>${roadmap.description}</p>
         </div>
         <div class="roadmap-body">
+            <section class="roadmap-progress" aria-live="polite"><div><p class="eyebrow">Your learning-to-earning journey</p><h4>Roadmap progress: <span id="roadmapProgressPercent">${progress.percent}%</span></h4><p id="roadmapProgressCount">${progress.completed} of ${progress.total} tasks completed</p></div><div class="roadmap-progress-track" aria-hidden="true"><span id="roadmapProgressBar" style="width:${progress.percent}%"></span></div></section>
+            <section class="roadmap-actions" aria-label="${skill} action stages"><div class="roadmap-actions-intro"><h4>Learn → Practice → Build → Portfolio → Find Work</h4><p>Work through one small, practical task at a time. Your progress is saved only in this browser.</p></div>${stages}</section>
+            <section class="roadmap-projects"><h4>Beginner project outputs</h4><div class="roadmap-project-grid">${projects}</div></section>
             <div class="roadmap-overview">
                 <div class="roadmap-info-card"><h4>Who it is suitable for</h4><p>${roadmap.suitable}</p></div>
                 <div class="roadmap-info-card"><h4>Beginner difficulty</h4><p>${roadmap.difficulty}</p></div>
@@ -1329,6 +1436,40 @@ function showRoadmap(skill) {
         </div>
     `;
     result.hidden = false;
+    result.querySelectorAll("[data-roadmap-task]").forEach((input) => {
+        input.addEventListener("change", function () {
+            const updated = readRoadmapProgress(skill);
+            updated[Number(this.dataset.roadmapTask)] = this.checked;
+            if (!writeRoadmapProgress(skill, updated)) { this.checked = !this.checked; return; }
+            const next = getRoadmapProgress(skill);
+            result.querySelector("#roadmapProgressPercent").textContent = `${next.percent}%`;
+            result.querySelector("#roadmapProgressCount").textContent = `${next.completed} of ${next.total} tasks completed`;
+            result.querySelector("#roadmapProgressBar").style.width = `${next.percent}%`;
+            this.closest(".roadmap-task").classList.toggle("is-complete", this.checked);
+            if (currentMyPlan && currentMyPlan.roadmapName === skill) renderMyPlan();
+        });
+    });
+    result.querySelectorAll("[data-stage-action]").forEach((button) => {
+        button.addEventListener("click", function () {
+            const stage = this.closest(".roadmap-stage");
+            const target = stage.querySelector('input:not(:checked)') || stage.querySelector("input");
+            target.focus();
+            stage.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
+        });
+    });
+    result.querySelectorAll("[data-portfolio-project]").forEach((button) => {
+        button.addEventListener("click", function () {
+            const [title, build, demonstrates, portfolio] = actionPlan.projects[Number(this.dataset.portfolioProject)];
+            document.getElementById("portfolioTitle").value = title;
+            document.getElementById("portfolioDescription").value = build;
+            document.getElementById("portfolioSkills").value = demonstrates;
+            document.getElementById("portfolioTools").value = "Add the tools you actually used";
+            document.getElementById("portfolioOutcome").value = portfolio;
+            const builder = document.getElementById("portfolioBuilderForm");
+            builder.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+            document.getElementById("portfolioTitle").focus({ preventScroll: true });
+        });
+    });
     result.scrollIntoView({ behavior: "smooth", block: "start" });
     result.focus();
     trackProductEvent("roadmap_opened", { skill });
@@ -1424,6 +1565,7 @@ function renderMyPlan() {
 
     const completed = getPlanProgress(plan);
     const percent = (completed / plan.checklist.length) * 100;
+    const roadmapJourney = getRoadmapProgress(plan.roadmapName);
     const checklist = plan.checklist.map((item, index) => `
         <label class="plan-day">
             <input type="checkbox" data-plan-day="${index}" ${item.completed ? "checked" : ""} aria-label="Mark Day ${item.day} as complete">
@@ -1441,6 +1583,7 @@ function renderMyPlan() {
             </div>
             <p class="my-plan-reason">${escapeHtml(plan.reason)}</p>
             <div class="plan-progress-row" aria-live="polite"><div class="plan-progress-track" aria-hidden="true"><span id="myPlanProgressBar" style="width:${percent}%"></span></div><strong id="myPlanProgressCount">Progress: ${completed}/7 completed</strong></div>
+            <div class="my-plan-roadmap"><div><span>Roadmap journey</span><strong>${escapeHtml(plan.roadmapName)}: ${roadmapJourney.percent}%</strong><p>${roadmapJourney.completed} of ${roadmapJourney.total} action tasks completed.</p></div><button type="button" id="continueRoadmapButton" class="secondary-button">Continue Roadmap</button></div>
             <h3>7-Day Starter Plan</h3>
             <div class="plan-checklist">${checklist}</div>
             ${renderRecommendedResources(roadmapResources[plan.roadmapName].slice(0, 2), { skill: plan.roadmapName, placement: "my_plan" }).replace("Recommended Tools &amp; Resources", "Resources that may help with your path")}
@@ -1472,6 +1615,9 @@ function renderMyPlan() {
     });
 
     document.getElementById("continuePlanButton").addEventListener("click", scrollToMyPlan);
+    document.getElementById("continueRoadmapButton").addEventListener("click", function () {
+        showRoadmap(currentMyPlan.roadmapName);
+    });
     document.getElementById("viewSavedRoadmapButton").addEventListener("click", function () {
         showRoadmap(currentMyPlan.roadmapName);
     });
@@ -1620,8 +1766,10 @@ document.getElementById("pathFinderForm").addEventListener("submit", function (e
     trackProductEvent("path_finder_completed", { recommended_path: recommendation });
 
     document.getElementById("startPathButton").addEventListener("click", function () {
+        // Render the skill roadmap chosen by Path Finder, then keep the user's
+        // viewport on the selected earning path and its complete guidance.
+        showRoadmap(roadmapName);
         showMessage(recommendation);
-        document.getElementById("message").scrollIntoView({ behavior: "smooth", block: "start" });
     });
 
     document.getElementById("viewRoadmapButton").addEventListener("click", function () {
