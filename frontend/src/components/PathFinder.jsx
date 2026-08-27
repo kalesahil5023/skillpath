@@ -51,14 +51,17 @@ export default function PathFinder({ onPlanSaved, onSelectRoadmap }) {
     }
 
     setErrorMessage("");
+    // 1. Calculate weighted recommendation based on user answers
     const result = getRecommendation(skills, time, goal);
     const path = result.primary;
     const details = PATH_DETAILS[path];
     const recommendedSkill = SKILL_RECOMMENDATIONS[path][skills[0]] || "Foundational Skills";
     const roadmapName = ROADMAP_LINKS[path][skills[0]] || "Web Development";
 
+    // 2. Synthesize personal rationale explaining why this path matches their criteria
     const reason = `Your interests in ${skills.join(", ")}, daily availability of ${time.toLowerCase()}, and ambition for ${goal.toLowerCase()} make ${path} the most sustainable starting point.`;
 
+    // 3. Assemble personalized 7-day starter checklist
     const checklist = details.checklist.map((item, idx) => ({
       day: idx + 1,
       task: idx === 0 ? `${item} Start with ${recommendedSkill.toLowerCase()} where possible.` : item,
@@ -86,6 +89,12 @@ export default function PathFinder({ onPlanSaved, onSelectRoadmap }) {
     }, 100);
   };
 
+  /**
+   * Persists the computed starter plan:
+   * - Immediately stores to localStorage for instant client access.
+   * - If logged in, sends POST /api/plans/ to synchronize with PostgreSQL.
+   * - Automatically scrolls smoothly to the MyPlan section.
+   */
   const handleSavePlan = async () => {
     if (!recommendation) return;
     setIsSaving(true);

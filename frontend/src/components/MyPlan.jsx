@@ -8,7 +8,9 @@ export default function MyPlan({ savedPlan, onSelectRoadmap, onPlanReset }) {
   const [currentPlan, setCurrentPlan] = useState(savedPlan);
   const [loading, setLoading] = useState(false);
 
-  // Sync with prop or load from Django / localStorage
+  // ── 1. Plan Synchronization (PostgreSQL Cloud + LocalStorage Fallback) ──
+  // If logged in: Fetches user's saved plan from Django REST API (/api/plans/).
+  // If guest: Reads persisted plan from the browser's localStorage.
   useEffect(() => {
     if (savedPlan) {
       setCurrentPlan(savedPlan);
@@ -25,7 +27,7 @@ export default function MyPlan({ savedPlan, onSelectRoadmap, onPlanReset }) {
             localStorage.setItem("skillpath_local_plan", JSON.stringify(res.data.plan));
           }
         } catch {
-          // fallback
+          // Fallback to local storage if offline or backend is waking up
           const local = localStorage.getItem("skillpath_local_plan");
           if (local) setCurrentPlan(JSON.parse(local));
         } finally {
@@ -46,6 +48,9 @@ export default function MyPlan({ savedPlan, onSelectRoadmap, onPlanReset }) {
     fetchPlan();
   }, [savedPlan, isLoggedIn]);
 
+  // ── 2. Optimistic Checklist Toggle ───────────────────────────────────────
+  // Updates UI immediately for zero perceptible latency, then dispatches
+  // PATCH /api/plans/checklist/<day>/ to persist state in PostgreSQL.
   const handleToggleDay = async (dayNumber) => {
     if (!currentPlan) return;
 
@@ -65,7 +70,7 @@ export default function MyPlan({ savedPlan, onSelectRoadmap, onPlanReset }) {
       try {
         await plansApi.toggleChecklist(dayNumber, targetItem.completed);
       } catch (err) {
-        console.error("Failed to sync checklist day:", err);
+        console.error("Failed to sync checklist day with cloud:", err);
       }
     }
   };

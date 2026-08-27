@@ -1,3 +1,14 @@
+"""
+=============================================================================
+Accounts & Authentication API Views (Django REST Framework)
+=============================================================================
+Handles:
+ 1. Standard user registration with encrypted password storage
+ 2. Custom SimpleJWT login returning access/refresh tokens and user metadata
+ 3. Current user profile inspection (/api/auth/me/)
+ 4. Google OAuth2 ID token verification & automatic user provisioning
+"""
+
 import uuid
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -10,15 +21,31 @@ from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 from .serializers import RegisterSerializer, UserSerializer, CustomTokenObtainPairSerializer
 
+
+# ── 1. Custom JWT Login View ────────────────────────────────────────────────
 class CustomLoginView(TokenObtainPairView):
+    """
+    Endpoint: POST /api/auth/login/
+    Accepts: { username, password }
+    Returns: { access, refresh, user: { id, username, email, displayName } }
+    Overridden to inject user profile details into the JWT response payload.
+    """
     serializer_class = CustomTokenObtainPairSerializer
 
 
+# ── 2. User Registration View ───────────────────────────────────────────────
 class RegisterView(generics.CreateAPIView):
+    """
+    Endpoint: POST /api/auth/register/
+    Accepts: { username, email, password, displayName }
+    Creates a new Django User with hashed password and immediately generates
+    SimpleJWT access and refresh tokens so the user is logged in upon sign-up.
+    """
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
 
     def create(self, request, *args, **kwargs):
+        # Validate incoming data using RegisterSerializer
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -38,7 +65,14 @@ class RegisterView(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 
+# ── 3. Current User Profile View ────────────────────────────────────────────
 class CurrentUserView(APIView):
+    """
+    Endpoint: GET /api/auth/me/
+    Requires: Bearer JWT in Authorization header
+    Returns: { user: { id, username, email, displayName, date_joined } }
+    Used on app mount to verify token validity and fetch user profile.
+    """
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
@@ -46,7 +80,18 @@ class CurrentUserView(APIView):
         return Response({"user": serializer.data})
 
 
+# ── 4. Google OAuth 2.0 Verification View ───────────────────────────────────
 class GoogleAuthView(APIView):
+    """
+    Endpoint: POST /api/auth/google/
+    Accepts: { "credential": "<Google ID Token from Google Identity Services>" }
+    Performs:
+      1. Cryptographic token verification using Google's public certs (google-auth).
+      2. Validates token audience against GOOGLE_CLIENT_ID if configured.
+      3. Extracts verified email and user name.
+      4. Gets or creates the corresponding user in PostgreSQL.
+      5. Issues standard SimpleJWT access (2h) and refresh (7d) tokens.
+    """
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
@@ -58,7 +103,7 @@ class GoogleAuthView(APIView):
             )
 
         try:
-            # Verify the ID token using Google public certificates
+            # Verify ID token using Google public certificates
             client_id = getattr(settings, "GOOGLE_CLIENT_ID", "") or None
             idinfo = id_token.verify_oauth2_token(
                 credential,
@@ -79,6 +124,7 @@ class GoogleAuthView(APIView):
             # Look up existing user by email or create new account
             user = User.objects.filter(email__iexact=email).first()
             if not user:
+                # Generate a clean unique username
                 base_username = email.split("@")[0].replace(".", "_")[:20]
                 unique_suffix = str(uuid.uuid4())[:6]
                 username = f"{base_username}_{unique_suffix}"
@@ -109,6 +155,7 @@ class GoogleAuthView(APIView):
             }, status=status.HTTP_200_OK)
 
         except ValueError as e:
+            # Token signature invalid, expired, or audience mismatch
             return Response(
                 {"error": f"Invalid Google token: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST
