@@ -87,7 +87,10 @@ router.post("/register", async (req, res) => {
         setAuthCookies(res, accessToken, refreshToken);
 
         res.status(201).json({
-            user: { id: user.id, email: user.email, displayName: user.display_name },
+            user: { id: user.id, username: user.display_name || user.email.split("@")[0], email: user.email, displayName: user.display_name },
+            access: accessToken,
+            refresh: refreshToken,
+            message: "User registered successfully.",
         });
     } catch (err) {
         console.error("Registration error:", err.message);
@@ -134,7 +137,10 @@ router.post("/login", async (req, res) => {
         setAuthCookies(res, accessToken, refreshToken);
 
         res.json({
-            user: { id: user.id, email: user.email, displayName: user.display_name },
+            user: { id: user.id, username: user.display_name || user.email.split("@")[0], email: user.email, displayName: user.display_name },
+            access: accessToken,
+            refresh: refreshToken,
+            message: "Login successful.",
         });
     } catch (err) {
         console.error("Login error:", err.message);
@@ -240,6 +246,92 @@ router.get("/me", requireAuth, async (req, res) => {
     } catch (err) {
         console.error("Get user error:", err.message);
         res.status(500).json({ error: "Could not retrieve user." });
+    }
+});
+
+// POST /api/auth/google
+router.post(["/google", "/google/"], async (req, res) => {
+    try {
+        const { credential } = req.body;
+        if (!credential) {
+            return res.status(400).json({ error: "Google credential token is required." });
+        }
+
+        // Verify ID token with Google's public tokeninfo endpoint
+        const googleRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`);
+        const idinfo = await googleRes.json();
+
+        if (idinfo.error || !idinfo.email) {
+            return res.status(400).json({
+                error: `Invalid Google token: ${idinfo.error_description || idinfo.error || "Token could not be verified."}`
+            });
+        }
+
+        const email = idinfo.email.toLowerCase().trim();
+        const displayName = idinfo.name || email.split("@")[0];
+
+        // Ensure users table exists
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                password_hash VARCHAR(255) NOT NULL,
+                display_name VARCHAR(100),
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            );
+            CREATE TABLE IF NOT EXISTS refresh_tokens (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                token_hash VARCHAR(64) NOT NULL,
+                expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+                revoked BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            );
+        `);
+
+        // Check if user exists
+        let userResult = await pool.query("SELECT id, email, display_name FROM users WHERE email = $1", [email]);
+        let user;
+
+        if (userResult.rows.length === 0) {
+            const randomPassword = crypto.randomBytes(32).toString("hex");
+            const passwordHash = await bcrypt.hash(randomPassword, BCRYPT_ROUNDS);
+            const insertResult = await pool.query(
+                "INSERT INTO users (email, password_hash, display_name) VALUES ($1, $2, $3) RETURNING id, email, display_name",
+                [email, passwordHash, displayName]
+            );
+            user = insertResult.rows[0];
+        } else {
+            user = userResult.rows[0];
+        }
+
+        const accessToken = generateAccessToken({ id: user.id, email: user.email });
+        const refreshToken = generateRefreshToken();
+
+        // Store refresh token
+        const refreshHash = crypto.createHash("sha256").update(refreshToken).digest("hex");
+        await pool.query(
+            "INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, $3)",
+            [user.id, refreshHash, new Date(Date.now() + REFRESH_TOKEN_EXPIRY_MS)]
+        );
+
+        setAuthCookies(res, accessToken, refreshToken);
+
+        res.json({
+            user: {
+                id: user.id,
+                username: user.display_name || user.email.split("@")[0],
+                email: user.email,
+                displayName: user.display_name || user.email.split("@")[0],
+            },
+            access: accessToken,
+            refresh: refreshToken,
+            message: "Google authentication successful.",
+        });
+    } catch (err) {
+        console.error("Google auth error:", err.message);
+        res.status(500).json({ error: "Google authentication failed on server." });
     }
 });
 
