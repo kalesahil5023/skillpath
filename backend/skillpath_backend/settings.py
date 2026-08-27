@@ -92,8 +92,13 @@ WSGI_APPLICATION = "skillpath_backend.wsgi.application"
 # In Development: Seamlessly defaults to local SQLite db.sqlite3 without configuration.
 DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL:
+    is_localhost = "localhost" in DATABASE_URL or "127.0.0.1" in DATABASE_URL
     DATABASES = {
-        "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=False)
+        "default": dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=not is_localhost,
+        )
     }
 else:
     DATABASES = {
