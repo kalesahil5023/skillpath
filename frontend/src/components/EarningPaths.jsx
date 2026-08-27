@@ -43,15 +43,13 @@ export default function EarningPaths({ onSelectRoadmap }) {
               <div
                 key={pathKey}
                 onClick={() => setSelectedPath(pathKey)}
-                className="glass-card"
+                className="card"
                 style={{
                   padding: "32px 26px",
                   cursor: "pointer",
-                  border: isSelected ? "1px solid var(--primary)" : "1px solid var(--border)",
-                  background: isSelected
-                    ? "linear-gradient(145deg, rgba(115,215,255,0.12), rgba(16,29,49,0.9))"
-                    : "var(--surface-glass)",
-                  boxShadow: isSelected ? "0 0 25px rgba(115,215,255,0.15)" : "var(--shadow-sm)",
+                  border: isSelected ? "1.5px solid var(--primary)" : "1px solid var(--border)",
+                  background: isSelected ? "var(--primary-light)" : "#ffffff",
+                  boxShadow: isSelected ? "var(--shadow-card-hover)" : "var(--shadow-card)",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
@@ -63,19 +61,19 @@ export default function EarningPaths({ onSelectRoadmap }) {
                       width: "48px",
                       height: "48px",
                       borderRadius: "12px",
-                      background: isSelected ? "var(--primary)" : "rgba(255, 255, 255, 0.05)",
-                      color: isSelected ? "#08111f" : "var(--primary)",
+                      background: isSelected ? "var(--primary)" : "var(--bg-subtle)",
+                      color: isSelected ? "#ffffff" : "var(--primary)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       marginBottom: "20px",
-                      transition: "all 0.2s",
+                      transition: "all 0.15s ease",
                     }}
                   >
                     <Icon size={24} />
                   </div>
-                  <h3 style={{ fontSize: "1.45rem", marginBottom: "8px" }}>{pathKey}</h3>
-                  <p style={{ fontSize: "0.95rem" }}>{EARNING_PATH_CONTENT[pathKey].intro}</p>
+                  <h3 style={{ fontSize: "1.45rem", marginBottom: "8px", color: isSelected ? "var(--primary-text)" : "var(--text-primary)" }}>{pathKey}</h3>
+                  <p style={{ fontSize: "0.95rem", color: isSelected ? "var(--text-secondary)" : "var(--text-muted)" }}>{EARNING_PATH_CONTENT[pathKey].intro}</p>
                 </div>
 
                 <div
@@ -98,13 +96,13 @@ export default function EarningPaths({ onSelectRoadmap }) {
         </div>
 
         {/* Detailed Breakdown for Active Path */}
-        <div className="glass-card" style={{ padding: "40px 32px" }}>
+        <div className="card" style={{ padding: "40px 32px", backgroundColor: "#ffffff" }}>
           <div style={{ marginBottom: "32px", paddingBottom: "24px", borderBottom: "1px solid var(--border)" }}>
-            <span className="badge badge-primary" style={{ marginBottom: "8px" }}>
+            <span className="badge badge-green" style={{ marginBottom: "8px" }}>
               In-Depth Exploration
             </span>
-            <h3 style={{ fontSize: "2rem", marginBottom: "8px" }}>{currentContent.title}</h3>
-            <p style={{ fontSize: "1.1rem" }}>{currentContent.intro}</p>
+            <h3 style={{ fontSize: "2rem", marginBottom: "8px", color: "var(--text-primary)" }}>{currentContent.title}</h3>
+            <p style={{ fontSize: "1.05rem", color: "var(--text-secondary)" }}>{currentContent.intro}</p>
           </div>
 
           {/* Sections Grid */}
@@ -124,16 +122,16 @@ export default function EarningPaths({ onSelectRoadmap }) {
                     style={{
                       padding: "24px",
                       borderRadius: "var(--radius-md)",
-                      background: "rgba(255, 107, 139, 0.08)",
-                      border: "1px solid rgba(255, 107, 139, 0.35)",
+                      background: "#fff1f2",
+                      border: "1px solid #fecdd3",
                       gridColumn: "1 / -1",
                     }}
                   >
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px", color: "var(--danger)", marginBottom: "8px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px", color: "#be123c", marginBottom: "8px" }}>
                       <ShieldAlert size={22} />
-                      <h4 style={{ fontSize: "1.2rem", color: "var(--danger)" }}>{section.title}</h4>
+                      <h4 style={{ fontSize: "1.2rem", color: "#be123c" }}>{section.title}</h4>
                     </div>
-                    <p style={{ color: "var(--text)", fontSize: "0.95rem", lineHeight: 1.6 }}>{section.content}</p>
+                    <p style={{ color: "#4c0519", fontSize: "0.95rem", lineHeight: 1.6 }}>{section.content}</p>
                   </div>
                 );
               }
@@ -144,14 +142,14 @@ export default function EarningPaths({ onSelectRoadmap }) {
                   style={{
                     padding: "24px",
                     borderRadius: "var(--radius-md)",
-                    background: "rgba(255, 255, 255, 0.025)",
+                    background: "var(--bg-subtle)",
                     border: "1px solid var(--border)",
                   }}
                 >
-                  <h4 style={{ fontSize: "1.15rem", marginBottom: "10px", color: "var(--text)" }}>
+                  <h4 style={{ fontSize: "1.15rem", marginBottom: "10px", color: "var(--text-primary)" }}>
                     {section.title}
                   </h4>
-                  <p style={{ fontSize: "0.92rem", lineHeight: 1.6 }}>{section.content}</p>
+                  <p style={{ fontSize: "0.92rem", lineHeight: 1.6, color: "var(--text-secondary)" }}>{section.content}</p>
                 </div>
               );
             })}
@@ -162,8 +160,8 @@ export default function EarningPaths({ onSelectRoadmap }) {
             style={{
               padding: "24px",
               borderRadius: "var(--radius-md)",
-              background: "rgba(115, 215, 255, 0.05)",
-              border: "1px solid rgba(115, 215, 255, 0.18)",
+              background: "var(--bg-subtle)",
+              border: "1px solid var(--border)",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
@@ -172,10 +170,10 @@ export default function EarningPaths({ onSelectRoadmap }) {
             }}
           >
             <div>
-              <h4 style={{ fontSize: "1.1rem", marginBottom: "4px" }}>
+              <h4 style={{ fontSize: "1.1rem", marginBottom: "4px", color: "var(--text-primary)" }}>
                 High-Value Skills Suited for {selectedPath}
               </h4>
-              <p style={{ fontSize: "0.9rem" }}>
+              <p style={{ fontSize: "0.9rem", color: "var(--text-muted)" }}>
                 Choose a roadmap to start building hands-on project deliverables:
               </p>
             </div>

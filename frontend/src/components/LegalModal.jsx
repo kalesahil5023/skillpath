@@ -132,7 +132,7 @@ export default function LegalModal({ topic, isOpen, onClose }) {
               width: "40px",
               height: "40px",
               borderRadius: "10px",
-              background: "rgba(115, 215, 255, 0.15)",
+              background: "var(--primary-light)",
               color: "var(--primary)",
               display: "flex",
               alignItems: "center",
@@ -141,7 +141,7 @@ export default function LegalModal({ topic, isOpen, onClose }) {
           >
             <Icon size={22} />
           </div>
-          <h3 style={{ fontSize: "1.75rem" }}>{currentTopic.title}</h3>
+          <h3 style={{ fontSize: "1.75rem", color: "var(--text-primary)" }}>{currentTopic.title}</h3>
         </div>
 
         <div style={{ padding: "8px 0 24px" }}>{currentTopic.body}</div>

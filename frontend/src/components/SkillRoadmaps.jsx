@@ -126,7 +126,7 @@ export default function SkillRoadmaps({ activeSkill, onSkillChange, onSendToPort
           </p>
         </div>
 
-        {/* Skill Selector Tabs */}
+        {/* Skill Category Selector Tabs */}
         <div
           style={{
             display: "flex",
@@ -154,15 +154,16 @@ export default function SkillRoadmaps({ activeSkill, onSkillChange, onSendToPort
                   gap: "10px",
                   padding: "12px 20px",
                   borderRadius: "var(--radius-md)",
-                  background: isSelected ? "linear-gradient(135deg, rgba(115,215,255,0.2), rgba(139,124,255,0.2))" : "rgba(255, 255, 255, 0.03)",
-                  border: isSelected ? "1px solid var(--primary)" : "1px solid var(--border)",
-                  color: isSelected ? "var(--text)" : "var(--text-secondary)",
+                  background: isSelected ? "var(--primary-light)" : "#ffffff",
+                  border: isSelected ? "1.5px solid var(--primary)" : "1px solid var(--border)",
+                  color: isSelected ? "var(--primary-text)" : "var(--text-secondary)",
                   cursor: "pointer",
                   fontFamily: "inherit",
                   fontSize: "0.95rem",
-                  fontWeight: isSelected ? 700 : 500,
+                  fontWeight: isSelected ? 700 : 600,
                   whiteSpace: "nowrap",
-                  transition: "all 0.2s",
+                  transition: "all 0.15s ease",
+                  boxShadow: isSelected ? "var(--shadow-xs)" : "none",
                 }}
               >
                 <Icon size={18} color={isSelected ? "var(--primary)" : "var(--text-muted)"} />
@@ -173,7 +174,7 @@ export default function SkillRoadmaps({ activeSkill, onSkillChange, onSendToPort
         </div>
 
         {/* Active Roadmap Container */}
-        <div className="glass-card" style={{ padding: "40px 32px" }}>
+        <div className="card" style={{ padding: "40px 32px", backgroundColor: "#ffffff" }}>
           {/* Header & Meta */}
           <div
             style={{
@@ -189,21 +190,21 @@ export default function SkillRoadmaps({ activeSkill, onSkillChange, onSendToPort
           >
             <div>
               <div style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: "8px" }}>
-                <span className="badge badge-primary">{selectedSkill}</span>
-                <span className="badge badge-secondary">{currentRoadmap.difficulty}</span>
+                <span className="badge badge-green">{selectedSkill}</span>
+                <span className="badge badge-blue">{currentRoadmap.difficulty}</span>
               </div>
-              <h3 style={{ fontSize: "2rem", marginBottom: "10px" }}>{selectedSkill} Roadmap</h3>
-              <p style={{ maxWidth: "680px", fontSize: "1.05rem" }}>{currentRoadmap.description}</p>
+              <h3 style={{ fontSize: "2rem", marginBottom: "10px", color: "var(--text-primary)" }}>{selectedSkill} Roadmap</h3>
+              <p style={{ maxWidth: "680px", fontSize: "1.05rem", color: "var(--text-secondary)" }}>{currentRoadmap.description}</p>
               <p style={{ fontSize: "0.9rem", color: "var(--text-muted)", marginTop: "6px" }}>
-                <strong>Ideal for:</strong> {currentRoadmap.suitable}
+                <strong style={{ color: "var(--text-primary)" }}>Ideal for:</strong> {currentRoadmap.suitable}
               </p>
             </div>
 
             {/* Progress Box */}
             <div
               style={{
-                background: "rgba(115, 215, 255, 0.06)",
-                border: "1px solid rgba(115, 215, 255, 0.2)",
+                background: "var(--bg-subtle)",
+                border: "1px solid var(--border)",
                 borderRadius: "var(--radius-md)",
                 padding: "20px",
                 minWidth: "240px",
@@ -211,30 +212,27 @@ export default function SkillRoadmaps({ activeSkill, onSkillChange, onSendToPort
             >
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px", fontSize: "0.85rem", fontWeight: 700 }}>
                 <span style={{ color: "var(--primary)" }}>ROADMAP MILESTONES</span>
-                <span>{progressPercent}%</span>
+                <span style={{ color: "var(--text-primary)" }}>{progressPercent}%</span>
               </div>
               <div
                 style={{
                   width: "100%",
                   height: "8px",
-                  background: "rgba(255, 255, 255, 0.1)",
+                  background: "#e2e8f0",
                   borderRadius: "var(--radius-full)",
                   overflow: "hidden",
-                  marginBottom: "8px",
                 }}
               >
                 <div
                   style={{
                     height: "100%",
                     width: `${progressPercent}%`,
-                    background: "linear-gradient(90deg, var(--primary), var(--accent))",
+                    background: "var(--primary)",
+                    borderRadius: "var(--radius-full)",
                     transition: "width 0.3s ease",
                   }}
                 />
               </div>
-              <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-                {completedTasks} of {totalTasks} tasks completed {isLoggedIn ? "(Cloud Synced)" : ""}
-              </span>
             </div>
           </div>
 
@@ -244,7 +242,7 @@ export default function SkillRoadmaps({ activeSkill, onSkillChange, onSendToPort
               <div
                 key={stage.name}
                 style={{
-                  background: "rgba(255, 255, 255, 0.02)",
+                  background: "var(--bg-subtle)",
                   border: "1px solid var(--border)",
                   borderRadius: "var(--radius-md)",
                   padding: "24px",
@@ -256,7 +254,7 @@ export default function SkillRoadmaps({ activeSkill, onSkillChange, onSendToPort
                       width: "32px",
                       height: "32px",
                       borderRadius: "8px",
-                      background: "rgba(115, 215, 255, 0.12)",
+                      background: "var(--primary-light)",
                       color: "var(--primary)",
                       display: "flex",
                       alignItems: "center",
@@ -267,7 +265,7 @@ export default function SkillRoadmaps({ activeSkill, onSkillChange, onSendToPort
                   >
                     0{stageIdx + 1}
                   </span>
-                  <h4 style={{ fontSize: "1.25rem" }}>Stage {stageIdx + 1}: {stage.name}</h4>
+                  <h4 style={{ fontSize: "1.25rem", color: "var(--text-primary)" }}>Stage {stageIdx + 1}: {stage.name}</h4>
                 </div>
 
                 <div style={{ display: "grid", gap: "12px" }}>
@@ -281,13 +279,14 @@ export default function SkillRoadmaps({ activeSkill, onSkillChange, onSendToPort
                         style={{
                           padding: "16px 20px",
                           borderRadius: "var(--radius-sm)",
-                          background: isDone ? "rgba(77, 225, 178, 0.06)" : "rgba(255, 255, 255, 0.03)",
-                          border: isDone ? "1px solid rgba(77, 225, 178, 0.25)" : "1px solid var(--border)",
+                          background: isDone ? "var(--primary-light)" : "#ffffff",
+                          border: isDone ? "1.5px solid var(--primary-border)" : "1px solid var(--border)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "space-between",
                           gap: "16px",
                           flexWrap: "wrap",
+                          boxShadow: isDone ? "none" : "var(--shadow-xs)",
                         }}
                       >
                         <div

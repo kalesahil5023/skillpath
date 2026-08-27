@@ -48,14 +48,14 @@ export default function ProjectBuilder({ onSendToPortfolio }) {
   };
 
   return (
-    <div className="glass-card" style={{ padding: "36px 30px" }}>
+    <div className="card" style={{ padding: "36px 30px", backgroundColor: "#ffffff" }}>
       <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
         <div
           style={{
             width: "36px",
             height: "36px",
             borderRadius: "10px",
-            background: "rgba(115, 215, 255, 0.15)",
+            background: "var(--primary-light)",
             color: "var(--primary)",
             display: "flex",
             alignItems: "center",
@@ -64,9 +64,9 @@ export default function ProjectBuilder({ onSendToPortfolio }) {
         >
           <Layers size={20} />
         </div>
-        <h3 style={{ fontSize: "1.45rem" }}>Project Plan Generator</h3>
+        <h3 style={{ fontSize: "1.45rem", color: "var(--text-primary)" }}>Project Plan Generator</h3>
       </div>
-      <p style={{ fontSize: "0.95rem", marginBottom: "24px" }}>
+      <p style={{ fontSize: "0.95rem", color: "var(--text-muted)", marginBottom: "24px" }}>
         Turn a broad skill into a concrete, client-ready practice brief with clear requirements and deliverables.
       </p>
 
@@ -93,7 +93,7 @@ export default function ProjectBuilder({ onSendToPortfolio }) {
             type="text"
             value={currentTemplate.type}
             disabled
-            style={{ opacity: 0.8 }}
+            style={{ opacity: 0.8, backgroundColor: "var(--bg-subtle)" }}
           />
         </div>
 
@@ -110,8 +110,9 @@ export default function ProjectBuilder({ onSendToPortfolio }) {
           />
         </div>
 
-        <button type="submit" className="btn btn-primary" style={{ width: "100%", marginTop: "10px" }}>
-          <span>Generate Structured Project Brief</span>
+        <button type="submit" className="btn btn-primary" style={{ width: "100%" }}>
+          <Sparkles size={16} />
+          <span>Generate Project Brief</span>
         </button>
       </form>
 
@@ -121,23 +122,23 @@ export default function ProjectBuilder({ onSendToPortfolio }) {
             marginTop: "32px",
             padding: "24px",
             borderRadius: "var(--radius-md)",
-            background: "rgba(6, 14, 25, 0.85)",
-            border: "1px solid rgba(115, 215, 255, 0.3)",
+            background: "var(--bg-subtle)",
+            border: "1px solid var(--border)",
           }}
         >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-            <span className="badge badge-accent">{generatedBrief.projectType}</span>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+            <span className="badge badge-green">Generated Brief</span>
             {isLoggedIn && savedSuccess && (
-              <span className="badge badge-primary" style={{ fontSize: "0.75rem" }}>
+              <span className="badge badge-blue" style={{ fontSize: "0.75rem" }}>
                 <Cloud size={12} />
                 <span>Saved to Cloud</span>
               </span>
             )}
           </div>
 
-          <h4 style={{ fontSize: "1.3rem", marginBottom: "8px" }}>{generatedBrief.title}</h4>
+          <h4 style={{ fontSize: "1.3rem", marginBottom: "8px", color: "var(--text-primary)" }}>{generatedBrief.title}</h4>
           <p style={{ fontSize: "0.95rem", color: "var(--text-secondary)", marginBottom: "20px" }}>
-            <strong>Objective:</strong> {generatedBrief.objective}
+            <strong style={{ color: "var(--text-primary)" }}>Objective:</strong> {generatedBrief.objective}
           </p>
 
           {/* Requirements */}

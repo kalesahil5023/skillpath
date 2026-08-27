@@ -136,15 +136,15 @@ Guidance is educational. Verify credentials responsibly.`;
   };
 
   return (
-    <div className="glass-card" style={{ padding: "36px 30px" }}>
+    <div className="card" style={{ padding: "36px 30px", backgroundColor: "#ffffff" }}>
       <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
         <div
           style={{
             width: "36px",
             height: "36px",
             borderRadius: "10px",
-            background: "rgba(77, 225, 178, 0.15)",
-            color: "var(--accent)",
+            background: "var(--primary-light)",
+            color: "var(--primary)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -152,9 +152,9 @@ Guidance is educational. Verify credentials responsibly.`;
         >
           <Briefcase size={20} />
         </div>
-        <h3 style={{ fontSize: "1.45rem" }}>Portfolio Entry Builder</h3>
+        <h3 style={{ fontSize: "1.45rem", color: "var(--text-primary)" }}>Portfolio Entry Builder</h3>
       </div>
-      <p style={{ fontSize: "0.95rem", marginBottom: "24px" }}>
+      <p style={{ fontSize: "0.95rem", color: "var(--text-muted)", marginBottom: "24px" }}>
         Assemble honest, clear case study descriptions for completed work. Download formatted text ready for Upwork, LinkedIn, or personal portfolio sites.
       </p>
 
@@ -219,18 +219,24 @@ Guidance is educational. Verify credentials responsibly.`;
         </div>
 
         <div className="form-group">
-          <label className="form-label">Live Link or Repository (Optional)</label>
+          <label className="form-label">Live Project or Repo URL (Optional)</label>
           <input
             className="form-input"
             type="url"
-            placeholder="https://yourusername.github.io/project"
+            placeholder="https://github.com/yourhandle/project-repo"
             value={projectUrl}
             onChange={(e) => setProjectUrl(e.target.value)}
           />
         </div>
 
-        <button type="submit" className="btn btn-accent" style={{ width: "100%", marginTop: "10px" }} disabled={isSaving}>
-          <span>{isSaving ? "Saving Entry..." : "Generate Portfolio Case Study"}</span>
+        <button
+          type="submit"
+          className="btn btn-primary"
+          style={{ width: "100%" }}
+          disabled={isSaving}
+        >
+          <Sparkles size={16} />
+          <span>{isSaving ? "Saving..." : "Save Case Study"}</span>
         </button>
       </form>
 

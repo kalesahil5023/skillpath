@@ -135,17 +135,17 @@ export default function PathFinder({ onPlanSaved, onSelectRoadmap }) {
   };
 
   return (
-    <section id="path-finder" className="section-spacing">
+    <section id="path-finder" className="section-spacing" style={{ backgroundColor: "var(--bg-canvas)" }}>
       <div className="container">
-        <div className="glass-card" style={{ padding: "48px 36px" }}>
+        <div className="card" style={{ padding: "48px 36px", backgroundColor: "#ffffff" }}>
           {/* Header */}
           <div style={{ maxWidth: "720px", marginBottom: "36px" }}>
             <div className="eyebrow">
               <Sparkles size={14} />
               <span>Interactive Decision Engine</span>
             </div>
-            <h2>Find Your Best Online Earning Path</h2>
-            <p style={{ marginTop: "12px", fontSize: "1.05rem" }}>
+            <h2>Find Your Best Learning &amp; Earning Direction</h2>
+            <p style={{ marginTop: "12px", fontSize: "1.05rem", color: "var(--text-muted)" }}>
               Answer three quick questions to receive a tailored, credible recommendation. This is practical educational guidance, not an inflated income claim.
             </p>
 
@@ -163,8 +163,9 @@ export default function PathFinder({ onPlanSaved, onSelectRoadmap }) {
               <div
                 style={{
                   flex: "0 0 160px",
-                  height: "7px",
-                  background: "rgba(255, 255, 255, 0.08)",
+                  height: "8px",
+                  background: "var(--bg-subtle)",
+                  border: "1px solid var(--border)",
                   borderRadius: "var(--radius-full)",
                   overflow: "hidden",
                 }}
@@ -173,12 +174,12 @@ export default function PathFinder({ onPlanSaved, onSelectRoadmap }) {
                   style={{
                     height: "100%",
                     width: `${(answeredCount / 3) * 100}%`,
-                    background: "linear-gradient(90deg, var(--primary), var(--accent))",
+                    background: "var(--primary)",
                     transition: "width 0.3s ease",
                   }}
                 />
               </div>
-              <span style={{ fontWeight: 600, color: "var(--text-secondary)" }}>
+              <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>
                 {answeredCount} of 3 answered
               </span>
             </div>
@@ -193,10 +194,10 @@ export default function PathFinder({ onPlanSaved, onSelectRoadmap }) {
                 borderRadius: "var(--radius-md)",
                 padding: "24px",
                 marginBottom: "24px",
-                background: "rgba(255, 255, 255, 0.02)",
+                background: "#ffffff",
               }}
             >
-              <legend style={{ padding: "0 10px", fontSize: "1.15rem", fontWeight: 700 }}>
+              <legend style={{ padding: "0 8px", fontSize: "1.15rem", fontWeight: 700, color: "var(--text-primary)" }}>
                 1. What skills or interests do you have?
               </legend>
               <p style={{ fontSize: "0.88rem", color: "var(--text-muted)", margin: "6px 0 18px" }}>
@@ -221,11 +222,12 @@ export default function PathFinder({ onPlanSaved, onSelectRoadmap }) {
                         gap: "12px",
                         padding: "14px 18px",
                         borderRadius: "var(--radius-sm)",
-                        background: isChecked ? "rgba(115, 215, 255, 0.12)" : "rgba(255, 255, 255, 0.03)",
-                        border: isChecked ? "1px solid var(--primary)" : "1px solid var(--border)",
+                        background: isChecked ? "var(--primary-light)" : "var(--bg-subtle)",
+                        border: isChecked ? "1.5px solid var(--primary)" : "1px solid var(--border)",
+                        color: isChecked ? "var(--primary-text)" : "var(--text-primary)",
                         cursor: "pointer",
-                        transition: "all 0.2s",
-                        fontWeight: isChecked ? 600 : 500,
+                        transition: "all 0.15s",
+                        fontWeight: isChecked ? 700 : 500,
                       }}
                     >
                       <input
@@ -248,10 +250,10 @@ export default function PathFinder({ onPlanSaved, onSelectRoadmap }) {
                 borderRadius: "var(--radius-md)",
                 padding: "24px",
                 marginBottom: "24px",
-                background: "rgba(255, 255, 255, 0.02)",
+                background: "#ffffff",
               }}
             >
-              <legend style={{ padding: "0 10px", fontSize: "1.15rem", fontWeight: 700 }}>
+              <legend style={{ padding: "0 8px", fontSize: "1.15rem", fontWeight: 700, color: "var(--text-primary)" }}>
                 2. How much time can you realistically invest per day?
               </legend>
               <p style={{ fontSize: "0.88rem", color: "var(--text-muted)", margin: "6px 0 18px" }}>
@@ -276,11 +278,12 @@ export default function PathFinder({ onPlanSaved, onSelectRoadmap }) {
                         gap: "12px",
                         padding: "14px 18px",
                         borderRadius: "var(--radius-sm)",
-                        background: isSelected ? "rgba(115, 215, 255, 0.12)" : "rgba(255, 255, 255, 0.03)",
-                        border: isSelected ? "1px solid var(--primary)" : "1px solid var(--border)",
+                        background: isSelected ? "var(--primary-light)" : "var(--bg-subtle)",
+                        border: isSelected ? "1.5px solid var(--primary)" : "1px solid var(--border)",
+                        color: isSelected ? "var(--primary-text)" : "var(--text-primary)",
                         cursor: "pointer",
-                        transition: "all 0.2s",
-                        fontWeight: isSelected ? 600 : 500,
+                        transition: "all 0.15s",
+                        fontWeight: isSelected ? 700 : 500,
                       }}
                     >
                       <input
@@ -308,10 +311,10 @@ export default function PathFinder({ onPlanSaved, onSelectRoadmap }) {
                 borderRadius: "var(--radius-md)",
                 padding: "24px",
                 marginBottom: "24px",
-                background: "rgba(255, 255, 255, 0.02)",
+                background: "#ffffff",
               }}
             >
-              <legend style={{ padding: "0 10px", fontSize: "1.15rem", fontWeight: 700 }}>
+              <legend style={{ padding: "0 8px", fontSize: "1.15rem", fontWeight: 700, color: "var(--text-primary)" }}>
                 3. What is your primary career outcome?
               </legend>
               <p style={{ fontSize: "0.88rem", color: "var(--text-muted)", margin: "6px 0 18px" }}>
@@ -336,11 +339,12 @@ export default function PathFinder({ onPlanSaved, onSelectRoadmap }) {
                         gap: "12px",
                         padding: "14px 18px",
                         borderRadius: "var(--radius-sm)",
-                        background: isSelected ? "rgba(115, 215, 255, 0.12)" : "rgba(255, 255, 255, 0.03)",
-                        border: isSelected ? "1px solid var(--primary)" : "1px solid var(--border)",
+                        background: isSelected ? "var(--primary-light)" : "var(--bg-subtle)",
+                        border: isSelected ? "1.5px solid var(--primary)" : "1px solid var(--border)",
+                        color: isSelected ? "var(--primary-text)" : "var(--text-primary)",
                         cursor: "pointer",
-                        transition: "all 0.2s",
-                        fontWeight: isSelected ? 600 : 500,
+                        transition: "all 0.15s",
+                        fontWeight: isSelected ? 700 : 500,
                       }}
                     >
                       <input
@@ -404,10 +408,10 @@ export default function PathFinder({ onPlanSaved, onSelectRoadmap }) {
               id="pathResult"
               style={{
                 marginTop: "48px",
-                borderRadius: "var(--radius-lg)",
+                borderRadius: "16px",
                 overflow: "hidden",
-                border: "1px solid rgba(115, 215, 255, 0.35)",
-                background: "rgba(10, 20, 36, 0.95)",
+                background: "#ffffff",
+                border: "1.5px solid var(--primary-border)",
                 boxShadow: "var(--shadow-lg)",
               }}
             >
@@ -415,17 +419,17 @@ export default function PathFinder({ onPlanSaved, onSelectRoadmap }) {
               <div
                 style={{
                   padding: "32px",
-                  background: "linear-gradient(135deg, rgba(32, 66, 100, 0.6), rgba(32, 28, 75, 0.6))",
-                  borderBottom: "1px solid rgba(115, 215, 255, 0.2)",
+                  background: "linear-gradient(135deg, #ecfdf5, #f0fdf4)",
+                  borderBottom: "1px solid var(--primary-border)",
                 }}
               >
-                <span className="badge badge-primary" style={{ marginBottom: "12px" }}>
-                  Recommended Path
+                <span className="badge badge-green" style={{ marginBottom: "12px" }}>
+                  Personalized Recommendation
                 </span>
-                <h3 style={{ fontSize: "2rem", marginBottom: "10px" }}>
+                <h3 style={{ fontSize: "2rem", marginBottom: "10px", color: "var(--text-primary)" }}>
                   Start with {recommendation.path}
                 </h3>
-                <p style={{ fontSize: "1.05rem", color: "var(--text)" }}>{recommendation.reason}</p>
+                <p style={{ fontSize: "1.05rem", color: "var(--text-secondary)" }}>{recommendation.reason}</p>
               </div>
 
               {/* Details Metrics */}
@@ -442,14 +446,14 @@ export default function PathFinder({ onPlanSaved, onSelectRoadmap }) {
                     style={{
                       padding: "18px",
                       borderRadius: "var(--radius-md)",
-                      background: "rgba(255, 255, 255, 0.03)",
+                      background: "var(--bg-subtle)",
                       border: "1px solid var(--border)",
                     }}
                   >
                     <span style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--primary)", fontWeight: 800 }}>
                       Skill to Prioritize
                     </span>
-                    <strong style={{ display: "block", fontSize: "1.1rem", marginTop: "6px" }}>
+                    <strong style={{ display: "block", fontSize: "1.1rem", marginTop: "6px", color: "var(--text-primary)" }}>
                       {recommendation.recommendedSkill}
                     </strong>
                   </div>
@@ -458,14 +462,14 @@ export default function PathFinder({ onPlanSaved, onSelectRoadmap }) {
                     style={{
                       padding: "18px",
                       borderRadius: "var(--radius-md)",
-                      background: "rgba(255, 255, 255, 0.03)",
+                      background: "var(--bg-subtle)",
                       border: "1px solid var(--border)",
                     }}
                   >
                     <span style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--primary)", fontWeight: 800 }}>
                       Difficulty Level
                     </span>
-                    <strong style={{ display: "block", fontSize: "1.1rem", marginTop: "6px" }}>
+                    <strong style={{ display: "block", fontSize: "1.1rem", marginTop: "6px", color: "var(--text-primary)" }}>
                       {recommendation.difficulty}
                     </strong>
                   </div>
@@ -474,7 +478,7 @@ export default function PathFinder({ onPlanSaved, onSelectRoadmap }) {
                     style={{
                       padding: "18px",
                       borderRadius: "var(--radius-md)",
-                      background: "rgba(255, 255, 255, 0.03)",
+                      background: "var(--bg-subtle)",
                       border: "1px solid var(--border)",
                     }}
                   >

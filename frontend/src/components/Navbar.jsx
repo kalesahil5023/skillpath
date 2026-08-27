@@ -1,214 +1,299 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { User, LogIn, LogOut, Menu, X, Compass, CheckCircle2 } from "lucide-react";
+import { User, LogIn, LogOut, Menu, X, Search, Sparkles, BookOpen, Code2, Layers, CheckCircle2 } from "lucide-react";
 
 export default function Navbar({ onOpenLegal }) {
   const { user, isLoggedIn, logout, openAuthModal } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const navLinks = [
+    { label: "Courses", href: "#popular-courses" },
+    { label: "Practice", href: "#path-finder" },
+    { label: "Roadmaps", href: "#skill-roadmaps" },
+    { label: "Projects", href: "#builders" },
+    { label: "Resources", href: "#resources" },
+  ];
 
   return (
-    <nav
+    <header
       style={{
-        position: "fixed",
-        top: "16px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        width: "calc(100% - 32px)",
-        maxWidth: "1200px",
+        position: "sticky",
+        top: 0,
         zIndex: 100,
-        background: "rgba(8, 16, 29, 0.75)",
-        backdropFilter: "blur(16px)",
-        WebkitBackdropFilter: "blur(16px)",
-        border: "1px solid rgba(115, 215, 255, 0.16)",
-        borderRadius: "16px",
-        padding: "12px 24px",
+        backgroundColor: "#ffffff",
+        borderBottom: `1px solid ${scrolled ? "var(--border)" : "var(--border-subtle)"}`,
+        boxShadow: scrolled ? "0 2px 10px rgba(15, 23, 42, 0.04)" : "none",
+        transition: "all 0.2s ease",
       }}
-      aria-label="Primary navigation"
     >
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        {/* Brand */}
-        <a
-          href="#home"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            fontSize: "1.2rem",
-            fontWeight: 800,
-            letterSpacing: "-0.03em",
-          }}
-        >
-          <span
-            style={{
-              width: "32px",
-              height: "32px",
-              borderRadius: "8px",
-              background: "linear-gradient(135deg, var(--primary), var(--secondary))",
-              color: "#08111f",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontWeight: 900,
-              fontSize: "1.1rem",
-            }}
-          >
-            S
-          </span>
-          <span>SkillSprint</span>
-        </a>
-
-        {/* Desktop Links */}
+      <div className="container">
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "28px",
-            fontSize: "0.95rem",
+            justifyContent: "space-between",
+            height: "72px",
           }}
-          className="desktop-nav"
         >
-          <a href="#path-finder" style={{ color: "var(--text-secondary)" }}>Path Finder</a>
-          <a href="#skill-roadmaps" style={{ color: "var(--text-secondary)" }}>Skill Roadmaps</a>
-          <a href="#my-plan" style={{ color: "var(--text-secondary)" }}>My Plan</a>
-          <a href="#earning-paths" style={{ color: "var(--text-secondary)" }}>Earning Paths</a>
-          <a href="#builders" style={{ color: "var(--text-secondary)" }}>Builders</a>
-          <a href="#resources" style={{ color: "var(--text-secondary)" }}>Resources</a>
-          <button
-            type="button"
-            onClick={() => onOpenLegal("about")}
+          {/* Brand Logo */}
+          <a
+            href="#"
             style={{
-              background: "none",
-              border: "none",
-              color: "var(--text-secondary)",
-              cursor: "pointer",
-              fontSize: "inherit",
-              fontFamily: "inherit",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              fontSize: "1.25rem",
+              fontWeight: 800,
+              fontFamily: "var(--font-heading)",
+              letterSpacing: "-0.03em",
+              color: "var(--text-primary)",
             }}
           >
-            About
-          </button>
-        </div>
+            <div
+              style={{
+                width: "34px",
+                height: "34px",
+                borderRadius: "8px",
+                backgroundColor: "var(--primary)",
+                color: "#ffffff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: 900,
+                fontSize: "1.1rem",
+                boxShadow: "0 2px 6px rgba(5, 150, 105, 0.3)",
+              }}
+            >
+              S
+            </div>
+            <span>
+              Skill<span style={{ color: "var(--primary)" }}>Sprint</span>
+            </span>
+          </a>
 
-        {/* User / Auth Controls */}
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          {isLoggedIn ? (
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <div
+          {/* Desktop Navigation Links */}
+          <nav
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "28px",
+            }}
+            className="desktop-nav"
+            aria-label="Main Navigation"
+          >
+            {navLinks.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "6px 14px",
-                  background: "rgba(115, 215, 255, 0.08)",
-                  border: "1px solid rgba(115, 215, 255, 0.2)",
-                  borderRadius: "var(--radius-full)",
-                  fontSize: "0.85rem",
+                  fontFamily: "var(--font-heading)",
+                  fontSize: "0.92rem",
+                  fontWeight: 600,
+                  color: "var(--text-secondary)",
+                  transition: "color 0.15s ease",
                 }}
+                onMouseEnter={(e) => (e.target.style.color = "var(--primary)")}
+                onMouseLeave={(e) => (e.target.style.color = "var(--text-secondary)")}
               >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+
+          {/* Right Action Area */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "14px",
+            }}
+            className="desktop-actions"
+          >
+            {isLoggedIn ? (
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                 <div
                   style={{
-                    width: "8px",
-                    height: "8px",
-                    borderRadius: "50%",
-                    background: "var(--accent)",
-                    boxShadow: "0 0 8px var(--accent)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    padding: "6px 12px",
+                    background: "var(--bg-subtle)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "var(--radius-full)",
                   }}
-                />
-                <User size={14} color="var(--primary)" />
-                <span style={{ fontWeight: 600, color: "var(--text)", maxWidth: "120px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {user?.displayName || user?.username}
-                </span>
-              </div>
-              <button
-                type="button"
-                className="btn btn-secondary btn-sm"
-                onClick={logout}
-                title="Log out"
-                style={{ padding: "8px 12px" }}
-              >
-                <LogOut size={15} />
-                <span className="hide-mobile">Log out</span>
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              className="btn btn-primary btn-sm"
-              onClick={() => openAuthModal("login")}
-            >
-              <LogIn size={15} />
-              <span>Log in / Sign up</span>
-            </button>
-          )}
+                >
+                  <div
+                    style={{
+                      width: "24px",
+                      height: "24px",
+                      borderRadius: "50%",
+                      background: "var(--primary)",
+                      color: "#ffffff",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "0.75rem",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {(user.displayName || user.username || "U")[0].toUpperCase()}
+                  </div>
+                  <span
+                    style={{
+                      fontSize: "0.85rem",
+                      fontWeight: 600,
+                      color: "var(--text-primary)",
+                    }}
+                  >
+                    {user.displayName || user.username}
+                  </span>
+                </div>
 
-          {/* Mobile Menu Toggle */}
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="btn btn-ghost"
+                  style={{ padding: "8px 12px", fontSize: "0.85rem" }}
+                  title="Sign out of account"
+                >
+                  <LogOut size={15} />
+                  <span>Logout</span>
+                </button>
+              </div>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => openAuthModal("login")}
+                  style={{
+                    fontFamily: "var(--font-heading)",
+                    fontSize: "0.92rem",
+                    fontWeight: 600,
+                    color: "var(--text-primary)",
+                    padding: "8px 14px",
+                    transition: "color 0.15s",
+                  }}
+                >
+                  Log In
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => openAuthModal("register")}
+                  className="btn btn-primary"
+                  style={{ padding: "9px 18px", fontSize: "0.9rem" }}
+                >
+                  Get Started
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* Mobile Hamburger Toggle */}
           <button
             type="button"
             className="mobile-toggle"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             style={{
-              background: "none",
-              border: "1px solid var(--border)",
-              borderRadius: "8px",
-              color: "var(--text)",
-              padding: "6px",
+              padding: "8px",
+              color: "var(--text-primary)",
               display: "none",
-              cursor: "pointer",
             }}
-            aria-label="Toggle navigation menu"
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           >
-            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
+
+        {/* Mobile Drawer Menu */}
+        {mobileMenuOpen && (
+          <div
+            style={{
+              padding: "18px 0 24px",
+              borderTop: "1px solid var(--border)",
+              display: "flex",
+              flexDirection: "column",
+              gap: "16px",
+            }}
+          >
+            {navLinks.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                style={{
+                  fontFamily: "var(--font-heading)",
+                  fontSize: "1rem",
+                  fontWeight: 600,
+                  color: "var(--text-primary)",
+                  padding: "8px 0",
+                }}
+              >
+                {link.label}
+              </a>
+            ))}
+
+            <div style={{ paddingTop: "12px", borderTop: "1px solid var(--border)", display: "flex", gap: "10px" }}>
+              {isLoggedIn ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    logout();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="btn btn-secondary"
+                  style={{ width: "100%" }}
+                >
+                  <LogOut size={16} />
+                  <span>Log Out ({user.displayName || user.username})</span>
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      openAuthModal("login");
+                      setMobileMenuOpen(false);
+                    }}
+                    className="btn btn-secondary"
+                    style={{ flex: 1 }}
+                  >
+                    Log In
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      openAuthModal("register");
+                      setMobileMenuOpen(false);
+                    }}
+                    className="btn btn-primary"
+                    style={{ flex: 1 }}
+                  >
+                    Get Started
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Mobile Dropdown */}
-      {mobileMenuOpen && (
-        <div
-          style={{
-            marginTop: "16px",
-            paddingTop: "16px",
-            borderTop: "1px solid var(--border)",
-            display: "flex",
-            flexDirection: "column",
-            gap: "14px",
-          }}
-        >
-          <a href="#path-finder" onClick={() => setMobileMenuOpen(false)}>Path Finder</a>
-          <a href="#skill-roadmaps" onClick={() => setMobileMenuOpen(false)}>Skill Roadmaps</a>
-          <a href="#my-plan" onClick={() => setMobileMenuOpen(false)}>My Plan</a>
-          <a href="#earning-paths" onClick={() => setMobileMenuOpen(false)}>Earning Paths</a>
-          <a href="#builders" onClick={() => setMobileMenuOpen(false)}>Builders</a>
-          <a href="#resources" onClick={() => setMobileMenuOpen(false)}>Resources</a>
-          <button
-            type="button"
-            onClick={() => {
-              setMobileMenuOpen(false);
-              onOpenLegal("about");
-            }}
-            style={{
-              background: "none",
-              border: "none",
-              color: "var(--text-secondary)",
-              textAlign: "left",
-              padding: 0,
-              fontSize: "1rem",
-              fontFamily: "inherit",
-              cursor: "pointer",
-            }}
-          >
-            About
-          </button>
-        </div>
-      )}
-
       <style>{`
-        @media (max-width: 860px) {
+        @media (max-width: 880px) {
           .desktop-nav { display: none !important; }
-          .mobile-toggle { display: flex !important; }
-          .hide-mobile { display: none; }
+          .desktop-actions { display: none !important; }
+          .mobile-toggle { display: block !important; }
         }
       `}</style>
-    </nav>
+    </header>
   );
 }

@@ -111,7 +111,7 @@ export default function MyPlan({ savedPlan, onSelectRoadmap, onPlanReset }) {
         </div>
 
         {currentPlan ? (
-          <div className="glass-card" style={{ padding: "40px 32px" }}>
+          <div className="card" style={{ padding: "40px 32px", backgroundColor: "#ffffff" }}>
             {/* Header with Title & Cloud Sync Badge */}
             <div
               style={{
@@ -126,9 +126,9 @@ export default function MyPlan({ savedPlan, onSelectRoadmap, onPlanReset }) {
             >
               <div>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-                  <h3 style={{ fontSize: "1.6rem" }}>Your 7-Day Action Plan</h3>
+                  <h3 style={{ fontSize: "1.6rem", color: "var(--text-primary)" }}>Your 7-Day Action Plan</h3>
                   {isLoggedIn ? (
-                    <span className="badge badge-accent" title="Synced with PostgreSQL Database">
+                    <span className="badge badge-green" title="Synced with PostgreSQL Database">
                       <CloudCheck size={14} />
                       <span>Synced to Cloud</span>
                     </span>
@@ -136,22 +136,22 @@ export default function MyPlan({ savedPlan, onSelectRoadmap, onPlanReset }) {
                     <button
                       type="button"
                       onClick={() => openAuthModal("login")}
-                      className="badge badge-warning"
-                      style={{ border: "none", cursor: "pointer" }}
+                      className="badge badge-amber"
+                      style={{ cursor: "pointer" }}
                       title="Click to sign up and save across devices"
                     >
                       <span>Device Only · Log in to Sync</span>
                     </button>
                   )}
                 </div>
-                <p style={{ maxWidth: "600px" }}>{currentPlan.reason}</p>
+                <p style={{ maxWidth: "600px", color: "var(--text-secondary)" }}>{currentPlan.reason}</p>
               </div>
 
               <button
                 type="button"
-                className="btn btn-secondary btn-sm"
+                className="btn btn-secondary"
                 onClick={handleReset}
-                style={{ color: "var(--text-muted)" }}
+                style={{ color: "var(--text-muted)", padding: "8px 14px", fontSize: "0.85rem" }}
               >
                 <RotateCcw size={14} />
                 <span>Reset Plan</span>
@@ -170,7 +170,7 @@ export default function MyPlan({ savedPlan, onSelectRoadmap, onPlanReset }) {
               <div
                 style={{
                   padding: "16px",
-                  background: "rgba(255, 255, 255, 0.025)",
+                  background: "var(--bg-subtle)",
                   border: "1px solid var(--border)",
                   borderRadius: "var(--radius-sm)",
                 }}
@@ -178,7 +178,7 @@ export default function MyPlan({ savedPlan, onSelectRoadmap, onPlanReset }) {
                 <span style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--primary)", fontWeight: 800 }}>
                   Recommended Path
                 </span>
-                <strong style={{ display: "block", fontSize: "1.1rem", marginTop: "4px" }}>
+                <strong style={{ display: "block", fontSize: "1.1rem", marginTop: "4px", color: "var(--text-primary)" }}>
                   {currentPlan.path}
                 </strong>
               </div>
@@ -186,7 +186,7 @@ export default function MyPlan({ savedPlan, onSelectRoadmap, onPlanReset }) {
               <div
                 style={{
                   padding: "16px",
-                  background: "rgba(255, 255, 255, 0.025)",
+                  background: "var(--bg-subtle)",
                   border: "1px solid var(--border)",
                   borderRadius: "var(--radius-sm)",
                 }}
@@ -194,7 +194,7 @@ export default function MyPlan({ savedPlan, onSelectRoadmap, onPlanReset }) {
                 <span style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--primary)", fontWeight: 800 }}>
                   Skill Focus
                 </span>
-                <strong style={{ display: "block", fontSize: "1.1rem", marginTop: "4px" }}>
+                <strong style={{ display: "block", fontSize: "1.1rem", marginTop: "4px", color: "var(--text-primary)" }}>
                   {currentPlan.recommendedSkill}
                 </strong>
               </div>
@@ -202,7 +202,7 @@ export default function MyPlan({ savedPlan, onSelectRoadmap, onPlanReset }) {
               <div
                 style={{
                   padding: "16px",
-                  background: "rgba(255, 255, 255, 0.025)",
+                  background: "var(--bg-subtle)",
                   border: "1px solid var(--border)",
                   borderRadius: "var(--radius-sm)",
                 }}
@@ -210,7 +210,7 @@ export default function MyPlan({ savedPlan, onSelectRoadmap, onPlanReset }) {
                 <span style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--primary)", fontWeight: 800 }}>
                   Target Outcome
                 </span>
-                <strong style={{ display: "block", fontSize: "1.1rem", marginTop: "4px" }}>
+                <strong style={{ display: "block", fontSize: "1.1rem", marginTop: "4px", color: "var(--text-primary)" }}>
                   {currentPlan.goal}
                 </strong>
               </div>
@@ -227,16 +227,16 @@ export default function MyPlan({ savedPlan, onSelectRoadmap, onPlanReset }) {
                   marginBottom: "10px",
                 }}
               >
-                <span>Checklist Progress ({progressPercent}%)</span>
-                <span style={{ color: "var(--primary)" }}>
+                <span style={{ color: "var(--text-primary)" }}>Checklist Progress ({progressPercent}%)</span>
+                <span style={{ color: "var(--primary)", fontWeight: 700 }}>
                   {completedCount} of {totalCount} completed
                 </span>
               </div>
               <div
                 style={{
                   width: "100%",
-                  height: "10px",
-                  background: "rgba(255, 255, 255, 0.08)",
+                  height: "9px",
+                  background: "#e2e8f0",
                   borderRadius: "var(--radius-full)",
                   overflow: "hidden",
                 }}
@@ -245,7 +245,7 @@ export default function MyPlan({ savedPlan, onSelectRoadmap, onPlanReset }) {
                   style={{
                     height: "100%",
                     width: `${progressPercent}%`,
-                    background: "linear-gradient(90deg, var(--primary), var(--accent))",
+                    background: "var(--primary)",
                     borderRadius: "var(--radius-full)",
                     transition: "width 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
                   }}
@@ -262,24 +262,25 @@ export default function MyPlan({ savedPlan, onSelectRoadmap, onPlanReset }) {
                   style={{
                     padding: "16px 20px",
                     borderRadius: "var(--radius-md)",
-                    background: item.completed ? "rgba(77, 225, 178, 0.08)" : "rgba(255, 255, 255, 0.03)",
-                    border: item.completed ? "1px solid rgba(77, 225, 178, 0.3)" : "1px solid var(--border)",
+                    background: item.completed ? "var(--primary-light)" : "#ffffff",
+                    border: item.completed ? "1.5px solid var(--primary-border)" : "1px solid var(--border)",
                     display: "flex",
                     alignItems: "center",
                     gap: "16px",
                     cursor: "pointer",
-                    transition: "all 0.2s",
+                    transition: "all 0.15s ease",
+                    boxShadow: item.completed ? "none" : "var(--shadow-xs)",
                   }}
                 >
-                  <div style={{ color: item.completed ? "var(--accent)" : "var(--text-muted)" }}>
-                    {item.completed ? <CheckCircle size={22} /> : <Circle size={22} />}
+                  <div style={{ color: item.completed ? "var(--primary)" : "var(--border-medium)" }}>
+                    {item.completed ? <CheckCircle size={22} color="var(--primary)" /> : <Circle size={22} />}
                   </div>
                   <div style={{ flex: 1 }}>
                     <span
                       style={{
                         fontSize: "0.75rem",
                         fontWeight: 800,
-                        color: item.completed ? "var(--accent)" : "var(--primary)",
+                        color: item.completed ? "var(--primary-text)" : "var(--primary)",
                         letterSpacing: "0.06em",
                         textTransform: "uppercase",
                       }}
@@ -288,10 +289,11 @@ export default function MyPlan({ savedPlan, onSelectRoadmap, onPlanReset }) {
                     </span>
                     <p
                       style={{
-                        fontSize: "1rem",
+                        fontSize: "0.98rem",
                         marginTop: "2px",
-                        color: item.completed ? "var(--text-muted)" : "var(--text)",
+                        color: item.completed ? "var(--text-muted)" : "var(--text-primary)",
                         textDecoration: item.completed ? "line-through" : "none",
+                        fontWeight: item.completed ? 400 : 500,
                       }}
                     >
                       {item.task}
@@ -311,8 +313,8 @@ export default function MyPlan({ savedPlan, onSelectRoadmap, onPlanReset }) {
                 gap: "16px",
                 padding: "20px 24px",
                 borderRadius: "var(--radius-md)",
-                background: "rgba(115, 215, 255, 0.06)",
-                border: "1px solid rgba(115, 215, 255, 0.2)",
+                background: "var(--bg-subtle)",
+                border: "1px solid var(--border)",
               }}
             >
               <div>

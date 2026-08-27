@@ -56,15 +56,16 @@ export default function ResourceHub({ onOpenLegal }) {
               style={{
                 padding: "8px 16px",
                 borderRadius: "var(--radius-full)",
-                background: selectedCategory === cat ? "var(--primary)" : "rgba(255, 255, 255, 0.04)",
-                color: selectedCategory === cat ? "#08111f" : "var(--text-secondary)",
+                background: selectedCategory === cat ? "var(--primary)" : "#ffffff",
+                color: selectedCategory === cat ? "#ffffff" : "var(--text-secondary)",
                 border: selectedCategory === cat ? "1px solid var(--primary)" : "1px solid var(--border)",
-                fontWeight: selectedCategory === cat ? 700 : 500,
+                fontWeight: selectedCategory === cat ? 700 : 600,
                 fontSize: "0.85rem",
                 cursor: "pointer",
                 whiteSpace: "nowrap",
-                transition: "all 0.2s",
+                transition: "all 0.15s ease",
                 fontFamily: "inherit",
+                boxShadow: selectedCategory === cat ? "var(--shadow-xs)" : "none",
               }}
             >
               {cat}
@@ -84,12 +85,13 @@ export default function ResourceHub({ onOpenLegal }) {
           {filteredResources.map((res) => (
             <div
               key={res.id}
-              className="glass-card"
+              className="card"
               style={{
                 padding: "28px 24px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
+                backgroundColor: "#ffffff",
               }}
             >
               <div>
@@ -97,28 +99,28 @@ export default function ResourceHub({ onOpenLegal }) {
                   <span style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--primary)", fontWeight: 700 }}>
                     {res.category}
                   </span>
-                  <span className={`badge ${res.pricingType === "Free" ? "badge-accent" : res.pricingType === "Freemium" ? "badge-primary" : "badge-warning"}`}>
+                  <span className={`badge ${res.pricingType === "Free" ? "badge-green" : res.pricingType === "Freemium" ? "badge-blue" : "badge-amber"}`}>
                     {res.pricingType}
                   </span>
                 </div>
 
-                <h4 style={{ fontSize: "1.25rem", marginBottom: "8px" }}>{res.name}</h4>
-                <p style={{ fontSize: "0.92rem", marginBottom: "14px" }}>{res.description}</p>
+                <h4 style={{ fontSize: "1.25rem", marginBottom: "8px", color: "var(--text-primary)" }}>{res.name}</h4>
+                <p style={{ fontSize: "0.92rem", marginBottom: "14px", color: "var(--text-secondary)" }}>{res.description}</p>
 
                 <div
                   style={{
                     padding: "12px 14px",
                     borderRadius: "var(--radius-sm)",
-                    background: "rgba(255, 255, 255, 0.025)",
+                    background: "var(--bg-subtle)",
                     border: "1px solid var(--border)",
                     fontSize: "0.86rem",
                     marginBottom: "20px",
                   }}
                 >
-                  <strong style={{ color: "var(--text)", display: "block", marginBottom: "2px" }}>
+                  <strong style={{ color: "var(--text-primary)", display: "block", marginBottom: "2px" }}>
                     Why we recommend it:
                   </strong>
-                  <span style={{ color: "var(--text-secondary)" }}>{res.whyRecommended}</span>
+                  <span style={{ color: "var(--text-muted)" }}>{res.whyRecommended}</span>
                 </div>
               </div>
 
@@ -126,8 +128,8 @@ export default function ResourceHub({ onOpenLegal }) {
                 href={res.officialUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-secondary btn-sm"
-                style={{ width: "100%" }}
+                className="btn btn-secondary"
+                style={{ width: "100%", padding: "9px 14px", fontSize: "0.85rem" }}
               >
                 <span>Visit Official Resource</span>
                 <ExternalLink size={14} />

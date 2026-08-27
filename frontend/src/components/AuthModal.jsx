@@ -94,25 +94,26 @@ export default function AuthModal() {
         <div style={{ textAlign: "center", marginBottom: "24px" }}>
           <div
             style={{
-              width: "48px",
-              height: "48px",
-              borderRadius: "12px",
-              background: "linear-gradient(135deg, var(--primary), var(--secondary))",
-              color: "#08111f",
+              width: "44px",
+              height: "44px",
+              borderRadius: "10px",
+              background: "var(--primary)",
+              color: "#ffffff",
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
               fontWeight: 900,
-              fontSize: "1.3rem",
+              fontSize: "1.25rem",
               marginBottom: "12px",
+              boxShadow: "0 2px 8px rgba(5, 150, 105, 0.25)",
             }}
           >
             S
           </div>
-          <h3 style={{ fontSize: "1.65rem", marginBottom: "6px" }}>
+          <h3 style={{ fontSize: "1.65rem", marginBottom: "6px", color: "var(--text-primary)" }}>
             {isLogin ? "Welcome back" : "Create your account"}
           </h3>
-          <p style={{ fontSize: "0.92rem", color: "var(--text-secondary)" }}>
+          <p style={{ fontSize: "0.92rem", color: "var(--text-muted)" }}>
             {isLogin
               ? "Access your saved starter plans and progress across devices."
               : "Sync your learning checklists and portfolio case studies to PostgreSQL."}
@@ -124,7 +125,8 @@ export default function AuthModal() {
           style={{
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
-            background: "rgba(255, 255, 255, 0.04)",
+            background: "var(--bg-subtle)",
+            border: "1px solid var(--border)",
             padding: "4px",
             borderRadius: "var(--radius-md)",
             marginBottom: "20px",
@@ -137,16 +139,17 @@ export default function AuthModal() {
               setError("");
             }}
             style={{
-              padding: "10px",
+              padding: "9px",
               borderRadius: "var(--radius-sm)",
-              background: isLogin ? "var(--surface)" : "transparent",
-              color: isLogin ? "var(--text)" : "var(--text-muted)",
+              background: isLogin ? "#ffffff" : "transparent",
+              color: isLogin ? "var(--text-primary)" : "var(--text-muted)",
               border: isLogin ? "1px solid var(--border)" : "none",
+              boxShadow: isLogin ? "var(--shadow-xs)" : "none",
               fontWeight: isLogin ? 700 : 500,
               cursor: "pointer",
               fontFamily: "inherit",
               fontSize: "0.9rem",
-              transition: "all 0.2s",
+              transition: "all 0.15s ease",
             }}
           >
             Log In
@@ -159,16 +162,17 @@ export default function AuthModal() {
               setError("");
             }}
             style={{
-              padding: "10px",
+              padding: "9px",
               borderRadius: "var(--radius-sm)",
-              background: !isLogin ? "var(--surface)" : "transparent",
-              color: !isLogin ? "var(--text)" : "var(--text-muted)",
+              background: !isLogin ? "#ffffff" : "transparent",
+              color: !isLogin ? "var(--text-primary)" : "var(--text-muted)",
               border: !isLogin ? "1px solid var(--border)" : "none",
+              boxShadow: !isLogin ? "var(--shadow-xs)" : "none",
               fontWeight: !isLogin ? 700 : 500,
               cursor: "pointer",
               fontFamily: "inherit",
               fontSize: "0.9rem",
-              transition: "all 0.2s",
+              transition: "all 0.15s ease",
             }}
           >
             Register
@@ -180,7 +184,7 @@ export default function AuthModal() {
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
             onError={() => setError("Google Sign-In was cancelled or unavailable.")}
-            theme="filled_black"
+            theme="outline"
             shape="pill"
             text={isLogin ? "signin_with" : "signup_with"}
             width="380"

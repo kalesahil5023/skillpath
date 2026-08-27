@@ -1,71 +1,94 @@
 import React from "react";
-import { Search, GraduationCap, LayoutGrid, Briefcase } from "lucide-react";
+import { BookOpen, Code2, Hammer, TrendingUp, CheckCircle, ArrowRight } from "lucide-react";
 
 export default function HowItWorks() {
-  const steps = [
+  const pillars = [
     {
-      num: "01",
-      icon: Search,
-      title: "Discover",
-      desc: "Complete the 3-question Path Finder to identify a legitimate path matching your skills, time, and goals.",
-      color: "var(--primary)",
-    },
-    {
-      num: "02",
-      icon: GraduationCap,
+      number: "01",
       title: "Learn",
-      desc: "Follow structured, milestone-based 30-day skill roadmaps designed for real-world application.",
-      color: "var(--secondary)",
+      tagline: "Structured Foundational Paths",
+      description:
+        "Skip tutorial paralysis. Follow guided curricula created by senior engineers that teach core software engineering, data systems, and system design step-by-step.",
+      icon: BookOpen,
+      badgeColor: "#059669",
+      bgLight: "#ecfdf5",
+      highlights: ["No fluff or filler theory", "Production-tested code patterns", "Interactive syntax walkthroughs"],
     },
     {
-      num: "03",
-      icon: LayoutGrid,
+      number: "02",
+      title: "Practice",
+      tagline: "Active Problem-Solving",
+      description:
+        "Knowledge sticks when applied. Solve graded coding problems, interactive algorithmic challenges, system assessments, and technical interview simulations.",
+      icon: Code2,
+      badgeColor: "#2563eb",
+      bgLight: "#eff6ff",
+      highlights: ["1,800+ curated DSA challenges", "Immediate test suite execution", "Clear complexity explanations"],
+    },
+    {
+      number: "03",
       title: "Build",
-      desc: "Use the Project & Portfolio Builders to craft proof-of-work case studies that clients respect.",
-      color: "var(--accent)",
+      tagline: "Production-Grade Projects",
+      description:
+        "Turn theoretical knowledge into tangible proof-of-work. Generate client-ready briefs, write clean modular code, and deploy real applications with databases and auth.",
+      icon: Hammer,
+      badgeColor: "#d97706",
+      bgLight: "#fffbeb",
+      highlights: ["Full-stack architectures", "PostgreSQL database models", "Automated case study exports"],
     },
     {
-      num: "04",
-      icon: Briefcase,
-      title: "Earn",
-      desc: "Apply to vetted freelance projects, remote job positions, or audience monetization with realistic expectations.",
-      color: "var(--warning)",
+      number: "04",
+      title: "Grow",
+      tagline: "Continuous Career Readiness",
+      description:
+        "Track milestone mastery across 30-day roadmaps, measure streak velocity, prepare structured interview talk-tracks, and launch your software career with confidence.",
+      icon: TrendingUp,
+      badgeColor: "#7c3aed",
+      bgLight: "#f5f3ff",
+      highlights: ["Cloud-synced checklists", "Resume-ready project writeups", "Targeted career roadmaps"],
     },
   ];
 
   return (
-    <section className="section-spacing">
+    <section id="how-it-works" className="section-spacing" style={{ backgroundColor: "var(--bg-canvas)" }}>
       <div className="container">
+        {/* Section Header */}
         <div className="section-header">
           <div className="eyebrow">
-            <span>Structured Progression</span>
+            <TrendingUp size={13} />
+            <span>The SkillSprint Model</span>
           </div>
-          <h2>Make steady progress, one deliberate step at a time.</h2>
+          <h2>The Four Pillars of Skill Mastery</h2>
           <p>
-            Avoid the overwhelm of disconnected YouTube tutorials and false promises. SkillSprint organizes your learning into a logical four-phase pipeline.
+            Most platforms make you watch videos. SkillSprint is built on a four-stage loop designed to help you actually understand, practice, build, and grow.
           </p>
         </div>
 
+        {/* 4 Pillars Grid */}
         <div
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
             gap: "24px",
           }}
+          className="pillars-grid"
         >
-          {steps.map((step, idx) => {
-            const Icon = step.icon;
+          {pillars.map((pillar, idx) => {
+            const Icon = pillar.icon;
             return (
               <div
                 key={idx}
-                className="glass-card"
+                className="card"
                 style={{
                   padding: "32px 28px",
-                  position: "relative",
                   display: "flex",
                   flexDirection: "column",
+                  borderRadius: "14px",
+                  backgroundColor: "#ffffff",
+                  position: "relative",
                 }}
               >
+                {/* Number Watermark & Icon */}
                 <div
                   style={{
                     display: "flex",
@@ -74,41 +97,111 @@ export default function HowItWorks() {
                     marginBottom: "24px",
                   }}
                 >
-                  <span
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      fontWeight: 800,
-                      fontSize: "1.2rem",
-                      color: step.color,
-                      letterSpacing: "0.05em",
-                    }}
-                  >
-                    {step.num}
-                  </span>
                   <div
                     style={{
-                      width: "44px",
-                      height: "44px",
+                      width: "48px",
+                      height: "48px",
                       borderRadius: "12px",
-                      background: `rgba(255, 255, 255, 0.04)`,
-                      border: "1px solid var(--border)",
+                      backgroundColor: pillar.bgLight,
+                      color: pillar.badgeColor,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      color: step.color,
                     }}
                   >
-                    <Icon size={22} />
+                    <Icon size={24} />
+                  </div>
+
+                  <span
+                    style={{
+                      fontFamily: "var(--font-heading)",
+                      fontSize: "1.75rem",
+                      fontWeight: 800,
+                      color: "#cbd5e1",
+                      letterSpacing: "-0.04em",
+                    }}
+                  >
+                    {pillar.number}
+                  </span>
+                </div>
+
+                {/* Pillar Header */}
+                <div style={{ marginBottom: "14px" }}>
+                  <h3
+                    style={{
+                      fontSize: "1.45rem",
+                      fontWeight: 800,
+                      color: "var(--text-primary)",
+                      marginBottom: "4px",
+                    }}
+                  >
+                    {pillar.title}
+                  </h3>
+                  <div
+                    style={{
+                      fontSize: "0.82rem",
+                      fontWeight: 700,
+                      color: pillar.badgeColor,
+                      fontFamily: "var(--font-heading)",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.04em",
+                    }}
+                  >
+                    {pillar.tagline}
                   </div>
                 </div>
 
-                <h3 style={{ marginBottom: "12px" }}>{step.title}</h3>
-                <p style={{ fontSize: "0.95rem", lineHeight: 1.6 }}>{step.desc}</p>
+                {/* Description */}
+                <p
+                  style={{
+                    fontSize: "0.92rem",
+                    color: "var(--text-secondary)",
+                    lineHeight: 1.6,
+                    marginBottom: "24px",
+                  }}
+                >
+                  {pillar.description}
+                </p>
+
+                {/* Highlights List */}
+                <div
+                  style={{
+                    marginTop: "auto",
+                    paddingTop: "20px",
+                    borderTop: "1px solid var(--border-subtle)",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "9px",
+                  }}
+                >
+                  {pillar.highlights.map((item, hIdx) => (
+                    <div
+                      key={hIdx}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        fontSize: "0.82rem",
+                        color: "var(--text-secondary)",
+                        fontWeight: 500,
+                      }}
+                    >
+                      <CheckCircle size={14} color="var(--primary)" style={{ flexShrink: 0 }} />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             );
           })}
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .pillars-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </section>
   );
 }

@@ -19,19 +19,19 @@ export default function TaskModal({ taskData, isOpen, onClose, onComplete, isCom
 
         {/* Stage & Skill Badge */}
         <div style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: "14px" }}>
-          <span className="badge badge-primary">Stage: {taskData.stageName}</span>
-          <span className="badge badge-secondary">{taskData.skillName}</span>
+          <span className="badge badge-green">Stage: {taskData.stageName}</span>
+          <span className="badge badge-blue">{taskData.skillName}</span>
         </div>
 
         {/* Title */}
-        <h3 style={{ fontSize: "1.65rem", marginBottom: "20px" }}>{taskData.task.title}</h3>
+        <h3 style={{ fontSize: "1.65rem", marginBottom: "20px", color: "var(--text-primary)" }}>{taskData.task.title}</h3>
 
         {/* Objective */}
         <div
           style={{
             padding: "16px 20px",
-            background: "rgba(115, 215, 255, 0.06)",
-            border: "1px solid rgba(115, 215, 255, 0.18)",
+            background: "var(--bg-subtle)",
+            border: "1px solid var(--border)",
             borderRadius: "var(--radius-md)",
             marginBottom: "24px",
           }}
@@ -40,22 +40,22 @@ export default function TaskModal({ taskData, isOpen, onClose, onComplete, isCom
             <Target size={16} />
             <span>Core Objective</span>
           </div>
-          <p style={{ fontSize: "0.95rem", color: "var(--text)" }}>{taskData.task.objective}</p>
+          <p style={{ fontSize: "0.95rem", color: "var(--text-secondary)" }}>{taskData.task.objective}</p>
         </div>
 
         {/* Why this matters */}
         <div style={{ marginBottom: "24px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "var(--secondary)", fontWeight: 700, fontSize: "0.9rem", marginBottom: "6px" }}>
-            <HelpCircle size={16} />
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "var(--text-primary)", fontWeight: 700, fontSize: "0.9rem", marginBottom: "6px" }}>
+            <HelpCircle size={16} color="var(--primary)" />
             <span>Why this matters</span>
           </div>
-          <p style={{ fontSize: "0.95rem" }}>{taskData.task.why}</p>
+          <p style={{ fontSize: "0.95rem", color: "var(--text-secondary)" }}>{taskData.task.why}</p>
         </div>
 
         {/* Step-by-Step Instructions */}
         <div style={{ marginBottom: "24px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "var(--accent)", fontWeight: 700, fontSize: "0.9rem", marginBottom: "12px" }}>
-            <ListChecks size={16} />
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "var(--text-primary)", fontWeight: 700, fontSize: "0.9rem", marginBottom: "12px" }}>
+            <ListChecks size={16} color="var(--primary)" />
             <span>Step-by-Step Action Items</span>
           </div>
           <ol style={{ paddingLeft: "20px", display: "grid", gap: "10px" }}>
@@ -71,16 +71,16 @@ export default function TaskModal({ taskData, isOpen, onClose, onComplete, isCom
         <div
           style={{
             padding: "16px 20px",
-            background: "rgba(77, 225, 178, 0.06)",
-            border: "1px solid rgba(77, 225, 178, 0.2)",
+            background: "var(--primary-light)",
+            border: "1px solid var(--primary-border)",
             borderRadius: "var(--radius-md)",
             marginBottom: "32px",
           }}
         >
-          <strong style={{ display: "block", color: "var(--accent)", fontSize: "0.85rem", textTransform: "uppercase", marginBottom: "4px" }}>
+          <strong style={{ display: "block", color: "var(--primary-text)", fontSize: "0.85rem", textTransform: "uppercase", marginBottom: "4px" }}>
             Expected Deliverable / Outcome
           </strong>
-          <p style={{ fontSize: "0.95rem", color: "var(--text)" }}>{taskData.task.outcome}</p>
+          <p style={{ fontSize: "0.95rem", color: "var(--text-secondary)" }}>{taskData.task.outcome}</p>
         </div>
 
         {/* Action Controls */}
@@ -90,7 +90,7 @@ export default function TaskModal({ taskData, isOpen, onClose, onComplete, isCom
           </button>
           <button
             type="button"
-            className={isCompleted ? "btn btn-secondary" : "btn btn-accent"}
+            className={isCompleted ? "btn btn-secondary" : "btn btn-primary"}
             onClick={() => {
               onComplete(taskData.skillName, taskData.taskIndex, !isCompleted);
               onClose();
