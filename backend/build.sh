@@ -1,29 +1,23 @@
 #!/usr/bin/env bash
-# Exit immediately if any non-optional command exits with a non-zero status
+# ============================================================================
+# SkillSprint Django Backend — Render Build Script
+# ============================================================================
+# This script runs during the Render BUILD phase.
+# Render Root Directory should be set to: backend
+# ============================================================================
 set -o errexit
 
-PYTHON_CMD="python"
-if ! command -v python >/dev/null 2>&1; then
-    PYTHON_CMD="python3"
-fi
+echo "==> Python: $(python --version)"
+echo "==> Directory: $(pwd)"
 
-echo "=========================================="
-echo "==> Build Environment: $($PYTHON_CMD --version)"
-echo "==> Working Directory: $(pwd)"
-echo "=========================================="
+echo "==> 1/3 Installing dependencies..."
+pip install --upgrade pip
+pip install -r requirements.txt
 
-echo "==> 1. Upgrading pip..."
-$PYTHON_CMD -m pip install --upgrade pip
+echo "==> 2/3 Collecting static files..."
+python manage.py collectstatic --noinput
 
-echo "==> 2. Installing Python dependencies..."
-$PYTHON_CMD -m pip install -r requirements.txt
+echo "==> 3/3 Running database migrations..."
+python manage.py migrate --noinput
 
-echo "==> 3. Collecting static files..."
-$PYTHON_CMD manage.py collectstatic --noinput
-
-echo "==> 4. Applying database migrations..."
-$PYTHON_CMD manage.py migrate --noinput || echo "==> Notice: Database migration skipped during build step. Migrations will run at service startup."
-
-echo "=========================================="
-echo "==> SkillSprint Build Finished Successfully!"
-echo "=========================================="
+echo "==> Build complete!"
