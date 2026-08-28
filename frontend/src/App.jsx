@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthProvider } from "./context/AuthContext";
-import { ThemeProvider } from "./context/ThemeContext";
 import { ToastProvider } from "./context/ToastContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Navbar from "./components/Navbar";
@@ -190,13 +189,11 @@ export default function App() {
   return (
     <ErrorBoundary>
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-        <ThemeProvider>
-          <ToastProvider>
-            <AuthProvider>
-              <MainContent />
-            </AuthProvider>
-          </ToastProvider>
-        </ThemeProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <MainContent />
+          </AuthProvider>
+        </ToastProvider>
       </GoogleOAuthProvider>
     </ErrorBoundary>
   );

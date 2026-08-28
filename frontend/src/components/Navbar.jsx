@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useTheme } from "../context/ThemeContext";
-import { User, LogIn, LogOut, Menu, X, Search, Sparkles, Sun, Moon } from "lucide-react";
+import { User, LogIn, LogOut, Menu, X, Search } from "lucide-react";
 
 export default function Navbar({ onOpenLegal, onOpenSearch }) {
   const { user, isLoggedIn, logout, openAuthModal } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -31,7 +29,7 @@ export default function Navbar({ onOpenLegal, onOpenSearch }) {
         position: "sticky",
         top: 0,
         zIndex: 100,
-        backgroundColor: "var(--bg-surface)",
+        backgroundColor: "#ffffff",
         borderBottom: `1px solid ${scrolled ? "var(--border)" : "var(--border-subtle)"}`,
         boxShadow: scrolled ? "0 2px 10px rgba(15, 23, 42, 0.04)" : "none",
         transition: "all 0.2s ease",
@@ -154,45 +152,13 @@ export default function Navbar({ onOpenLegal, onOpenSearch }) {
               <span className="search-label">Search</span>
               <kbd style={{
                 padding: "2px 5px",
-                background: "var(--bg-surface)",
+                background: "#ffffff",
                 border: "1px solid var(--border)",
                 borderRadius: "4px",
                 fontSize: "0.68rem",
                 fontFamily: "monospace",
                 color: "var(--text-muted)",
               }}>⌘K</kbd>
-            </button>
-
-            {/* Dark Mode Toggle */}
-            <button
-              type="button"
-              onClick={toggleTheme}
-              title={isDark ? "Switch to light mode" : "Switch to dark mode"}
-              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-              style={{
-                width: "36px",
-                height: "36px",
-                borderRadius: "var(--radius-sm)",
-                border: "1px solid var(--border)",
-                background: "var(--bg-subtle)",
-                color: "var(--text-muted)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                transition: "all 0.15s ease",
-                flexShrink: 0,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = "var(--primary)";
-                e.currentTarget.style.borderColor = "var(--primary)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = "var(--text-muted)";
-                e.currentTarget.style.borderColor = "var(--border)";
-              }}
-            >
-              {isDark ? <Sun size={17} /> : <Moon size={17} />}
             </button>
 
             {isLoggedIn ? (
@@ -345,17 +311,6 @@ export default function Navbar({ onOpenLegal, onOpenSearch }) {
             ))}
 
             <div style={{ paddingTop: "12px", borderTop: "1px solid var(--border)", display: "flex", gap: "10px", flexWrap: "wrap" }}>
-              {/* Dark mode toggle in mobile */}
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className="btn btn-secondary"
-                style={{ flex: "0 0 auto" }}
-              >
-                {isDark ? <Sun size={16} /> : <Moon size={16} />}
-                <span>{isDark ? "Light Mode" : "Dark Mode"}</span>
-              </button>
-
               {isLoggedIn ? (
                 <button
                   type="button"
