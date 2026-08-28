@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
+import { ToastProvider } from "./context/ToastContext";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import StatsStrip from "./components/StatsStrip";
@@ -18,6 +21,8 @@ import FinalCTA from "./components/FinalCTA";
 import Footer from "./components/Footer";
 import AuthModal from "./components/AuthModal";
 import LegalModal from "./components/LegalModal";
+import SearchModal from "./components/SearchModal";
+import BackToTop from "./components/BackToTop";
 import { Sparkles } from "lucide-react";
 
 function MainContent() {
@@ -25,6 +30,7 @@ function MainContent() {
   const [savedPlan, setSavedPlan] = useState(null);
   const [portfolioPrefill, setPortfolioPrefill] = useState(null);
   const [legalTopic, setLegalTopic] = useState(null);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const handleSelectRoadmap = (skillName) => {
     setSelectedRoadmapSkill(skillName);
@@ -42,10 +48,25 @@ function MainContent() {
     }
   };
 
+  // Global keyboard shortcut: Cmd/Ctrl+K to open search
+  React.useEffect(() => {
+    const handler = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", backgroundColor: "var(--bg-canvas)" }}>
       {/* Navigation */}
-      <Navbar onOpenLegal={(topic) => setLegalTopic(topic)} />
+      <Navbar
+        onOpenLegal={(topic) => setLegalTopic(topic)}
+        onOpenSearch={() => setSearchOpen(true)}
+      />
 
       {/* Main Sections */}
       <main style={{ flex: 1 }}>
@@ -67,9 +88,11 @@ function MainContent() {
         {/* 3. Popular Courses: "Most loved by our learners" */}
         <PopularCourses
           onSelectCourse={(courseId) => {
+            // Navigate to PathFinder and scroll to it
             const el = document.getElementById("path-finder");
             if (el) el.scrollIntoView({ behavior: "smooth" });
           }}
+          onSelectRoadmap={handleSelectRoadmap}
         />
 
         {/* 4. SkillSprint Learning Journey: The 4 Core Pillars */}
@@ -96,7 +119,7 @@ function MainContent() {
         />
 
         {/* 8. Proof-of-Work Project & Portfolio Builders */}
-        <section id="builders" className="section-spacing" style={{ backgroundColor: "#ffffff" }}>
+        <section id="builders" className="section-spacing" style={{ backgroundColor: "var(--bg-subtle)" }}>
           <div className="container">
             <div className="section-header">
               <div className="eyebrow">
@@ -152,21 +175,29 @@ function MainContent() {
         isOpen={!!legalTopic}
         onClose={() => setLegalTopic(null)}
       />
+      <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+
+      {/* Global UX Utilities */}
+      <BackToTop />
     </div>
   );
 }
 
-// Google Client ID for OAuth2 Web application
-const GOOGLE_CLIENT_ID =
-  import.meta.env.VITE_GOOGLE_CLIENT_ID ||
-  "570963281143-hsmgi61lb2favffu16ekeb77lliql9on.apps.googleusercontent.com";
+// Google Client ID for OAuth2 Web application (always use env var in production)
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 
 export default function App() {
   return (
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <AuthProvider>
-        <MainContent />
-      </AuthProvider>
-    </GoogleOAuthProvider>
+    <ErrorBoundary>
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+        <ThemeProvider>
+          <ToastProvider>
+            <AuthProvider>
+              <MainContent />
+            </AuthProvider>
+          </ToastProvider>
+        </ThemeProvider>
+      </GoogleOAuthProvider>
+    </ErrorBoundary>
   );
 }

@@ -14,6 +14,7 @@ Configures:
 from pathlib import Path
 from datetime import timedelta
 import os
+import sys
 import dj_database_url
 from dotenv import load_dotenv
 
@@ -27,6 +28,13 @@ load_dotenv(BASE_DIR / ".env")
 # ── 1. Security & Environment ───────────────────────────────────────────────
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-skillpath-secret-key-change-in-prod-2026")
 DEBUG = os.getenv("DEBUG", "True").lower() in ("true", "1", "yes")
+
+# B8 FIX: Raise error if insecure defaults are used in production
+if not DEBUG and SECRET_KEY.startswith("django-insecure"):
+    raise RuntimeError(
+        "DJANGO_SECRET_KEY env var must be set to a secure value in production (DEBUG=False). "
+        "Generate one with: python -c \"from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())\""
+    )
 
 # Allowed HTTP Host headers (permits wildcard in staging, restricted in production)
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
@@ -155,8 +163,21 @@ SIMPLE_JWT = {
 }
 
 # ── 9. Cross-Origin Resource Sharing (CORS) ─────────────────────────────────
-# Permits Vercel frontend (https://www.skillsprint.online) and local dev (localhost:5173)
-CORS_ALLOW_ALL_ORIGINS = True
+# B7 FIX: Restrict CORS to known origins in production.
+# In development (DEBUG=True), allow all for convenience.
+# In production, only allow the deployed frontend domain.
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    CORS_ALLOW_ALL_ORIGINS = False
+    CORS_ALLOWED_ORIGINS = [
+        origin.strip()
+        for origin in os.getenv(
+            "CORS_ALLOWED_ORIGINS",
+            "https://www.skillsprint.online,https://skillsprint.online"
+        ).split(",")
+        if origin.strip()
+    ]
 CORS_ALLOW_CREDENTIALS = True
 
 # ── 10. Google OAuth2 Configuration ─────────────────────────────────────────

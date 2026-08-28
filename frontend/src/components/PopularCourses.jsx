@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Star, Users, Clock, ArrowRight, BookOpen, Check, Layers, Code, Shield, Brain, Terminal } from "lucide-react";
 
-export default function PopularCourses({ onSelectCourse }) {
+export default function PopularCourses({ onSelectCourse, onSelectRoadmap }) {
   const [activeCategory, setActiveCategory] = useState("All");
 
   const categories = ["All", "Web Development", "Python & DSA", "Machine Learning", "Cybersecurity", "Cloud & Systems"];
@@ -10,6 +10,7 @@ export default function PopularCourses({ onSelectCourse }) {
     {
       id: "web-dev-pro",
       category: "Web Development",
+      roadmapName: "Web Development",
       title: "Modern Full-Stack Engineering with React & Django",
       level: "Intermediate",
       duration: "10 Weeks",
@@ -29,6 +30,7 @@ export default function PopularCourses({ onSelectCourse }) {
     {
       id: "python-dsa-mastery",
       category: "Python & DSA",
+      roadmapName: "Excel & Data",
       title: "Data Structures & Algorithms: The Technical Interview",
       level: "Beginner to Advanced",
       duration: "8 Weeks",
@@ -48,6 +50,7 @@ export default function PopularCourses({ onSelectCourse }) {
     {
       id: "applied-ml",
       category: "Machine Learning",
+      roadmapName: "Excel & Data",
       title: "Applied Machine Learning & Neural Network Pipelines",
       level: "Intermediate",
       duration: "12 Weeks",
@@ -67,6 +70,7 @@ export default function PopularCourses({ onSelectCourse }) {
     {
       id: "cybersec-defense",
       category: "Cybersecurity",
+      roadmapName: "Web Development",
       title: "Practical Network Defense & Web Security Protocols",
       level: "Beginner",
       duration: "6 Weeks",
@@ -86,6 +90,7 @@ export default function PopularCourses({ onSelectCourse }) {
     {
       id: "cloud-devops",
       category: "Cloud & Systems",
+      roadmapName: "Web Development",
       title: "Production DevOps: Docker, Kubernetes & CI/CD Pipelines",
       level: "Intermediate",
       duration: "8 Weeks",
@@ -105,6 +110,7 @@ export default function PopularCourses({ onSelectCourse }) {
     {
       id: "foundations-cs",
       category: "Python & DSA",
+      roadmapName: "Excel & Data",
       title: "Computer Systems Fundamentals: Memory, OS & Networks",
       level: "Beginner",
       duration: "6 Weeks",
@@ -129,7 +135,7 @@ export default function PopularCourses({ onSelectCourse }) {
       : courses.filter((c) => c.category === activeCategory);
 
   return (
-    <section id="popular-courses" className="section-spacing" style={{ backgroundColor: "#ffffff" }}>
+    <section id="popular-courses" className="section-spacing" style={{ backgroundColor: "var(--bg-surface)" }}>
       <div className="container">
         {/* Section Header */}
         <div className="section-header">
@@ -187,7 +193,7 @@ export default function PopularCourses({ onSelectCourse }) {
                   flexDirection: "column",
                   borderRadius: "14px",
                   overflow: "hidden",
-                  backgroundColor: "#ffffff",
+                  backgroundColor: "var(--bg-surface)",
                 }}
               >
                 {/* Visual Thumbnail Banner */}
@@ -335,14 +341,23 @@ export default function PopularCourses({ onSelectCourse }) {
                       </div>
                     </div>
 
-                    <a
-                      href="#path-finder"
+                    {/* B10 FIX: Use onSelectRoadmap to navigate to the relevant roadmap */}
+                    <button
+                      type="button"
                       className="btn btn-secondary"
                       style={{ padding: "8px 14px", fontSize: "0.82rem" }}
+                      onClick={() => {
+                        if (onSelectRoadmap && course.roadmapName) {
+                          onSelectRoadmap(course.roadmapName);
+                        }
+                        if (onSelectCourse) {
+                          onSelectCourse(course.id);
+                        }
+                      }}
                     >
-                      <span>Syllabus</span>
+                      <span>View Roadmap</span>
                       <ArrowRight size={13} />
-                    </a>
+                    </button>
                   </div>
                 </div>
               </div>

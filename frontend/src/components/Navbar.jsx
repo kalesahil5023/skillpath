@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { User, LogIn, LogOut, Menu, X, Search, Sparkles, BookOpen, Code2, Layers, CheckCircle2 } from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
+import { User, LogIn, LogOut, Menu, X, Search, Sparkles, Sun, Moon } from "lucide-react";
 
-export default function Navbar({ onOpenLegal }) {
+export default function Navbar({ onOpenLegal, onOpenSearch }) {
   const { user, isLoggedIn, logout, openAuthModal } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -29,7 +31,7 @@ export default function Navbar({ onOpenLegal }) {
         position: "sticky",
         top: 0,
         zIndex: 100,
-        backgroundColor: "#ffffff",
+        backgroundColor: "var(--bg-surface)",
         borderBottom: `1px solid ${scrolled ? "var(--border)" : "var(--border-subtle)"}`,
         boxShadow: scrolled ? "0 2px 10px rgba(15, 23, 42, 0.04)" : "none",
         transition: "all 0.2s ease",
@@ -114,12 +116,87 @@ export default function Navbar({ onOpenLegal }) {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "14px",
+              gap: "10px",
             }}
             className="desktop-actions"
           >
+            {/* Search Button */}
+            <button
+              type="button"
+              onClick={onOpenSearch}
+              title="Search (⌘K)"
+              aria-label="Search"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "8px 12px",
+                background: "var(--bg-subtle)",
+                border: "1px solid var(--border)",
+                borderRadius: "var(--radius-sm)",
+                color: "var(--text-muted)",
+                fontSize: "0.84rem",
+                fontWeight: 500,
+                cursor: "pointer",
+                fontFamily: "var(--font-body)",
+                transition: "all 0.15s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "var(--primary)";
+                e.currentTarget.style.color = "var(--text-primary)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "var(--border)";
+                e.currentTarget.style.color = "var(--text-muted)";
+              }}
+            >
+              <Search size={15} />
+              <span className="search-label">Search</span>
+              <kbd style={{
+                padding: "2px 5px",
+                background: "var(--bg-surface)",
+                border: "1px solid var(--border)",
+                borderRadius: "4px",
+                fontSize: "0.68rem",
+                fontFamily: "monospace",
+                color: "var(--text-muted)",
+              }}>⌘K</kbd>
+            </button>
+
+            {/* Dark Mode Toggle */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+              style={{
+                width: "36px",
+                height: "36px",
+                borderRadius: "var(--radius-sm)",
+                border: "1px solid var(--border)",
+                background: "var(--bg-subtle)",
+                color: "var(--text-muted)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                transition: "all 0.15s ease",
+                flexShrink: 0,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "var(--primary)";
+                e.currentTarget.style.borderColor = "var(--primary)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "var(--text-muted)";
+                e.currentTarget.style.borderColor = "var(--border)";
+              }}
+            >
+              {isDark ? <Sun size={17} /> : <Moon size={17} />}
+            </button>
+
             {isLoggedIn ? (
-              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <div
                   style={{
                     display: "flex",
@@ -181,6 +258,9 @@ export default function Navbar({ onOpenLegal }) {
                     color: "var(--text-primary)",
                     padding: "8px 14px",
                     transition: "color 0.15s",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
                   }}
                 >
                   Log In
@@ -225,6 +305,28 @@ export default function Navbar({ onOpenLegal }) {
               gap: "16px",
             }}
           >
+            {/* Mobile Search */}
+            <button
+              type="button"
+              onClick={() => { onOpenSearch(); setMobileMenuOpen(false); }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                padding: "10px 14px",
+                background: "var(--bg-subtle)",
+                border: "1px solid var(--border)",
+                borderRadius: "var(--radius-sm)",
+                color: "var(--text-muted)",
+                fontSize: "0.92rem",
+                cursor: "pointer",
+                fontFamily: "var(--font-body)",
+              }}
+            >
+              <Search size={16} />
+              <span>Search courses, tasks, resources...</span>
+            </button>
+
             {navLinks.map((link) => (
               <a
                 key={link.label}
@@ -242,7 +344,18 @@ export default function Navbar({ onOpenLegal }) {
               </a>
             ))}
 
-            <div style={{ paddingTop: "12px", borderTop: "1px solid var(--border)", display: "flex", gap: "10px" }}>
+            <div style={{ paddingTop: "12px", borderTop: "1px solid var(--border)", display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              {/* Dark mode toggle in mobile */}
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="btn btn-secondary"
+                style={{ flex: "0 0 auto" }}
+              >
+                {isDark ? <Sun size={16} /> : <Moon size={16} />}
+                <span>{isDark ? "Light Mode" : "Dark Mode"}</span>
+              </button>
+
               {isLoggedIn ? (
                 <button
                   type="button"
@@ -251,7 +364,7 @@ export default function Navbar({ onOpenLegal }) {
                     setMobileMenuOpen(false);
                   }}
                   className="btn btn-secondary"
-                  style={{ width: "100%" }}
+                  style={{ flex: 1 }}
                 >
                   <LogOut size={16} />
                   <span>Log Out ({user.displayName || user.username})</span>
@@ -292,6 +405,9 @@ export default function Navbar({ onOpenLegal }) {
           .desktop-nav { display: none !important; }
           .desktop-actions { display: none !important; }
           .mobile-toggle { display: block !important; }
+        }
+        @media (max-width: 1100px) {
+          .search-label { display: none; }
         }
       `}</style>
     </header>

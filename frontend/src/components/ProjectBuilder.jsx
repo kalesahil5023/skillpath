@@ -1,16 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { PROJECT_TEMPLATES } from "../data/skillsData";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
 import { portfolioApi } from "../api/client";
 import { Sparkles, Layers, CheckCircle2, Cloud, ArrowRight } from "lucide-react";
 
 export default function ProjectBuilder({ onSendToPortfolio }) {
   const { isLoggedIn } = useAuth();
+  const { addToast } = useToast();
   const [skill, setSkill] = useState("Web Development");
   const [title, setTitle] = useState("");
   const [generatedBrief, setGeneratedBrief] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  // B3 FIX: Track last saved skill+title to avoid duplicate cloud saves on re-generation
+  const savedBriefKey = useRef(null);
 
   const currentTemplate = PROJECT_TEMPLATES[skill];
 
@@ -33,22 +37,35 @@ export default function ProjectBuilder({ onSendToPortfolio }) {
     setGeneratedBrief(brief);
     setSavedSuccess(false);
 
-    if (isLoggedIn) {
+    // B3 FIX: Only save to cloud if this exact brief hasn't already been saved
+    const briefKey = `${skill}::${title.trim()}`;
+    if (isLoggedIn && savedBriefKey.current !== briefKey) {
       setIsSaving(true);
+      savedBriefKey.current = briefKey;
       portfolioApi
         .createProject({
           skill,
           projectType: currentTemplate.type,
           title: title.trim(),
         })
-        .then(() => setSavedSuccess(true))
-        .catch((err) => console.error("Cloud project save failed:", err))
+        .then(() => {
+          setSavedSuccess(true);
+          addToast("Project brief saved to cloud!", "success");
+        })
+        .catch((err) => {
+          console.error("Cloud project save failed:", err);
+          addToast("Cloud save failed — brief generated locally", "warning");
+          // Reset key so a retry attempt is possible
+          savedBriefKey.current = null;
+        })
         .finally(() => setIsSaving(false));
+    } else if (!isLoggedIn) {
+      addToast("Project brief generated!", "success");
     }
   };
 
   return (
-    <div className="card" style={{ padding: "36px 30px", backgroundColor: "#ffffff" }}>
+    <div className="card" style={{ padding: "36px 30px", backgroundColor: "var(--bg-surface)" }}>
       <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
         <div
           style={{

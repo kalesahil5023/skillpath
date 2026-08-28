@@ -1,7 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { GoogleLogin } from "@react-oauth/google";
-import { X, LogIn, UserPlus, AlertCircle, Sparkles } from "lucide-react";
+import { X, LogIn, UserPlus, AlertCircle, Eye, EyeOff } from "lucide-react";
+
+// ── Password Strength Utility ─────────────────────────────────────────────────
+function getPasswordStrength(password) {
+  if (!password) return { score: 0, label: "", color: "" };
+  let score = 0;
+  if (password.length >= 8) score++;
+  if (password.length >= 12) score++;
+  if (/[A-Z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[^a-zA-Z0-9]/.test(password)) score++;
+
+  if (score <= 1) return { score, label: "Weak", color: "#e11d48", pct: "25%" };
+  if (score <= 2) return { score, label: "Fair", color: "#d97706", pct: "50%" };
+  if (score <= 3) return { score, label: "Good", color: "#2563eb", pct: "75%" };
+  return { score, label: "Strong", color: "#059669", pct: "100%" };
+}
 
 export default function AuthModal() {
   const {
@@ -20,10 +36,24 @@ export default function AuthModal() {
   const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  if (!authModalOpen) return null;
+  const [showPassword, setShowPassword] = useState(false);
 
   const isLogin = authModalMode === "login";
+  const passwordStrength = getPasswordStrength(password);
+
+  // B1 FIX: Reset form state every time modal opens
+  useEffect(() => {
+    if (authModalOpen) {
+      setUsername("");
+      setEmail("");
+      setPassword("");
+      setDisplayName("");
+      setError("");
+      setShowPassword(false);
+    }
+  }, [authModalOpen]);
+
+  if (!authModalOpen) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,6 +62,7 @@ export default function AuthModal() {
 
     try {
       if (isLogin) {
+        // F3 FIX: Accept email-or-username — if input contains @, pass as email too
         await login(username, password);
       } else {
         await register(username, email, password, displayName);
@@ -53,7 +84,7 @@ export default function AuthModal() {
           setError(messages || "Authentication failed. Please verify credentials.");
         }
       } else {
-        setError("Network error connecting to Django backend. Is the server running?");
+        setError("Network error connecting to backend. Is the server running?");
       }
     } finally {
       setLoading(false);
@@ -116,7 +147,7 @@ export default function AuthModal() {
           <p style={{ fontSize: "0.92rem", color: "var(--text-muted)" }}>
             {isLogin
               ? "Access your saved starter plans and progress across devices."
-              : "Sync your learning checklists and portfolio case studies to PostgreSQL."}
+              : "Sync your learning checklists and portfolio case studies to cloud."}
           </p>
         </div>
 
@@ -141,7 +172,7 @@ export default function AuthModal() {
             style={{
               padding: "9px",
               borderRadius: "var(--radius-sm)",
-              background: isLogin ? "#ffffff" : "transparent",
+              background: isLogin ? "var(--bg-surface)" : "transparent",
               color: isLogin ? "var(--text-primary)" : "var(--text-muted)",
               border: isLogin ? "1px solid var(--border)" : "none",
               boxShadow: isLogin ? "var(--shadow-xs)" : "none",
@@ -164,7 +195,7 @@ export default function AuthModal() {
             style={{
               padding: "9px",
               borderRadius: "var(--radius-sm)",
-              background: !isLogin ? "#ffffff" : "transparent",
+              background: !isLogin ? "var(--bg-surface)" : "transparent",
               color: !isLogin ? "var(--text-primary)" : "var(--text-muted)",
               border: !isLogin ? "1px solid var(--border)" : "none",
               boxShadow: !isLogin ? "var(--shadow-xs)" : "none",
@@ -217,14 +248,17 @@ export default function AuthModal() {
           )}
 
           <div className="form-group">
-            <label className="form-label">Username</label>
+            <label className="form-label">
+              {isLogin ? "Username or Email" : "Username"}
+            </label>
             <input
               className="form-input"
               type="text"
-              placeholder="e.g. alexriver"
+              placeholder={isLogin ? "username or you@email.com" : "e.g. alexriver"}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
+              autoComplete={isLogin ? "username" : "username"}
             />
           </div>
 
@@ -242,17 +276,69 @@ export default function AuthModal() {
             </div>
           )}
 
+          {/* Password field with show/hide toggle */}
           <div className="form-group">
             <label className="form-label">Password</label>
-            <input
-              className="form-input"
-              type="password"
-              placeholder="At least 8 characters"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={8}
-            />
+            <div style={{ position: "relative" }}>
+              <input
+                className="form-input"
+                type={showPassword ? "text" : "password"}
+                placeholder="At least 8 characters"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={8}
+                style={{ paddingRight: "44px" }}
+                autoComplete={isLogin ? "current-password" : "new-password"}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                style={{
+                  position: "absolute",
+                  right: "12px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: "var(--text-muted)",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+              </button>
+            </div>
+
+            {/* U5: Password strength indicator (register only) */}
+            {!isLogin && password.length > 0 && (
+              <div style={{ marginTop: "8px" }}>
+                <div
+                  style={{
+                    height: "4px",
+                    background: "var(--border)",
+                    borderRadius: "2px",
+                    overflow: "hidden",
+                    marginBottom: "4px",
+                  }}
+                >
+                  <div
+                    style={{
+                      height: "100%",
+                      width: passwordStrength.pct,
+                      background: passwordStrength.color,
+                      borderRadius: "2px",
+                      transition: "width 0.3s ease, background-color 0.3s ease",
+                    }}
+                  />
+                </div>
+                <span style={{ fontSize: "0.78rem", color: passwordStrength.color, fontWeight: 600 }}>
+                  {passwordStrength.label} password
+                </span>
+              </div>
+            )}
           </div>
 
           {error && (
@@ -261,12 +347,12 @@ export default function AuthModal() {
                 display: "flex",
                 alignItems: "flex-start",
                 gap: "8px",
-                color: "var(--danger)",
+                color: "var(--danger, #e11d48)",
                 fontSize: "0.88rem",
                 padding: "10px 14px",
                 borderRadius: "var(--radius-sm)",
-                background: "rgba(255, 107, 139, 0.08)",
-                border: "1px solid rgba(255, 107, 139, 0.3)",
+                background: "rgba(225, 29, 72, 0.06)",
+                border: "1px solid rgba(225, 29, 72, 0.2)",
                 marginBottom: "20px",
               }}
             >

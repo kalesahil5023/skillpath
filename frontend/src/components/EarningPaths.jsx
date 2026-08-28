@@ -27,7 +27,7 @@ export default function EarningPaths({ onSelectRoadmap }) {
           </p>
         </div>
 
-        {/* Path Selector Cards */}
+        {/* U4 FIX: Path Selector Cards — use <button> for keyboard accessibility */}
         <div
           style={{
             display: "grid",
@@ -40,19 +40,36 @@ export default function EarningPaths({ onSelectRoadmap }) {
             const Icon = pathIcons[pathKey];
             const isSelected = selectedPath === pathKey;
             return (
-              <div
+              <button
                 key={pathKey}
+                type="button"
                 onClick={() => setSelectedPath(pathKey)}
-                className="card"
+                aria-pressed={isSelected}
                 style={{
+                  textAlign: "left",
                   padding: "32px 26px",
                   cursor: "pointer",
+                  borderRadius: "var(--radius-lg)",
                   border: isSelected ? "1.5px solid var(--primary)" : "1px solid var(--border)",
-                  background: isSelected ? "var(--primary-light)" : "#ffffff",
+                  background: isSelected ? "var(--primary-light)" : "var(--bg-surface)",
                   boxShadow: isSelected ? "var(--shadow-card-hover)" : "var(--shadow-card)",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
+                  fontFamily: "inherit",
+                  transition: "all 0.15s ease",
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSelected) {
+                    e.currentTarget.style.borderColor = "var(--border-medium)";
+                    e.currentTarget.style.boxShadow = "var(--shadow-card-hover)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSelected) {
+                    e.currentTarget.style.borderColor = "var(--border)";
+                    e.currentTarget.style.boxShadow = "var(--shadow-card)";
+                  }
                 }}
               >
                 <div>
@@ -85,18 +102,19 @@ export default function EarningPaths({ onSelectRoadmap }) {
                     color: isSelected ? "var(--primary)" : "var(--text-muted)",
                     fontWeight: 700,
                     fontSize: "0.9rem",
+                    fontFamily: "var(--font-heading)",
                   }}
                 >
                   <span>Explore Guidance</span>
                   <ArrowRight size={15} />
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>
 
         {/* Detailed Breakdown for Active Path */}
-        <div className="card" style={{ padding: "40px 32px", backgroundColor: "#ffffff" }}>
+        <div className="card" style={{ padding: "40px 32px", backgroundColor: "var(--bg-surface)" }}>
           <div style={{ marginBottom: "32px", paddingBottom: "24px", borderBottom: "1px solid var(--border)" }}>
             <span className="badge badge-green" style={{ marginBottom: "8px" }}>
               In-Depth Exploration

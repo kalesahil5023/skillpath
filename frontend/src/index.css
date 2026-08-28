@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SkillSprint Light Theme Design System
+   SkillSprint Design System — Light & Dark Theme
    Professional • Modern • Human-Designed • Student-Friendly
    ========================================================================== */
 
@@ -21,6 +21,10 @@
   --primary-text: #065f46;
 
   /* Secondary & Functional Accents */
+  --secondary: #2563eb;
+  --accent: #7c3aed;
+  --danger: #e11d48;
+  --warning: #d97706;
   --accent-blue: #2563eb;
   --accent-blue-light: #dbeafe;
   --accent-purple: #7c3aed;
@@ -35,6 +39,7 @@
   --text-muted: #64748b;
   --text-light: #94a3b8;
   --text-inverse: #ffffff;
+  --text: #1e293b;
 
   /* Borders & Dividers */
   --border: #e2e8f0;
@@ -46,7 +51,7 @@
   --font-heading: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  /* ── 3. Border Radii (Restrained & Modern) ──────────────────────────────── */
+  /* ── 3. Border Radii ──────────────────────────────────────────────────── */
   --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -62,6 +67,45 @@
   --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
   --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.05), 0 4px 12px rgba(15, 23, 42, 0.02);
   --shadow-card-hover: 0 12px 28px -4px rgba(15, 23, 42, 0.08), 0 4px 8px -2px rgba(15, 23, 42, 0.02);
+}
+
+/* ==========================================================================
+   Dark Theme — [data-theme="dark"]
+   ========================================================================== */
+[data-theme="dark"] {
+  --bg-canvas: #0a0f1a;
+  --bg-surface: #111827;
+  --bg-subtle: #1e2535;
+  --bg-tint-green: #052e16;
+  --bg-tint-blue: #0c1a3a;
+  --bg-tint-amber: #1c1200;
+  --bg-contrast: #f8fafc;
+
+  --primary: #10b981;
+  --primary-hover: #059669;
+  --primary-light: #052e16;
+  --primary-border: #065f46;
+  --primary-text: #6ee7b7;
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-light: #64748b;
+  --text-inverse: #0f172a;
+  --text: #e2e8f0;
+
+  --border: #1e2d3d;
+  --border-subtle: #172030;
+  --border-medium: #2d3d52;
+  --border-focus: #10b981;
+
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.25), 0 1px 2px -1px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.25), 0 2px 4px -2px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
+  --shadow-card-hover: 0 12px 28px -4px rgba(0, 0, 0, 0.4), 0 4px 8px -2px rgba(0, 0, 0, 0.2);
 }
 
 /* ==========================================================================
@@ -88,6 +132,7 @@ body {
   font-size: 1rem;
   line-height: 1.6;
   overflow-x: hidden;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -183,6 +228,13 @@ button {
   box-shadow: var(--shadow-card-hover);
 }
 
+.glass-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
 /* Interactive Buttons */
 .btn {
   display: inline-flex;
@@ -196,6 +248,8 @@ button {
   border-radius: var(--radius-sm);
   transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
+  cursor: pointer;
+  border: none;
 }
 
 .btn-primary {
@@ -215,7 +269,7 @@ button {
 }
 
 .btn-secondary {
-  background-color: #ffffff;
+  background-color: var(--bg-surface);
   color: var(--text-primary);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-xs);
@@ -227,6 +281,18 @@ button {
   color: var(--text-primary);
 }
 
+.btn-accent {
+  background: linear-gradient(135deg, #059669, #2563eb);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
+}
+
+.btn-accent:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(5, 150, 105, 0.35);
+}
+
 .btn-ghost {
   background-color: transparent;
   color: var(--text-muted);
@@ -235,6 +301,17 @@ button {
 .btn-ghost:hover {
   background-color: var(--bg-subtle);
   color: var(--text-primary);
+}
+
+.btn-sm {
+  padding: 7px 14px;
+  font-size: 0.84rem;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
 }
 
 /* Form Inputs */
@@ -254,7 +331,7 @@ button {
 .form-input, .form-select, .form-textarea {
   width: 100%;
   padding: 11px 14px;
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-sm);
   color: var(--text-primary);
@@ -263,10 +340,21 @@ button {
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
+.form-input::placeholder,
+.form-select::placeholder,
+.form-textarea::placeholder {
+  color: var(--text-muted);
+}
+
 .form-input:focus, .form-select:focus, .form-textarea:focus {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+}
+
+.form-textarea {
+  min-height: 100px;
+  resize: vertical;
 }
 
 /* Tags & Badges */
@@ -293,10 +381,22 @@ button {
   border: 1px solid #bfdbfe;
 }
 
-.badge-amber {
+.badge-amber, .badge-warning {
   background: var(--bg-tint-amber);
   color: #b45309;
   border: 1px solid #fde68a;
+}
+
+.badge-primary {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary-border);
+}
+
+.badge-accent {
+  background: #f5f3ff;
+  color: #6d28d9;
+  border: 1px solid #ddd6fe;
 }
 
 /* Tabs */
@@ -309,6 +409,11 @@ button {
   background: var(--bg-subtle);
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
+  scrollbar-width: none;
+}
+
+.tabs-container::-webkit-scrollbar {
+  display: none;
 }
 
 .tab-btn {
@@ -320,6 +425,9 @@ button {
   color: var(--text-muted);
   transition: all 0.15s ease;
   white-space: nowrap;
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }
 
 .tab-btn:hover {
@@ -327,7 +435,7 @@ button {
 }
 
 .tab-btn.active {
-  background: #ffffff;
+  background: var(--bg-surface);
   color: var(--text-primary);
   box-shadow: var(--shadow-sm);
 }
@@ -349,7 +457,7 @@ button {
 }
 
 .modal-container {
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-xl);
@@ -374,11 +482,149 @@ button {
   color: var(--text-muted);
   background: var(--bg-subtle);
   transition: all 0.15s;
+  border: none;
+  cursor: pointer;
 }
 
 .modal-close:hover {
   color: var(--text-primary);
   background: var(--border);
+}
+
+/* ==========================================================================
+   Skeleton Loading Animations
+   ========================================================================== */
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.skeleton {
+  background: var(--border);
+  border-radius: var(--radius-sm);
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+
+.skeleton-text {
+  height: 14px;
+  background: var(--border);
+  border-radius: 4px;
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+
+.skeleton-title {
+  height: 20px;
+  background: var(--border);
+  border-radius: 4px;
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+  margin-bottom: 10px;
+}
+
+.skeleton-card {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   Toast Notifications
+   ========================================================================== */
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   Password Strength Indicator
+   ========================================================================== */
+
+.password-strength-bar {
+  height: 4px;
+  border-radius: 2px;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+/* ==========================================================================
+   Animated Counter
+   ========================================================================== */
+
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   Dark Mode Specific Overrides
+   ========================================================================== */
+
+[data-theme="dark"] .card {
+  background: var(--bg-surface);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] .form-textarea {
+  background: var(--bg-subtle);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .btn-secondary {
+  background: var(--bg-subtle);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+  background: var(--border);
+}
+
+[data-theme="dark"] .modal-container {
+  background: var(--bg-surface);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .tab-btn.active {
+  background: var(--bg-subtle);
+}
+
+[data-theme="dark"] .tabs-container {
+  background: var(--bg-canvas);
+}
+
+[data-theme="dark"] header {
+  background-color: var(--bg-surface) !important;
+  border-bottom-color: var(--border) !important;
+}
+
+[data-theme="dark"] footer {
+  background-color: var(--bg-surface) !important;
+  border-top-color: var(--border) !important;
+}
+
+/* Hide scrollbar utility */
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 /* ==========================================================================
