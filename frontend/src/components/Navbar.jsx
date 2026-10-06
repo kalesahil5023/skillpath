@@ -1,368 +1,219 @@
-import React, { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
-import { User, LogIn, LogOut, Menu, X, Search } from "lucide-react";
+import React, { useState } from "react";
 
-export default function Navbar({ onOpenLegal, onOpenSearch }) {
-  const { user, isLoggedIn, logout, openAuthModal } = useAuth();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+const navLinks = [
+  { label: "Explore Simulations", href: "#", active: true },
+  { label: "Career DNA", href: "#career-dna" },
+  { label: "Skill Graph", href: "#skill-graph" },
+  { label: "Roadmaps", href: "#roadmaps" },
+  { label: "Project Lab", href: "#project-lab" },
+  { label: "Skill Passport", href: "#passport" },
+];
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const navLinks = [
-    { label: "Courses", href: "#popular-courses" },
-    { label: "Practice", href: "#path-finder" },
-    { label: "Roadmaps", href: "#skill-roadmaps" },
-    { label: "Projects", href: "#builders" },
-    { label: "Resources", href: "#resources" },
-  ];
+export default function Navbar() {
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header
       style={{
-        position: "sticky",
+        position: "fixed",
         top: 0,
-        zIndex: 100,
-        backgroundColor: "#ffffff",
-        borderBottom: `1px solid ${scrolled ? "var(--border)" : "var(--border-subtle)"}`,
-        boxShadow: scrolled ? "0 2px 10px rgba(15, 23, 42, 0.04)" : "none",
-        transition: "all 0.2s ease",
+        left: 0,
+        right: 0,
+        zIndex: 50,
+        background: "rgba(255,255,255,0.97)",
+        backdropFilter: "blur(12px)",
+        borderBottom: "1px solid var(--outline-variant)",
       }}
     >
-      <div className="container">
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            height: "72px",
-          }}
-        >
-          {/* Brand Logo */}
-          <a
-            href="#"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              fontSize: "1.25rem",
-              fontWeight: 800,
-              fontFamily: "var(--font-heading)",
-              letterSpacing: "-0.03em",
-              color: "var(--text-primary)",
-            }}
-          >
+      <div
+        className="ss-container"
+        style={{
+          height: 64,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        {/* Left: Logo + Nav */}
+        <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+          {/* Logo */}
+          <a href="#" style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div
               style={{
-                width: "34px",
-                height: "34px",
-                borderRadius: "8px",
-                backgroundColor: "var(--primary)",
-                color: "#ffffff",
+                width: 32,
+                height: 32,
+                borderRadius: 4,
+                background: "var(--primary)",
+                color: "#fff",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontWeight: 900,
-                fontSize: "1.1rem",
-                boxShadow: "0 2px 6px rgba(5, 150, 105, 0.3)",
+                fontFamily: "var(--font-headline)",
+                fontWeight: 700,
+                fontSize: 18,
+                boxShadow: "var(--shadow-sm)",
+                flexShrink: 0,
               }}
             >
               S
             </div>
-            <span>
-              Skill<span style={{ color: "var(--primary)" }}>Sprint</span>
+            <span
+              style={{
+                fontFamily: "var(--font-headline)",
+                fontSize: "1.25rem",
+                fontWeight: 700,
+                color: "var(--on-surface)",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              SkillSprint
             </span>
           </a>
 
-          {/* Desktop Navigation Links */}
+          {/* Divider */}
+          <div
+            className="hide-mobile"
+            style={{ width: 1, height: 16, background: "var(--outline-variant)" }}
+          />
+
+          {/* Desktop Nav */}
           <nav
             style={{
-              display: "flex",
+              display: "none",
               alignItems: "center",
-              gap: "28px",
+              gap: 24,
             }}
             className="desktop-nav"
-            aria-label="Main Navigation"
           >
             {navLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
                 style={{
-                  fontFamily: "var(--font-heading)",
-                  fontSize: "0.92rem",
+                  fontFamily: "var(--font-label)",
+                  fontSize: "0.6875rem",
                   fontWeight: 600,
-                  color: "var(--text-secondary)",
-                  transition: "color 0.15s ease",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: link.active ? "var(--primary)" : "var(--on-surface-variant)",
+                  borderBottom: link.active ? "2px solid var(--primary)" : "2px solid transparent",
+                  paddingBottom: 2,
+                  transition: "color 0.15s",
+                  textDecoration: "none",
                 }}
-                onMouseEnter={(e) => (e.target.style.color = "var(--primary)")}
-                onMouseLeave={(e) => (e.target.style.color = "var(--text-secondary)")}
               >
                 {link.label}
               </a>
             ))}
           </nav>
-
-          {/* Right Action Area */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
-            className="desktop-actions"
-          >
-            {/* Search Button */}
-            <button
-              type="button"
-              onClick={onOpenSearch}
-              title="Search (⌘K)"
-              aria-label="Search"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                padding: "8px 12px",
-                background: "var(--bg-subtle)",
-                border: "1px solid var(--border)",
-                borderRadius: "var(--radius-sm)",
-                color: "var(--text-muted)",
-                fontSize: "0.84rem",
-                fontWeight: 500,
-                cursor: "pointer",
-                fontFamily: "var(--font-body)",
-                transition: "all 0.15s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "var(--primary)";
-                e.currentTarget.style.color = "var(--text-primary)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "var(--border)";
-                e.currentTarget.style.color = "var(--text-muted)";
-              }}
-            >
-              <Search size={15} />
-              <span className="search-label">Search</span>
-              <kbd style={{
-                padding: "2px 5px",
-                background: "#ffffff",
-                border: "1px solid var(--border)",
-                borderRadius: "4px",
-                fontSize: "0.68rem",
-                fontFamily: "monospace",
-                color: "var(--text-muted)",
-              }}>⌘K</kbd>
-            </button>
-
-            {isLoggedIn ? (
-              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    padding: "6px 12px",
-                    background: "var(--bg-subtle)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "var(--radius-full)",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "24px",
-                      height: "24px",
-                      borderRadius: "50%",
-                      background: "var(--primary)",
-                      color: "#ffffff",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "0.75rem",
-                      fontWeight: 700,
-                    }}
-                  >
-                    {(user.displayName || user.username || "U")[0].toUpperCase()}
-                  </div>
-                  <span
-                    style={{
-                      fontSize: "0.85rem",
-                      fontWeight: 600,
-                      color: "var(--text-primary)",
-                    }}
-                  >
-                    {user.displayName || user.username}
-                  </span>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={logout}
-                  className="btn btn-ghost"
-                  style={{ padding: "8px 12px", fontSize: "0.85rem" }}
-                  title="Sign out of account"
-                >
-                  <LogOut size={15} />
-                  <span>Logout</span>
-                </button>
-              </div>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  onClick={() => openAuthModal("login")}
-                  style={{
-                    fontFamily: "var(--font-heading)",
-                    fontSize: "0.92rem",
-                    fontWeight: 600,
-                    color: "var(--text-primary)",
-                    padding: "8px 14px",
-                    transition: "color 0.15s",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  Log In
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => openAuthModal("register")}
-                  className="btn btn-primary"
-                  style={{ padding: "9px 18px", fontSize: "0.9rem" }}
-                >
-                  Get Started
-                </button>
-              </>
-            )}
-          </div>
-
-          {/* Mobile Hamburger Toggle */}
-          <button
-            type="button"
-            className="mobile-toggle"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            style={{
-              padding: "8px",
-              color: "var(--text-primary)",
-              display: "none",
-            }}
-            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
         </div>
 
-        {/* Mobile Drawer Menu */}
-        {mobileMenuOpen && (
+        {/* Right: Actions */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          {/* Engine Status */}
+          <div className="status-online hide-mobile">
+            <span
+              className="status-dot animate-pulse"
+              style={{ background: "var(--tertiary)" }}
+            />
+            <span>ENGINE: ONLINE</span>
+          </div>
+
+          {/* Launch Simulator CTA */}
+          <a href="#simulator-preview" className="btn-primary" style={{ fontSize: "0.6875rem" }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 15 }}>terminal</span>
+            Launch Simulator
+          </a>
+
+          {/* Divider */}
           <div
+            className="hide-mobile"
+            style={{ width: 1, height: 20, background: "var(--outline-variant)" }}
+          />
+
+          {/* Avatar */}
+          <button
             style={{
-              padding: "18px 0 24px",
-              borderTop: "1px solid var(--border)",
+              width: 32,
+              height: 32,
+              borderRadius: "50%",
+              background: "var(--surface-container)",
+              border: "1px solid var(--outline-variant)",
               display: "flex",
-              flexDirection: "column",
-              gap: "16px",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "var(--on-surface-variant)",
+              cursor: "pointer",
+              transition: "color 0.15s",
+              flexShrink: 0,
             }}
           >
-            {/* Mobile Search */}
-            <button
-              type="button"
-              onClick={() => { onOpenSearch(); setMobileMenuOpen(false); }}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                padding: "10px 14px",
-                background: "var(--bg-subtle)",
-                border: "1px solid var(--border)",
-                borderRadius: "var(--radius-sm)",
-                color: "var(--text-muted)",
-                fontSize: "0.92rem",
-                cursor: "pointer",
-                fontFamily: "var(--font-body)",
-              }}
-            >
-              <Search size={16} />
-              <span>Search courses, tasks, resources...</span>
-            </button>
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>person</span>
+          </button>
 
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                style={{
-                  fontFamily: "var(--font-heading)",
-                  fontSize: "1rem",
-                  fontWeight: 600,
-                  color: "var(--text-primary)",
-                  padding: "8px 0",
-                }}
-              >
-                {link.label}
-              </a>
-            ))}
-
-            <div style={{ paddingTop: "12px", borderTop: "1px solid var(--border)", display: "flex", gap: "10px", flexWrap: "wrap" }}>
-              {isLoggedIn ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    logout();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="btn btn-secondary"
-                  style={{ flex: 1 }}
-                >
-                  <LogOut size={16} />
-                  <span>Log Out ({user.displayName || user.username})</span>
-                </button>
-              ) : (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      openAuthModal("login");
-                      setMobileMenuOpen(false);
-                    }}
-                    className="btn btn-secondary"
-                    style={{ flex: 1 }}
-                  >
-                    Log In
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      openAuthModal("register");
-                      setMobileMenuOpen(false);
-                    }}
-                    className="btn btn-primary"
-                    style={{ flex: 1 }}
-                  >
-                    Get Started
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        )}
+          {/* Mobile Hamburger */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            style={{
+              display: "none",
+              padding: 6,
+              color: "var(--on-surface-variant)",
+              cursor: "pointer",
+            }}
+            className="mobile-menu-btn"
+            aria-label="Open menu"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 22 }}>
+              {menuOpen ? "close" : "menu"}
+            </span>
+          </button>
+        </div>
       </div>
 
+      {/* Mobile Menu */}
+      {menuOpen && (
+        <div
+          style={{
+            background: "var(--surface)",
+            borderTop: "1px solid var(--outline-variant)",
+            padding: "12px var(--margin)",
+            display: "flex",
+            flexDirection: "column",
+            gap: 4,
+          }}
+        >
+          {navLinks.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              onClick={() => setMenuOpen(false)}
+              style={{
+                fontFamily: "var(--font-label)",
+                fontSize: "0.6875rem",
+                fontWeight: 600,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: link.active ? "var(--primary)" : "var(--on-surface-variant)",
+                padding: "10px 0",
+                borderBottom: "1px solid var(--outline-variant)",
+                textDecoration: "none",
+              }}
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
+      )}
+
       <style>{`
-        @media (max-width: 880px) {
-          .desktop-nav { display: none !important; }
-          .desktop-actions { display: none !important; }
-          .mobile-toggle { display: block !important; }
+        @media (min-width: 1280px) {
+          .desktop-nav { display: flex !important; }
         }
-        @media (max-width: 1100px) {
-          .search-label { display: none; }
+        @media (max-width: 1279px) {
+          .mobile-menu-btn { display: flex !important; }
+        }
+        @media (max-width: 640px) {
+          .hide-mobile { display: none !important; }
         }
       `}</style>
     </header>

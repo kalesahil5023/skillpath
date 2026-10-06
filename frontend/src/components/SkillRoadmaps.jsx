@@ -1,574 +1,742 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { useAuth } from "../context/AuthContext";
-import { useToast } from "../context/ToastContext";
-import {
-  SKILL_ROADMAPS,
-  ROADMAP_RESOURCES,
-  RESOURCE_CATALOG,
-} from "../data/skillsData";
-import { roadmapsApi } from "../api/client";
-import TaskModal from "./TaskModal";
-import {
-  Code2,
-  Palette,
-  PenTool,
-  Video,
-  FileSpreadsheet,
-  Share2,
-  CheckCircle2,
-  Circle,
-  ExternalLink,
-  ChevronRight,
-  Sparkles,
-  Trophy,
-} from "lucide-react";
+import React, { useState } from "react";
 
-// B4 FIX: Pre-compute stable task indices at the data layer (not inside render)
-function buildTaskIndex(roadmapData) {
-  const index = {}; // { skillName: [ { stageIndex, taskIndex, globalIndex } ] }
-  Object.entries(roadmapData).forEach(([skill, roadmap]) => {
-    let globalIdx = 0;
-    index[skill] = [];
-    roadmap.stages.forEach((stage, stageIdx) => {
-      stage.tasks.forEach((task, taskIdx) => {
-        index[skill].push({ stageIdx, taskIdx, globalIdx, task, stageName: stage.name });
-        globalIdx++;
-      });
-    });
-  });
-  return index;
-}
+const nodeData = {
+  consensus: {
+    tag: "CRITICAL PREREQUISITE • GAP 38%",
+    tagColor: "var(--error)",
+    title: "Distributed Consensus & Raft",
+    desc: "Your profile indicates strong relational querying, but lacks practical execution in distributed leader elections and log replication under partition splits.",
+    deps: ["TCP Sockets", "RPC Layer", "Raft Engine"],
+    depColors: ["var(--tertiary)", "var(--primary)", "var(--error)"],
+    delta: "-44% vs Target",
+    deltaColor: "var(--error)",
+    time: "3 Sprints (2.5h)",
+  },
+  postgres: {
+    tag: "MASTERED NODE • 82%",
+    tagColor: "var(--primary)",
+    title: "PostgreSQL Query Planning & Index Architecture",
+    desc: "Mastery verified in indexing strategies, composite B-Trees, and analyzing EXPLAIN ANALYZE query buffers under heavy write loads.",
+    deps: ["Schema Design", "B-Tree Index", "EXPLAIN Plans"],
+    depColors: ["var(--tertiary)", "var(--tertiary)", "var(--primary)"],
+    delta: "+12% vs Target",
+    deltaColor: "var(--tertiary)",
+    time: "Mastered",
+  },
+  kafka: {
+    tag: "IN PROGRESS • 54%",
+    tagColor: "var(--outline)",
+    title: "Kafka Event Streaming & Consumer Groups",
+    desc: "Partition balancing, dead-letter queues, and exactly-once processing semantics are currently under evaluation in Sprint 06.",
+    deps: ["TCP Sockets", "Kafka Topics", "Consumer Groups"],
+    depColors: ["var(--outline)", "var(--outline)", "var(--primary)"],
+    delta: "-18% vs Target",
+    deltaColor: "var(--on-surface-variant)",
+    time: "2 Sprints (1.8h)",
+  },
+  rest: {
+    tag: "MASTERED NODE • 98%",
+    tagColor: "var(--tertiary)",
+    title: "REST & GraphQL API Architecture",
+    desc: "Full mastery in schema design, n+1 resolver batching with DataLoader, and RFC-compliant HTTP caching headers.",
+    deps: ["HTTP/2", "Schema Design", "DataLoader"],
+    depColors: ["var(--tertiary)", "var(--tertiary)", "var(--tertiary)"],
+    delta: "+28% vs Target",
+    deltaColor: "var(--tertiary)",
+    time: "Mastered",
+  },
+  docker: {
+    tag: "MASTERED NODE • 91%",
+    tagColor: "var(--tertiary)",
+    title: "Docker OCI & Multi-Stage Containers",
+    desc: "Proven minimal image compilation, layer caching optimization, and non-root execution hardening.",
+    deps: ["Linux Namespaces", "OCI Runtime", "Compose"],
+    depColors: ["var(--tertiary)", "var(--tertiary)", "var(--tertiary)"],
+    delta: "+21% vs Target",
+    deltaColor: "var(--tertiary)",
+    time: "Mastered",
+  },
+};
 
-const TASK_INDEX = buildTaskIndex(SKILL_ROADMAPS);
-
-export default function SkillRoadmaps({ activeSkill, onSkillChange, onSendToPortfolio }) {
-  const { isLoggedIn } = useAuth();
-  const { addToast } = useToast();
-  const [selectedSkill, setSelectedSkill] = useState(activeSkill || "Web Development");
-  const [skillProgress, setSkillProgress] = useState({});
-  const [activeModalTask, setActiveModalTask] = useState(null);
-
-  const skillsList = [
-    { name: "Web Development", icon: Code2 },
-    { name: "Graphic Design", icon: Palette },
-    { name: "Content Writing", icon: PenTool },
-    { name: "Video Editing", icon: Video },
-    { name: "Excel & Data", icon: FileSpreadsheet },
-    { name: "Social Media Management", icon: Share2 },
-  ];
-
-  // Sync prop changes
-  useEffect(() => {
-    if (activeSkill) {
-      setSelectedSkill(activeSkill);
-    }
-  }, [activeSkill]);
-
-  // Load progress from Django API or localStorage
-  useEffect(() => {
-    const loadProgress = async () => {
-      if (isLoggedIn) {
-        try {
-          const res = await roadmapsApi.getProgress();
-          if (res.data.progress) {
-            setSkillProgress(res.data.progress);
-            localStorage.setItem("skillpath_roadmap_progress", JSON.stringify(res.data.progress));
-          }
-        } catch {
-          const saved = localStorage.getItem("skillpath_roadmap_progress");
-          if (saved) setSkillProgress(JSON.parse(saved));
-        }
-      } else {
-        const saved = localStorage.getItem("skillpath_roadmap_progress");
-        if (saved) {
-          try {
-            setSkillProgress(JSON.parse(saved));
-          } catch {
-            setSkillProgress({});
-          }
-        }
-      }
-    };
-
-    loadProgress();
-  }, [isLoggedIn]);
-
-  const handleTaskToggle = async (skill, taskIndex, completed) => {
-    const updatedSkillMap = {
-      ...(skillProgress[skill] || {}),
-      [taskIndex]: completed,
-    };
-    const updatedTotalProgress = {
-      ...skillProgress,
-      [skill]: updatedSkillMap,
-    };
-
-    setSkillProgress(updatedTotalProgress);
-    localStorage.setItem("skillpath_roadmap_progress", JSON.stringify(updatedTotalProgress));
-
-    // U2: Toast on task toggle
-    addToast(
-      completed ? "Task marked complete! 🎉" : "Task marked incomplete",
-      completed ? "success" : "info",
-      2000
-    );
-
-    if (isLoggedIn) {
-      try {
-        await roadmapsApi.updateProgress(skill, taskIndex, completed);
-      } catch (err) {
-        console.error("Cloud progress sync failed:", err);
-        addToast("Cloud sync failed — progress saved locally", "warning");
-      }
-    }
-
-    // F7: Check if roadmap is 100% complete
-    const allTasksForSkill = TASK_INDEX[skill] || [];
-    const newCompletedCount = Object.values(updatedSkillMap).filter(Boolean).length;
-    if (completed && newCompletedCount === allTasksForSkill.length && allTasksForSkill.length > 0) {
-      addToast(`🏆 ${skill} roadmap complete! Outstanding work!`, "success", 5000);
-    }
-  };
-
-  const currentRoadmap = SKILL_ROADMAPS[selectedSkill];
-  const currentSkillProgress = skillProgress[selectedSkill] || {};
-  const skillTaskIndex = TASK_INDEX[selectedSkill] || [];
-
-  // Compute progress using stable pre-built index
-  const totalTasks = skillTaskIndex.length;
-  const completedTasks = Object.values(currentSkillProgress).filter(Boolean).length;
-  const progressPercent = totalTasks ? Math.round((completedTasks / totalTasks) * 100) : 0;
-  const isComplete = progressPercent === 100 && totalTasks > 0;
+export default function SkillGraph() {
+  const [selectedNode, setSelectedNode] = useState("consensus");
+  const detail = nodeData[selectedNode];
 
   return (
-    <section id="skill-roadmaps" className="section-spacing">
-      <div className="container">
-        <div className="section-header">
-          <div className="eyebrow">
-            <Sparkles size={14} />
-            <span>30-Day Step-by-Step Blueprints</span>
-          </div>
-          <h2>Explore Core Skill Roadmaps</h2>
-          <p>
-            Choose a discipline below to access a 5-stage roadmap: Learn fundamentals, Practice exercises, Build projects, assemble a Portfolio, and Find paying work.
-          </p>
-        </div>
-
-        {/* Skill Category Selector Tabs */}
+    <section
+      id="skill-graph"
+      style={{
+        width: "100%",
+        padding: "64px 0",
+        borderBottom: "1px solid var(--outline-variant)",
+        background: "var(--surface-subtle)",
+      }}
+    >
+      <div
+        className="ss-container"
+        style={{ display: "flex", flexDirection: "column", gap: 24 }}
+      >
+        {/* Header */}
         <div
           style={{
             display: "flex",
-            gap: "10px",
-            overflowX: "auto",
-            paddingBottom: "16px",
-            marginBottom: "36px",
-            scrollbarWidth: "none",
+            flexWrap: "wrap",
+            alignItems: "flex-end",
+            justifyContent: "space-between",
+            gap: 16,
           }}
-          className="hide-scrollbar"
         >
-          {skillsList.map((skillItem) => {
-            const Icon = skillItem.icon;
-            const isSelected = selectedSkill === skillItem.name;
-            const skillTaskIdx = TASK_INDEX[skillItem.name] || [];
-            const skillDone = Object.values(skillProgress[skillItem.name] || {}).filter(Boolean).length;
-            const skillTotal = skillTaskIdx.length;
-            const skillPct = skillTotal ? Math.round((skillDone / skillTotal) * 100) : 0;
-
-            return (
-              <button
-                key={skillItem.name}
-                type="button"
-                onClick={() => {
-                  setSelectedSkill(skillItem.name);
-                  onSkillChange(skillItem.name);
-                }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  padding: "12px 20px",
-                  borderRadius: "var(--radius-md)",
-                  background: isSelected ? "var(--primary-light)" : "var(--bg-surface)",
-                  border: isSelected ? "1.5px solid var(--primary)" : "1px solid var(--border)",
-                  color: isSelected ? "var(--primary-text)" : "var(--text-secondary)",
-                  cursor: "pointer",
-                  fontFamily: "inherit",
-                  fontSize: "0.95rem",
-                  fontWeight: isSelected ? 700 : 600,
-                  whiteSpace: "nowrap",
-                  transition: "all 0.15s ease",
-                  boxShadow: isSelected ? "var(--shadow-xs)" : "none",
-                  position: "relative",
-                }}
-              >
-                <Icon size={18} color={isSelected ? "var(--primary)" : "var(--text-muted)"} />
-                <span>{skillItem.name}</span>
-                {skillPct > 0 && (
-                  <span
-                    style={{
-                      fontSize: "0.7rem",
-                      fontWeight: 700,
-                      padding: "2px 6px",
-                      borderRadius: "9999px",
-                      background: skillPct === 100 ? "var(--primary)" : "var(--border)",
-                      color: skillPct === 100 ? "#fff" : "var(--text-muted)",
-                    }}
-                  >
-                    {skillPct}%
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Active Roadmap Container */}
-        <div className="card" style={{ padding: "40px 32px", backgroundColor: "var(--bg-surface)" }}>
-          {/* Header & Meta */}
+          <div>
+            <span className="eyebrow" style={{ display: "block", marginBottom: 4 }}>
+              Knowledge Topology
+            </span>
+            <h2
+              style={{
+                fontFamily: "var(--font-headline)",
+                fontSize: "clamp(1.5rem, 3vw, 1.875rem)",
+                fontWeight: 700,
+                color: "var(--on-surface)",
+              }}
+            >
+              Interactive Skill Graph & DAG Navigator
+            </h2>
+          </div>
+          {/* Legend */}
           <div
             style={{
               display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
               flexWrap: "wrap",
-              gap: "24px",
-              marginBottom: "36px",
-              paddingBottom: "28px",
-              borderBottom: "1px solid var(--border)",
+              alignItems: "center",
+              gap: 12,
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.6875rem",
+              color: "var(--on-surface)",
             }}
           >
-            <div>
-              <div style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: "8px" }}>
-                <span className="badge badge-green">{selectedSkill}</span>
-                <span className="badge badge-blue">{currentRoadmap.difficulty}</span>
-                {isComplete && (
-                  <span className="badge" style={{ background: "#fef3c7", color: "#92400e", border: "1px solid #fde68a" }}>
-                    <Trophy size={12} /> Completed!
-                  </span>
-                )}
-              </div>
-              <h3 style={{ fontSize: "2rem", marginBottom: "10px", color: "var(--text-primary)" }}>{selectedSkill} Roadmap</h3>
-              <p style={{ maxWidth: "680px", fontSize: "1.05rem", color: "var(--text-secondary)" }}>{currentRoadmap.description}</p>
-              <p style={{ fontSize: "0.9rem", color: "var(--text-muted)", marginTop: "6px" }}>
-                <strong style={{ color: "var(--text-primary)" }}>Ideal for:</strong> {currentRoadmap.suitable}
-              </p>
-            </div>
-
-            {/* Progress Box */}
-            <div
-              style={{
-                background: "var(--bg-subtle)",
-                border: "1px solid var(--border)",
-                borderRadius: "var(--radius-md)",
-                padding: "20px",
-                minWidth: "240px",
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px", fontSize: "0.85rem", fontWeight: 700 }}>
-                <span style={{ color: "var(--primary)" }}>ROADMAP MILESTONES</span>
-                <span style={{ color: "var(--text-primary)" }}>{progressPercent}%</span>
-              </div>
-              <div
-                style={{
-                  width: "100%",
-                  height: "8px",
-                  background: "var(--border)",
-                  borderRadius: "var(--radius-full)",
-                  overflow: "hidden",
-                }}
+            {[
+              { label: "Mastered", color: "var(--tertiary)" },
+              { label: "Proficient", color: "var(--primary)" },
+              { label: "In Progress", color: "var(--outline)" },
+              { label: "Critical Gap", color: "var(--error)" },
+            ].map(({ label, color }) => (
+              <span
+                key={label}
+                style={{ display: "flex", alignItems: "center", gap: 6 }}
               >
-                <div
+                <span
                   style={{
-                    height: "100%",
-                    width: `${progressPercent}%`,
-                    background: isComplete
-                      ? "linear-gradient(90deg, #059669, #10b981)"
-                      : "var(--primary)",
-                    borderRadius: "var(--radius-full)",
-                    transition: "width 0.3s ease",
+                    width: 10,
+                    height: 10,
+                    borderRadius: "50%",
+                    background: color,
+                    display: "inline-block",
+                    flexShrink: 0,
                   }}
                 />
-              </div>
-              <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "8px" }}>
-                {completedTasks} of {totalTasks} tasks complete
-              </div>
-            </div>
+                {label}
+              </span>
+            ))}
           </div>
+        </div>
 
-          {/* F7: Completion Certificate Banner */}
-          {isComplete && (
-            <div
-              style={{
-                padding: "24px",
-                borderRadius: "var(--radius-md)",
-                background: "linear-gradient(135deg, #ecfdf5, #d1fae5)",
-                border: "1.5px solid var(--primary-border)",
-                marginBottom: "32px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                flexWrap: "wrap",
-                gap: "16px",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                <div
-                  style={{
-                    width: "52px",
-                    height: "52px",
-                    borderRadius: "50%",
-                    background: "var(--primary)",
-                    color: "#fff",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Trophy size={26} />
-                </div>
-                <div>
-                  <h4 style={{ fontSize: "1.15rem", color: "var(--primary-text)" }}>
-                    🎉 {selectedSkill} Roadmap Complete!
-                  </h4>
-                  <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginTop: "2px" }}>
-                    You've mastered all {totalTasks} milestones. Add this to your portfolio!
-                  </p>
-                </div>
-              </div>
-              <div style={{ display: "flex", gap: "10px" }}>
-                <button
-                  type="button"
-                  className="btn btn-primary btn-sm"
-                  onClick={() => {
-                    const text = `I just completed the ${selectedSkill} roadmap on SkillSprint! All ${totalTasks} milestones done. 🏆`;
-                    if (navigator.share) {
-                      navigator.share({ title: "SkillSprint Achievement", text, url: window.location.href });
-                    } else {
-                      navigator.clipboard.writeText(text);
-                      addToast("Achievement copied to clipboard!", "success");
-                    }
-                  }}
-                >
-                  <Share2 size={14} />
-                  <span>Share Achievement</span>
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary btn-sm"
-                  onClick={() =>
-                    onSendToPortfolio({
-                      title: `${selectedSkill} Roadmap Completion`,
-                      description: `Completed all ${totalTasks} milestone tasks in the ${selectedSkill} roadmap on SkillSprint, covering ${currentRoadmap.stages.map((s) => s.name).join(", ")}.`,
-                      skillsUsed: selectedSkill,
-                      toolsUsed: "SkillSprint Learning Platform",
-                      outcome: `100% roadmap completion — ${totalTasks} tasks across 5 stages`,
-                    })
-                  }
-                >
-                  Add to Portfolio
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* 5 Stages Grid — B4 FIX: use pre-computed TASK_INDEX for stable indices */}
-          <div style={{ display: "grid", gap: "28px" }}>
-            {currentRoadmap.stages.map((stage, stageIdx) => {
-              // Get tasks for this stage with their stable globalIdx
-              const stageTasks = skillTaskIndex.filter((t) => t.stageIdx === stageIdx);
-
-              return (
-                <div
-                  key={stage.name}
-                  style={{
-                    background: "var(--bg-subtle)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "var(--radius-md)",
-                    padding: "24px",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "18px" }}>
-                    <span
-                      style={{
-                        width: "32px",
-                        height: "32px",
-                        borderRadius: "8px",
-                        background: "var(--primary-light)",
-                        color: "var(--primary)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontWeight: 800,
-                        fontSize: "0.9rem",
-                      }}
-                    >
-                      0{stageIdx + 1}
-                    </span>
-                    <h4 style={{ fontSize: "1.25rem", color: "var(--text-primary)" }}>Stage {stageIdx + 1}: {stage.name}</h4>
-                  </div>
-
-                  <div style={{ display: "grid", gap: "12px" }}>
-                    {stageTasks.map(({ task, globalIdx }) => {
-                      const isDone = !!currentSkillProgress[globalIdx];
-
-                      return (
-                        <div
-                          key={task.title}
-                          style={{
-                            padding: "16px 20px",
-                            borderRadius: "var(--radius-sm)",
-                            background: isDone ? "var(--primary-light)" : "var(--bg-surface)",
-                            border: isDone ? "1.5px solid var(--primary-border)" : "1px solid var(--border)",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            gap: "16px",
-                            flexWrap: "wrap",
-                            boxShadow: isDone ? "none" : "var(--shadow-xs)",
-                          }}
-                        >
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "14px",
-                              flex: 1,
-                              minWidth: "260px",
-                              cursor: "pointer",
-                            }}
-                            role="checkbox"
-                            aria-checked={isDone}
-                            tabIndex={0}
-                            onClick={() => handleTaskToggle(selectedSkill, globalIdx, !isDone)}
-                            onKeyDown={(e) =>
-                              (e.key === "Enter" || e.key === " ") &&
-                              handleTaskToggle(selectedSkill, globalIdx, !isDone)
-                            }
-                          >
-                            <div style={{ color: isDone ? "var(--primary)" : "var(--text-muted)" }}>
-                              {isDone ? <CheckCircle2 size={20} /> : <Circle size={20} />}
-                            </div>
-                            <div>
-                              <strong
-                                style={{
-                                  display: "block",
-                                  fontSize: "1rem",
-                                  color: isDone ? "var(--text-muted)" : "var(--text)",
-                                  textDecoration: isDone ? "line-through" : "none",
-                                }}
-                              >
-                                {task.title}
-                              </strong>
-                              {/* B9 FIX: Only append ... when text is actually longer than 95 chars */}
-                              <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-                                {task.objective.length > 95
-                                  ? task.objective.slice(0, 95) + "..."
-                                  : task.objective}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div style={{ display: "flex", gap: "10px" }}>
-                            <button
-                              type="button"
-                              className="btn btn-secondary btn-sm"
-                              onClick={() =>
-                                setActiveModalTask({
-                                  stageName: stage.name,
-                                  skillName: selectedSkill,
-                                  task,
-                                  taskIndex: globalIdx,
-                                })
-                              }
-                            >
-                              <span>Inspect Task</span>
-                              <ChevronRight size={14} />
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Recommended Resources for this Skill */}
+        {/* Graph Container */}
+        <div
+          style={{
+            background: "var(--surface)",
+            border: "1px solid var(--outline-variant)",
+            borderRadius: 8,
+            padding: 24,
+            boxShadow: "var(--shadow-sm)",
+            display: "flex",
+            flexDirection: "column",
+            gap: 24,
+          }}
+        >
           <div
             style={{
-              marginTop: "40px",
-              paddingTop: "28px",
-              borderTop: "1px solid var(--border)",
+              display: "flex",
+              flexDirection: "column",
+              gap: 24,
             }}
           >
-            <h4 style={{ marginBottom: "16px", fontSize: "1.2rem", color: "var(--text-primary)" }}>
-              Verified Tools &amp; Official Documentation for {selectedSkill}
-            </h4>
+            {/* Graph Visual */}
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-                gap: "16px",
+                background: "#fff",
+                border: "1px solid rgba(226,232,240,0.8)",
+                borderRadius: 6,
+                padding: 24,
+                position: "relative",
+                minHeight: 340,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                overflow: "hidden",
               }}
             >
-              {(ROADMAP_RESOURCES[selectedSkill] || []).map((resourceId) => {
-                const resource = RESOURCE_CATALOG[resourceId];
-                if (!resource) return null;
-                return (
+              {/* SVG Connection Lines */}
+              <svg
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  pointerEvents: "none",
+                  stroke: "var(--outline-variant)",
+                  strokeWidth: 1.5,
+                }}
+              >
+                <line strokeDasharray="4" x1="20%" x2="50%" y1="30%" y2="25%" />
+                <line x1="20%" x2="50%" y1="70%" y2="25%" />
+                <line x1="50%" x2="80%" y1="25%" y2="35%" />
+                <line x1="50%" x2="50%" y1="25%" y2="75%" />
+                <line strokeDasharray="3" x1="50%" x2="80%" y1="75%" y2="75%" />
+              </svg>
+
+              {/* Nodes */}
+              <div
+                style={{
+                  position: "relative",
+                  zIndex: 10,
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  padding: "8px 0",
+                }}
+              >
+                {/* Top Row */}
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "100%",
+                    paddingLeft: 8,
+                    paddingRight: 8,
+                    flexWrap: "wrap",
+                    gap: 12,
+                  }}
+                >
                   <div
-                    key={resource.id}
+                    className="graph-node"
+                    onClick={() => setSelectedNode("rest")}
                     style={{
-                      padding: "20px",
-                      borderRadius: "var(--radius-md)",
-                      background: "var(--bg-subtle)",
-                      border: "1px solid var(--border)",
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "space-between",
+                      width: 176,
+                      border:
+                        selectedNode === "rest"
+                          ? "2px solid var(--primary)"
+                          : undefined,
                     }}
                   >
-                    <div>
-                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                        <span style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--primary)", fontWeight: 700 }}>
-                          {resource.category}
-                        </span>
-                        <span className="badge badge-primary">{resource.pricingType}</span>
-                      </div>
-                      <h5 style={{ fontSize: "1.1rem", marginBottom: "6px", color: "var(--text-primary)" }}>{resource.name}</h5>
-                      <p style={{ fontSize: "0.88rem", marginBottom: "14px", color: "var(--text-secondary)" }}>{resource.description}</p>
-                    </div>
-
-                    <a
-                      href={resource.officialUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-secondary btn-sm"
-                      style={{ alignSelf: "flex-start" }}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        marginBottom: 4,
+                      }}
                     >
-                      <span>Official Link</span>
-                      <ExternalLink size={13} />
-                    </a>
+                      <span
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "0.6875rem",
+                          fontWeight: 600,
+                          color: "var(--on-surface)",
+                        }}
+                      >
+                        REST & GraphQL
+                      </span>
+                      <span
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "0.625rem",
+                          fontWeight: 700,
+                          padding: "2px 6px",
+                          background: "var(--tertiary-container)",
+                          color: "var(--tertiary)",
+                          borderRadius: 4,
+                        }}
+                      >
+                        98%
+                      </span>
+                    </div>
+                    <span
+                      style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "0.625rem",
+                        color: "var(--tertiary)",
+                        fontWeight: 500,
+                      }}
+                    >
+                      Status: Mastered
+                    </span>
                   </div>
-                );
-              })}
+
+                  <div
+                    className="graph-node"
+                    onClick={() => setSelectedNode("kafka")}
+                    style={{
+                      width: 176,
+                      border:
+                        selectedNode === "kafka"
+                          ? "2px solid var(--primary)"
+                          : undefined,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        marginBottom: 4,
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "0.6875rem",
+                          fontWeight: 600,
+                          color: "var(--on-surface)",
+                        }}
+                      >
+                        Kafka Streams
+                      </span>
+                      <span
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "0.625rem",
+                          fontWeight: 700,
+                          padding: "2px 6px",
+                          background: "var(--surface-container)",
+                          color: "var(--outline)",
+                          borderRadius: 4,
+                        }}
+                      >
+                        54%
+                      </span>
+                    </div>
+                    <span
+                      style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "0.625rem",
+                        color: "var(--outline)",
+                        fontWeight: 500,
+                      }}
+                    >
+                      Status: In-Progress
+                    </span>
+                  </div>
+                </div>
+
+                {/* Central Hub */}
+                <div
+                  style={{ display: "flex", justifyContent: "center", width: "100%", margin: "24px 0" }}
+                >
+                  <div
+                    className="graph-node-central"
+                    onClick={() => setSelectedNode("postgres")}
+                    style={{
+                      width: 260,
+                      border:
+                        selectedNode === "postgres"
+                          ? "2px solid var(--primary-dark)"
+                          : undefined,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        marginBottom: 6,
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontFamily: "var(--font-headline)",
+                          fontSize: "0.6875rem",
+                          fontWeight: 700,
+                          color: "var(--primary-dark)",
+                        }}
+                      >
+                        PostgreSQL Query Plans
+                      </span>
+                      <span
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "0.6875rem",
+                          fontWeight: 700,
+                          padding: "2px 6px",
+                          background: "var(--primary)",
+                          color: "#fff",
+                          borderRadius: 4,
+                        }}
+                      >
+                        82%
+                      </span>
+                    </div>
+                    <p
+                      style={{
+                        fontFamily: "var(--font-body)",
+                        fontSize: "0.6875rem",
+                        color: "var(--on-surface-variant)",
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      Index scans, B-Trees & EXPLAIN ANALYZE
+                    </p>
+                    <div
+                      style={{
+                        marginTop: 8,
+                        width: "100%",
+                        background: "var(--outline-variant)",
+                        height: 4,
+                        borderRadius: 4,
+                        overflow: "hidden",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: "82%",
+                          height: "100%",
+                          background: "var(--primary)",
+                          borderRadius: 4,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom Row */}
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "100%",
+                    paddingLeft: 8,
+                    paddingRight: 8,
+                    flexWrap: "wrap",
+                    gap: 12,
+                  }}
+                >
+                  <div
+                    className="graph-node"
+                    onClick={() => setSelectedNode("docker")}
+                    style={{
+                      width: 176,
+                      border:
+                        selectedNode === "docker"
+                          ? "2px solid var(--primary)"
+                          : undefined,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        marginBottom: 4,
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "0.6875rem",
+                          fontWeight: 600,
+                          color: "var(--on-surface)",
+                        }}
+                      >
+                        Docker & OCI
+                      </span>
+                      <span
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "0.625rem",
+                          fontWeight: 700,
+                          padding: "2px 6px",
+                          background: "var(--tertiary-container)",
+                          color: "var(--tertiary)",
+                          borderRadius: 4,
+                        }}
+                      >
+                        91%
+                      </span>
+                    </div>
+                    <span
+                      style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "0.625rem",
+                        color: "var(--tertiary)",
+                        fontWeight: 500,
+                      }}
+                    >
+                      Status: Mastered
+                    </span>
+                  </div>
+
+                  {/* Critical Gap Node */}
+                  <div
+                    className="graph-node-error"
+                    onClick={() => setSelectedNode("consensus")}
+                    style={{
+                      width: 192,
+                      outline:
+                        selectedNode === "consensus"
+                          ? "2px solid #dc2626"
+                          : undefined,
+                      outlineOffset: 2,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        marginBottom: 4,
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "0.6875rem",
+                          fontWeight: 700,
+                          color: "var(--error)",
+                        }}
+                      >
+                        Raft Consensus
+                      </span>
+                      <span
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "0.625rem",
+                          fontWeight: 700,
+                          padding: "2px 6px",
+                          background: "#fff",
+                          color: "var(--error)",
+                          borderRadius: 4,
+                          border: "1px solid rgba(220,38,38,0.3)",
+                        }}
+                      >
+                        Gap: 38%
+                      </span>
+                    </div>
+                    <span
+                      style={{
+                        fontFamily: "var(--font-label)",
+                        fontSize: "0.625rem",
+                        color: "var(--error)",
+                        fontWeight: 700,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.06em",
+                      }}
+                    >
+                      Critical Hiring Blocker
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Detail Panel */}
+            <div
+              style={{
+                background: "var(--surface-subtle)",
+                border: "1px solid var(--outline-variant)",
+                borderRadius: 6,
+                padding: 20,
+                display: "flex",
+                flexDirection: "column",
+                gap: 12,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  borderBottom: "1px solid var(--outline-variant)",
+                  paddingBottom: 8,
+                  flexWrap: "wrap",
+                  gap: 8,
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: "var(--font-label)",
+                    fontSize: "0.625rem",
+                    fontWeight: 700,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    color: "var(--outline)",
+                  }}
+                >
+                  Node Telemetry Inspector
+                </span>
+                <span
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "0.6875rem",
+                    fontWeight: 700,
+                    color: detail.tagColor,
+                    transition: "color 0.2s",
+                  }}
+                >
+                  {detail.tag}
+                </span>
+              </div>
+
+              <h3
+                style={{
+                  fontFamily: "var(--font-headline)",
+                  fontSize: "1.125rem",
+                  fontWeight: 700,
+                  color: "var(--on-surface)",
+                  transition: "all 0.2s",
+                }}
+              >
+                {detail.title}
+              </h3>
+
+              <p
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: "0.6875rem",
+                  color: "var(--on-surface-variant)",
+                  lineHeight: 1.65,
+                }}
+              >
+                {detail.desc}
+              </p>
+
+              {/* Dependencies */}
+              <div
+                style={{
+                  background: "var(--surface)",
+                  border: "1px solid var(--outline-variant)",
+                  borderRadius: 4,
+                  padding: 12,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 6,
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: "var(--font-label)",
+                    fontSize: "0.625rem",
+                    color: "var(--outline)",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  Dependency Hierarchy
+                </span>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  {detail.deps.map((dep, i) => (
+                    <React.Fragment key={dep}>
+                      <span
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "0.6875rem",
+                          fontWeight: 600,
+                          color: detail.depColors[i],
+                        }}
+                      >
+                        {dep}
+                      </span>
+                      {i < detail.deps.length - 1 && (
+                        <span
+                          className="material-symbols-outlined"
+                          style={{ fontSize: 14, color: "var(--outline)" }}
+                        >
+                          arrow_right_alt
+                        </span>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
+              </div>
+
+              {/* Metrics Grid */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                {[
+                  {
+                    label: "Benchmark Delta",
+                    value: detail.delta,
+                    color: detail.deltaColor,
+                  },
+                  {
+                    label: "Est. Time to Mastery",
+                    value: detail.time,
+                    color: "var(--on-surface)",
+                  },
+                ].map(({ label, value, color }) => (
+                  <div
+                    key={label}
+                    style={{
+                      padding: 12,
+                      background: "var(--surface)",
+                      border: "1px solid var(--outline-variant)",
+                      borderRadius: 4,
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontFamily: "var(--font-label)",
+                        fontSize: "0.625rem",
+                        color: "var(--outline)",
+                        fontWeight: 600,
+                        textTransform: "uppercase",
+                        display: "block",
+                        letterSpacing: "0.08em",
+                      }}
+                    >
+                      {label}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "0.875rem",
+                        fontWeight: 700,
+                        color,
+                        display: "block",
+                        marginTop: 2,
+                      }}
+                    >
+                      {value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Launch CTA */}
+              <div style={{ paddingTop: 12, borderTop: "1px solid var(--outline-variant)" }}>
+                <a
+                  href="#simulator-preview"
+                  className="btn-primary"
+                  style={{ width: "100%", justifyContent: "center" }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+                    play_arrow
+                  </span>
+                  Launch Targeted Remediation Sprint
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Task Inspection Modal */}
-      <TaskModal
-        isOpen={!!activeModalTask}
-        taskData={activeModalTask}
-        onClose={() => setActiveModalTask(null)}
-        onComplete={handleTaskToggle}
-        isCompleted={
-          activeModalTask
-            ? !!(skillProgress[activeModalTask.skillName] || {})[activeModalTask.taskIndex]
-            : false
-        }
-      />
     </section>
   );
 }
