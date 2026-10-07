@@ -1,217 +1,421 @@
-import React, { useState } from "react";
-import { EARNING_PATH_CONTENT } from "../data/skillsData";
-import { Laptop, TrendingUp, Briefcase, ShieldAlert, Sparkles, ArrowRight } from "lucide-react";
+import React from "react";
 
-export default function EarningPaths({ onSelectRoadmap }) {
-  const [selectedPath, setSelectedPath] = useState("Freelancing");
+const features = [
+  {
+    icon: "verified_user",
+    title: "Judge0 Execution Hashes",
+    desc: "Every solution run produces a SHA-256 execution certificate certifying you wrote the code.",
+  },
+  {
+    icon: "sync_alt",
+    title: "Automatic Public GitHub Synchronization",
+    desc: "Completed sprint projects automatically open production-grade PRs on your personal GitHub.",
+  },
+  {
+    icon: "travel_explore",
+    title: "Instant Hiring Recruiter Inspection",
+    desc: "Recruiters can run your code live inside an ephemeral sandbox straight from your resume link.",
+  },
+];
 
-  const pathIcons = {
-    "Freelancing": Laptop,
-    "Affiliate Marketing": TrendingUp,
-    "Online Jobs": Briefcase,
-  };
+const recentArtifacts = [
+  { name: "dist-raft-consensus-impl", result: "18/18 Tests (0.84s)" },
+  { name: "redis-stream-event-broker", result: "22/22 Tests (1.12s)" },
+  { name: "postgres-btree-optimizer", result: "14/14 Tests (0.42s)" },
+];
 
-  const currentContent = EARNING_PATH_CONTENT[selectedPath];
-
+export default function EarningPaths() {
   return (
-    <section id="earning-paths" className="section-spacing">
-      <div className="container">
-        <div className="section-header">
-          <div className="eyebrow">
-            <Sparkles size={14} />
-            <span>Monetization Trajectories</span>
-          </div>
-          <h2>Explore Your Earning Direction</h2>
-          <p>
-            Understand the fundamental differences between client services, audience marketing, and remote employment. Review scam warnings and realistic milestones before you invest time.
+    <section
+      id="passport"
+      style={{
+        width: "100%",
+        padding: "64px 0",
+        borderBottom: "1px solid var(--outline-variant)",
+        background: "var(--surface-subtle)",
+      }}
+    >
+      <div
+        className="ss-container"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr",
+          gap: 40,
+          alignItems: "center",
+        }}
+      >
+        {/* Left: Evidence Description */}
+        <div
+          style={{ display: "flex", flexDirection: "column", gap: 16 }}
+        >
+          <span className="eyebrow">
+            Verifiable Proof vs Fake Diplomas
+          </span>
+          <h2
+            style={{
+              fontFamily: "var(--font-headline)",
+              fontSize: "clamp(1.5rem, 3vw, 1.875rem)",
+              fontWeight: 700,
+              color: "var(--on-surface)",
+              lineHeight: 1.3,
+            }}
+          >
+            The Skill Passport: Cryptographic Proof of Engineering Competence
+          </h2>
+          <p
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: "0.9375rem",
+              color: "var(--on-surface-variant)",
+              lineHeight: 1.7,
+            }}
+          >
+            Stop showing PDFs that prove nothing. SkillSprint records every code diff,
+            every passing unit test suite, and every system benchmark into an immutable
+            public ledger.
           </p>
+
+          {/* Features */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, paddingTop: 8 }}>
+            {features.map(({ icon, title, desc }) => (
+              <div key={title} style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                <span
+                  className="material-symbols-outlined"
+                  style={{ color: "var(--primary)", fontSize: 20, marginTop: 2, flexShrink: 0 }}
+                >
+                  {icon}
+                </span>
+                <div>
+                  <h4
+                    style={{
+                      fontFamily: "var(--font-headline)",
+                      fontSize: "0.875rem",
+                      fontWeight: 600,
+                      color: "var(--on-surface)",
+                      marginBottom: 4,
+                    }}
+                  >
+                    {title}
+                  </h4>
+                  <p
+                    style={{
+                      fontFamily: "var(--font-body)",
+                      fontSize: "0.6875rem",
+                      color: "var(--on-surface-variant)",
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    {desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ paddingTop: 8 }}>
+            <a
+              href="#"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
+                color: "var(--primary)",
+                fontFamily: "var(--font-label)",
+                fontSize: "0.6875rem",
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                textDecoration: "none",
+                transition: "color 0.15s",
+              }}
+            >
+              View Sample Verifiable Passport (Alex Chen)
+              <span className="material-symbols-outlined" style={{ fontSize: 15 }}>
+                open_in_new
+              </span>
+            </a>
+          </div>
         </div>
 
-        {/* U4 FIX: Path Selector Cards — use <button> for keyboard accessibility */}
+        {/* Right: Passport Card */}
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "20px",
-            marginBottom: "40px",
+            background: "var(--surface)",
+            border: "1px solid var(--outline-variant)",
+            borderRadius: 8,
+            padding: 24,
+            boxShadow: "var(--shadow-md)",
           }}
         >
-          {Object.keys(EARNING_PATH_CONTENT).map((pathKey) => {
-            const Icon = pathIcons[pathKey];
-            const isSelected = selectedPath === pathKey;
-            return (
-              <button
-                key={pathKey}
-                type="button"
-                onClick={() => setSelectedPath(pathKey)}
-                aria-pressed={isSelected}
-                style={{
-                  textAlign: "left",
-                  padding: "32px 26px",
-                  cursor: "pointer",
-                  borderRadius: "var(--radius-lg)",
-                  border: isSelected ? "1.5px solid var(--primary)" : "1px solid var(--border)",
-                  background: isSelected ? "var(--primary-light)" : "var(--bg-surface)",
-                  boxShadow: isSelected ? "var(--shadow-card-hover)" : "var(--shadow-card)",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  fontFamily: "inherit",
-                  transition: "all 0.15s ease",
-                }}
-                onMouseEnter={(e) => {
-                  if (!isSelected) {
-                    e.currentTarget.style.borderColor = "var(--border-medium)";
-                    e.currentTarget.style.boxShadow = "var(--shadow-card-hover)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isSelected) {
-                    e.currentTarget.style.borderColor = "var(--border)";
-                    e.currentTarget.style.boxShadow = "var(--shadow-card)";
-                  }
-                }}
-              >
-                <div>
-                  <div
-                    style={{
-                      width: "48px",
-                      height: "48px",
-                      borderRadius: "12px",
-                      background: isSelected ? "var(--primary)" : "var(--bg-subtle)",
-                      color: isSelected ? "#ffffff" : "var(--primary)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      marginBottom: "20px",
-                      transition: "all 0.15s ease",
-                    }}
-                  >
-                    <Icon size={24} />
-                  </div>
-                  <h3 style={{ fontSize: "1.45rem", marginBottom: "8px", color: isSelected ? "var(--primary-text)" : "var(--text-primary)" }}>{pathKey}</h3>
-                  <p style={{ fontSize: "0.95rem", color: isSelected ? "var(--text-secondary)" : "var(--text-muted)" }}>{EARNING_PATH_CONTENT[pathKey].intro}</p>
-                </div>
-
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {/* Passport Header */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                borderBottom: "1px solid var(--outline-variant)",
+                paddingBottom: 16,
+                flexWrap: "wrap",
+                gap: 12,
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <div
                   style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 4,
+                    background: "var(--primary)",
+                    color: "#fff",
                     display: "flex",
                     alignItems: "center",
-                    gap: "6px",
-                    marginTop: "20px",
-                    color: isSelected ? "var(--primary)" : "var(--text-muted)",
+                    justifyContent: "center",
                     fontWeight: 700,
-                    fontSize: "0.9rem",
-                    fontFamily: "var(--font-heading)",
+                    fontSize: "0.875rem",
+                    flexShrink: 0,
                   }}
                 >
-                  <span>Explore Guidance</span>
-                  <ArrowRight size={15} />
+                  AC
                 </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Detailed Breakdown for Active Path */}
-        <div className="card" style={{ padding: "40px 32px", backgroundColor: "var(--bg-surface)" }}>
-          <div style={{ marginBottom: "32px", paddingBottom: "24px", borderBottom: "1px solid var(--border)" }}>
-            <span className="badge badge-green" style={{ marginBottom: "8px" }}>
-              In-Depth Exploration
-            </span>
-            <h3 style={{ fontSize: "2rem", marginBottom: "8px", color: "var(--text-primary)" }}>{currentContent.title}</h3>
-            <p style={{ fontSize: "1.05rem", color: "var(--text-secondary)" }}>{currentContent.intro}</p>
-          </div>
-
-          {/* Sections Grid */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-              gap: "20px",
-              marginBottom: "36px",
-            }}
-          >
-            {currentContent.sections.map((section, idx) => {
-              if (section.isScamCard) {
-                return (
-                  <div
-                    key={idx}
+                <div>
+                  <h4
                     style={{
-                      padding: "24px",
-                      borderRadius: "var(--radius-md)",
-                      background: "#fff1f2",
-                      border: "1px solid #fecdd3",
-                      gridColumn: "1 / -1",
+                      fontFamily: "var(--font-headline)",
+                      fontSize: "1rem",
+                      fontWeight: 700,
+                      color: "var(--on-surface)",
                     }}
                   >
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px", color: "#be123c", marginBottom: "8px" }}>
-                      <ShieldAlert size={22} />
-                      <h4 style={{ fontSize: "1.2rem", color: "#be123c" }}>{section.title}</h4>
-                    </div>
-                    <p style={{ color: "#4c0519", fontSize: "0.95rem", lineHeight: 1.6 }}>{section.content}</p>
-                  </div>
-                );
-              }
-
-              return (
-                <div
-                  key={idx}
+                    Alex Chen
+                  </h4>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "0.6875rem",
+                      color: "var(--outline)",
+                    }}
+                  >
+                    @alex_chen.sprint • L5 Backend Ready
+                  </span>
+                </div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                <span
                   style={{
-                    padding: "24px",
-                    borderRadius: "var(--radius-md)",
-                    background: "var(--bg-subtle)",
-                    border: "1px solid var(--border)",
+                    fontFamily: "var(--font-label)",
+                    fontSize: "0.625rem",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                    padding: "2px 8px",
+                    background: "var(--tertiary-container)",
+                    color: "var(--tertiary)",
+                    borderRadius: 4,
                   }}
                 >
-                  <h4 style={{ fontSize: "1.15rem", marginBottom: "10px", color: "var(--text-primary)" }}>
-                    {section.title}
-                  </h4>
-                  <p style={{ fontSize: "0.92rem", lineHeight: 1.6, color: "var(--text-secondary)" }}>{section.content}</p>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Associated Roadmaps CTAs */}
-          <div
-            style={{
-              padding: "24px",
-              borderRadius: "var(--radius-md)",
-              background: "var(--bg-subtle)",
-              border: "1px solid var(--border)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: "16px",
-            }}
-          >
-            <div>
-              <h4 style={{ fontSize: "1.1rem", marginBottom: "4px", color: "var(--text-primary)" }}>
-                High-Value Skills Suited for {selectedPath}
-              </h4>
-              <p style={{ fontSize: "0.9rem", color: "var(--text-muted)" }}>
-                Choose a roadmap to start building hands-on project deliverables:
-              </p>
+                  VERIFIED TALENT
+                </span>
+                <span
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "0.625rem",
+                    color: "var(--outline)",
+                    marginTop: 4,
+                    fontWeight: 500,
+                  }}
+                >
+                  ID: #0x8F9A42
+                </span>
+              </div>
             </div>
 
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-              {currentContent.roadmaps.map((roadmapName) => (
-                <button
-                  key={roadmapName}
-                  type="button"
-                  className="btn btn-secondary btn-sm"
-                  onClick={() => onSelectRoadmap(roadmapName)}
+            {/* Stats Grid */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              {[
+                {
+                  label: "Shipped Sprints",
+                  value: "14 Modules",
+                  sub: "100% Tests Passing",
+                  subColor: "var(--tertiary)",
+                },
+                {
+                  label: "Peer Architecture Score",
+                  value: "Top 5%",
+                  sub: "Evaluated by 28 Staff Engs",
+                  valueColor: "var(--primary)",
+                  subColor: "var(--outline)",
+                },
+              ].map(({ label, value, sub, valueColor, subColor }) => (
+                <div
+                  key={label}
+                  style={{
+                    background: "var(--surface-subtle)",
+                    border: "1px solid var(--outline-variant)",
+                    borderRadius: 4,
+                    padding: 12,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2,
+                  }}
                 >
-                  <span>{roadmapName} Roadmap</span>
-                  <ArrowRight size={13} />
-                </button>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-label)",
+                      fontSize: "0.625rem",
+                      color: "var(--outline)",
+                      fontWeight: 600,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.08em",
+                    }}
+                  >
+                    {label}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-headline)",
+                      fontSize: "1.25rem",
+                      fontWeight: 700,
+                      color: valueColor || "var(--on-surface)",
+                    }}
+                  >
+                    {value}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "0.6875rem",
+                      fontWeight: 500,
+                      color: subColor || "var(--outline)",
+                    }}
+                  >
+                    {sub}
+                  </span>
+                </div>
               ))}
+            </div>
+
+            {/* Cryptographic Seal */}
+            <div
+              style={{
+                padding: 12,
+                background: "var(--surface-subtle)",
+                border: "1px solid var(--outline-variant)",
+                borderRadius: 4,
+                fontFamily: "var(--font-mono)",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: 4,
+                  fontSize: "0.625rem",
+                  textTransform: "uppercase",
+                  fontWeight: 700,
+                  color: "var(--outline)",
+                }}
+              >
+                <span>PROOF SIGNATURE</span>
+                <span>SHA-256 ENCRYPTED</span>
+              </div>
+              <div
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "0.6875rem",
+                  fontWeight: 500,
+                  color: "var(--on-surface)",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+              </div>
+            </div>
+
+            {/* Recent Artifacts */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+                paddingTop: 4,
+                borderTop: "1px solid rgba(226,232,240,0.6)",
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "var(--font-label)",
+                  fontSize: "0.625rem",
+                  color: "var(--outline)",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.1em",
+                }}
+              >
+                Recently Verified Code Invocations
+              </span>
+              {recentArtifacts.map(({ name, result }, i) => (
+                <div
+                  key={name}
+                  className="passport-row"
+                  style={{
+                    borderBottom:
+                      i < recentArtifacts.length - 1
+                        ? "1px solid rgba(226,232,240,0.5)"
+                        : "none",
+                  }}
+                >
+                  <span style={{ color: "var(--on-surface)" }}>{name}</span>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "0.6875rem",
+                      fontWeight: 600,
+                      color: "var(--tertiary)",
+                    }}
+                  >
+                    {result}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Issued By */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingTop: 8,
+                borderTop: "1px solid var(--outline-variant)",
+                fontFamily: "var(--font-label)",
+                fontSize: "0.625rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                color: "var(--outline)",
+                flexWrap: "wrap",
+                gap: 6,
+              }}
+            >
+              <span>ISSUED BY SKILLSPRINT ENGINE VERIFICATION CLUSTER</span>
+              <span style={{ color: "var(--primary)", fontWeight: 700 }}>
+                LIVE PUBLIC PASS
+              </span>
             </div>
           </div>
         </div>
       </div>
+
+      <style>{`
+        @media (min-width: 1024px) {
+          #passport > .ss-container {
+            grid-template-columns: 1fr 1fr !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }

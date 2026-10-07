@@ -1,376 +1,394 @@
-import React, { useState } from "react";
-import { Star, Users, Clock, ArrowRight, BookOpen, Check, Layers, Code, Shield, Brain, Terminal } from "lucide-react";
+import React from "react";
 
-export default function PopularCourses({ onSelectCourse, onSelectRoadmap }) {
-  const [activeCategory, setActiveCategory] = useState("All");
+const scenarios = [
+  {
+    badge: "P1 Outage Simulation",
+    badgeColor: "var(--error)",
+    badgeBg: "var(--error-container)",
+    time: "45 MINS",
+    title: "Connection Pool Exhaustion at 10,000 RPS",
+    desc: "The primary checkout API is returning 503s under burst flash sale traffic. Trace connection leaks in pg-pool, adjust max active pools, and implement exponential backoff retry buffers.",
+    tags: ["Node.js", "PostgreSQL", "k6 Load Gen"],
+    levelIcon: "warning",
+    levelLabel: "L5 Systems Architect",
+    levelColor: "var(--error)",
+  },
+  {
+    badge: "Financial Systems",
+    badgeColor: "var(--on-primary-container)",
+    badgeBg: "var(--primary-container)",
+    time: "30 MINS",
+    title: "Idempotent Stripe Webhook Ingestion Engine",
+    desc: "Incoming events are duplicated during network retries, causing double-billing transactions. Build an atomic Redis mutex with deterministic idempotency keys and SQL transactions.",
+    tags: ["TypeScript", "Redis Mutex", "ACID Checks"],
+    levelIcon: "check_circle",
+    levelLabel: "Intermediate Full-Stack",
+    levelColor: "var(--primary)",
+  },
+  {
+    badge: "Platform Engineering",
+    badgeColor: "var(--tertiary)",
+    badgeBg: "var(--tertiary-container)",
+    time: "35 MINS",
+    title: "Zero-Downtime Blue/Green Deployment Rollback",
+    desc: "A bad schema migration in canary release cluster v2.4.1 triggers a spike in 500 error rates. Inspect NGINX upstream route configs, isolate the faulty pods, and execute instant hot-switch rollback.",
+    tags: ["Docker OCI", "NGINX Upstream", "Prometheus"],
+    levelIcon: "verified",
+    levelLabel: "DevOps & Platform",
+    levelColor: "var(--tertiary)",
+  },
+];
 
-  const categories = ["All", "Web Development", "Python & DSA", "Machine Learning", "Cybersecurity", "Cloud & Systems"];
+const terminalLines = [
+  {
+    text: "$ pytest tests/test_concurrency_race.py -v --benchmark-enable",
+    color: "#94a3b8",
+  },
+  {
+    text: "============================= test session starts ==============================",
+    color: "#475569",
+  },
+  {
+    text: "tests/test_concurrency_race.py::test_idempotency_parallel_threads",
+    suffix: "PASSED [ 28%]",
+    suffixColor: "#34d399",
+  },
+  {
+    text: "tests/test_concurrency_race.py::test_connection_pool_under_limit",
+    suffix: "PASSED [ 57%]",
+    suffixColor: "#34d399",
+  },
+  {
+    text: "tests/test_concurrency_race.py::test_failover_recovery_latency",
+    suffix: "PASSED [ 85%]",
+    suffixColor: "#38bdf8",
+  },
+  {
+    text: "tests/test_concurrency_race.py::test_deadlock_prevention_timeout",
+    suffix: "PASSED [100%]",
+    suffixColor: "#34d399",
+  },
+  {
+    text: "====== 4 passed, 0 failed in 1.48s | Memory Peak: 42.1 MB | SHA-256 Validated ======",
+    color: "#34d399",
+    bold: true,
+  },
+];
 
-  const courses = [
-    {
-      id: "web-dev-pro",
-      category: "Web Development",
-      roadmapName: "Web Development",
-      title: "Modern Full-Stack Engineering with React & Django",
-      level: "Intermediate",
-      duration: "10 Weeks",
-      students: "14,820",
-      rating: "4.95",
-      reviews: "1,240",
-      instructor: {
-        name: "Marcus Vance",
-        role: "Principal Architect",
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
-      },
-      skills: ["React 18", "Django 5.x", "PostgreSQL", "REST APIs", "Vite"],
-      accentColor: "#059669",
-      bgGradient: "linear-gradient(135deg, #ecfdf5, #d1fae5)",
-      icon: Code,
-    },
-    {
-      id: "python-dsa-mastery",
-      category: "Python & DSA",
-      roadmapName: "Excel & Data",
-      title: "Data Structures & Algorithms: The Technical Interview",
-      level: "Beginner to Advanced",
-      duration: "8 Weeks",
-      students: "22,400",
-      rating: "4.98",
-      reviews: "3,120",
-      instructor: {
-        name: "Elena Rostova",
-        role: "Ex-Staff Engineer",
-        avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&auto=format&fit=crop&q=80",
-      },
-      skills: ["Big-O Complexity", "Graphs", "Dynamic Programming", "Trees"],
-      accentColor: "#2563eb",
-      bgGradient: "linear-gradient(135deg, #eff6ff, #dbeafe)",
-      icon: Terminal,
-    },
-    {
-      id: "applied-ml",
-      category: "Machine Learning",
-      roadmapName: "Excel & Data",
-      title: "Applied Machine Learning & Neural Network Pipelines",
-      level: "Intermediate",
-      duration: "12 Weeks",
-      students: "9,640",
-      rating: "4.92",
-      reviews: "840",
-      instructor: {
-        name: "Dr. Aris Thorne",
-        role: "AI Research Scientist",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
-      },
-      skills: ["PyTorch", "scikit-learn", "Vector Databases", "Embeddings"],
-      accentColor: "#7c3aed",
-      bgGradient: "linear-gradient(135deg, #f5f3ff, #ede9fe)",
-      icon: Brain,
-    },
-    {
-      id: "cybersec-defense",
-      category: "Cybersecurity",
-      roadmapName: "Web Development",
-      title: "Practical Network Defense & Web Security Protocols",
-      level: "Beginner",
-      duration: "6 Weeks",
-      students: "7,180",
-      rating: "4.89",
-      reviews: "560",
-      instructor: {
-        name: "Sarah Chen",
-        role: "Senior Security Analyst",
-        avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80",
-      },
-      skills: ["OWASP Top 10", "Wireshark", "Burp Suite", "Hardening"],
-      accentColor: "#e11d48",
-      bgGradient: "linear-gradient(135deg, #fff1f2, #ffe4e6)",
-      icon: Shield,
-    },
-    {
-      id: "cloud-devops",
-      category: "Cloud & Systems",
-      roadmapName: "Web Development",
-      title: "Production DevOps: Docker, Kubernetes & CI/CD Pipelines",
-      level: "Intermediate",
-      duration: "8 Weeks",
-      students: "11,350",
-      rating: "4.94",
-      reviews: "990",
-      instructor: {
-        name: "Devon Reed",
-        role: "Cloud Infrastructure Lead",
-        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80",
-      },
-      skills: ["Docker", "Kubernetes", "GitHub Actions", "Monitoring"],
-      accentColor: "#d97706",
-      bgGradient: "linear-gradient(135deg, #fffbeb, #fef3c7)",
-      icon: Layers,
-    },
-    {
-      id: "foundations-cs",
-      category: "Python & DSA",
-      roadmapName: "Excel & Data",
-      title: "Computer Systems Fundamentals: Memory, OS & Networks",
-      level: "Beginner",
-      duration: "6 Weeks",
-      students: "16,200",
-      rating: "4.96",
-      reviews: "1,450",
-      instructor: {
-        name: "Julian Rivera",
-        role: "Systems Engineer",
-        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&auto=format&fit=crop&q=80",
-      },
-      skills: ["C Basics", "Process Scheduling", "Sockets", "TCP/IP"],
-      accentColor: "#0284c7",
-      bgGradient: "linear-gradient(135deg, #f0f9ff, #e0f2fe)",
-      icon: BookOpen,
-    },
-  ];
-
-  const filteredCourses =
-    activeCategory === "All"
-      ? courses
-      : courses.filter((c) => c.category === activeCategory);
-
+export default function PopularCourses() {
   return (
-    <section id="popular-courses" className="section-spacing" style={{ backgroundColor: "var(--bg-surface)" }}>
-      <div className="container">
-        {/* Section Header */}
-        <div className="section-header">
-          <div className="eyebrow">
-            <BookOpen size={13} />
-            <span>Structured Learning Tracks</span>
-          </div>
-          <h2>Most loved by our learners</h2>
-          <p>
-            Rigorous curricula built backwards from actual hiring expectations. Every track includes hands-on challenges, graded assessments, and a portfolio project.
-          </p>
-        </div>
-
-        {/* Category Filter Tabs */}
+    <section
+      id="simulator-preview"
+      style={{
+        width: "100%",
+        background: "var(--surface)",
+        padding: "64px 0",
+        borderBottom: "1px solid var(--outline-variant)",
+      }}
+    >
+      <div
+        className="ss-container"
+        style={{ display: "flex", flexDirection: "column", gap: 32 }}
+      >
+        {/* Header */}
         <div
           style={{
             display: "flex",
-            justifyContent: "center",
-            marginBottom: "44px",
-            overflowX: "auto",
-            paddingBottom: "8px",
+            flexWrap: "wrap",
+            alignItems: "flex-end",
+            justifyContent: "space-between",
+            gap: 16,
+            borderBottom: "1px solid var(--outline-variant)",
+            paddingBottom: 24,
           }}
         >
-          <div className="tabs-container">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                className={`tab-btn ${activeCategory === cat ? "active" : ""}`}
-                onClick={() => setActiveCategory(cat)}
-              >
-                {cat}
-              </button>
-            ))}
+          <div>
+            <span className="eyebrow" style={{ display: "block", marginBottom: 4 }}>
+              Realistic Hands-On Testbeds
+            </span>
+            <h2
+              style={{
+                fontFamily: "var(--font-headline)",
+                fontSize: "clamp(1.5rem, 3vw, 1.875rem)",
+                fontWeight: 700,
+                color: "var(--on-surface)",
+              }}
+            >
+              Career Simulation Arena
+            </h2>
           </div>
+          <p
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: "0.875rem",
+              color: "var(--on-surface-variant)",
+              maxWidth: 400,
+              lineHeight: 1.6,
+            }}
+          >
+            Not generic algorithm leetcode. Solve real engineering challenges straight
+            from high-scale engineering sprint backlogs.
+          </p>
         </div>
 
-        {/* Courses Grid */}
+        {/* Scenario Cards Grid */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))",
-            gap: "28px",
+            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+            gap: 24,
           }}
-          className="courses-grid"
         >
-          {filteredCourses.map((course) => {
-            const Icon = course.icon;
-            return (
+          {scenarios.map((s) => (
+            <div
+              key={s.title}
+              style={{
+                background: "var(--surface)",
+                border: "1px solid var(--outline-variant)",
+                borderRadius: 8,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                overflow: "hidden",
+                boxShadow: "var(--shadow-sm)",
+                transition: "box-shadow 0.2s ease, border-color 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = "var(--shadow-md)";
+                e.currentTarget.style.borderColor = "var(--primary)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = "var(--shadow-sm)";
+                e.currentTarget.style.borderColor = "var(--outline-variant)";
+              }}
+            >
+              {/* Card Body */}
               <div
-                key={course.id}
-                className="card"
                 style={{
+                  padding: 20,
                   display: "flex",
                   flexDirection: "column",
-                  borderRadius: "14px",
-                  overflow: "hidden",
-                  backgroundColor: "var(--bg-surface)",
+                  gap: 12,
+                  flex: 1,
                 }}
               >
-                {/* Visual Thumbnail Banner */}
                 <div
                   style={{
-                    height: "140px",
-                    background: course.bgGradient,
-                    padding: "20px 24px",
                     display: "flex",
-                    flexDirection: "column",
+                    alignItems: "center",
                     justifyContent: "space-between",
-                    borderBottom: "1px solid var(--border-subtle)",
-                    position: "relative",
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <span
-                      style={{
-                        backgroundColor: "#ffffff",
-                        color: course.accentColor,
-                        padding: "4px 10px",
-                        borderRadius: "var(--radius-full)",
-                        fontSize: "0.74rem",
-                        fontWeight: 700,
-                        fontFamily: "var(--font-heading)",
-                        boxShadow: "var(--shadow-xs)",
-                      }}
-                    >
-                      {course.category}
-                    </span>
-
-                    <span
-                      style={{
-                        fontSize: "0.76rem",
-                        color: "var(--text-secondary)",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {course.level}
-                    </span>
-                  </div>
-
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <div
-                      style={{
-                        width: "36px",
-                        height: "36px",
-                        borderRadius: "8px",
-                        backgroundColor: "#ffffff",
-                        color: course.accentColor,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        boxShadow: "var(--shadow-xs)",
-                      }}
-                    >
-                      <Icon size={20} />
-                    </div>
-                    <div style={{ fontSize: "0.82rem", color: "var(--text-muted)", fontWeight: 500 }}>
-                      {course.duration} comprehensive track
-                    </div>
-                  </div>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-label)",
+                      fontSize: "0.625rem",
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
+                      padding: "2px 8px",
+                      background: s.badgeBg,
+                      color: s.badgeColor,
+                      borderRadius: 4,
+                    }}
+                  >
+                    {s.badge}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "0.6875rem",
+                      color: "var(--outline)",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {s.time}
+                  </span>
                 </div>
 
-                {/* Course Card Body */}
-                <div style={{ padding: "24px", flex: 1, display: "flex", flexDirection: "column" }}>
-                  <h3
-                    style={{
-                      fontSize: "1.18rem",
-                      fontWeight: 700,
-                      lineHeight: 1.35,
-                      color: "var(--text-primary)",
-                      marginBottom: "14px",
-                      minHeight: "48px",
-                    }}
-                  >
-                    {course.title}
-                  </h3>
+                <h3
+                  style={{
+                    fontFamily: "var(--font-headline)",
+                    fontSize: "0.9375rem",
+                    fontWeight: 700,
+                    color: "var(--on-surface)",
+                    lineHeight: 1.35,
+                  }}
+                >
+                  {s.title}
+                </h3>
 
-                  {/* Skills Tags */}
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "20px" }}>
-                    {course.skills.map((skill, sIdx) => (
-                      <span
-                        key={sIdx}
-                        style={{
-                          fontSize: "0.74rem",
-                          backgroundColor: "var(--bg-subtle)",
-                          color: "var(--text-secondary)",
-                          padding: "3px 8px",
-                          borderRadius: "4px",
-                          fontWeight: 500,
-                        }}
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
+                <p
+                  style={{
+                    fontFamily: "var(--font-body)",
+                    fontSize: "0.6875rem",
+                    color: "var(--on-surface-variant)",
+                    lineHeight: 1.65,
+                  }}
+                >
+                  {s.desc}
+                </p>
 
-                  {/* Stats: Learners & Rating */}
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      paddingBottom: "16px",
-                      borderBottom: "1px solid var(--border-subtle)",
-                      marginBottom: "16px",
-                      fontSize: "0.84rem",
-                      color: "var(--text-muted)",
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                      <Users size={14} />
-                      <span>{course.students} enrolled</span>
-                    </div>
-
-                    <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "#b45309", fontWeight: 700 }}>
-                      <Star size={14} fill="#f59e0b" stroke="#f59e0b" />
-                      <span>{course.rating}</span>
-                      <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>({course.reviews})</span>
-                    </div>
-                  </div>
-
-                  {/* Instructor & CTA */}
-                  <div style={{ marginTop: "auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                      <img
-                        src={course.instructor.avatar}
-                        alt={course.instructor.name}
-                        style={{
-                          width: "32px",
-                          height: "32px",
-                          borderRadius: "50%",
-                          objectFit: "cover",
-                        }}
-                        loading="lazy"
-                      />
-                      <div>
-                        <div style={{ fontSize: "0.84rem", fontWeight: 700, color: "var(--text-primary)" }}>
-                          {course.instructor.name}
-                        </div>
-                        <div style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>
-                          {course.instructor.role}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* B10 FIX: Use onSelectRoadmap to navigate to the relevant roadmap */}
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      style={{ padding: "8px 14px", fontSize: "0.82rem" }}
-                      onClick={() => {
-                        if (onSelectRoadmap && course.roadmapName) {
-                          onSelectRoadmap(course.roadmapName);
-                        }
-                        if (onSelectCourse) {
-                          onSelectCourse(course.id);
-                        }
+                {/* Tags */}
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 6,
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "0.625rem",
+                    paddingTop: 4,
+                  }}
+                >
+                  {s.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      style={{
+                        padding: "2px 8px",
+                        background: "var(--surface-subtle)",
+                        border: "1px solid var(--outline-variant)",
+                        borderRadius: 4,
+                        color: "var(--on-surface-variant)",
+                        fontWeight: 500,
                       }}
                     >
-                      <span>View Roadmap</span>
-                      <ArrowRight size={13} />
-                    </button>
-                  </div>
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               </div>
-            );
-          })}
+
+              {/* Card Footer */}
+              <div
+                style={{
+                  padding: "12px 20px",
+                  background: "var(--surface-subtle)",
+                  borderTop: "1px solid var(--outline-variant)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 4,
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "0.6875rem",
+                    fontWeight: 600,
+                    color: s.levelColor,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 15 }}>
+                    {s.levelIcon}
+                  </span>
+                  {s.levelLabel}
+                </div>
+                <a
+                  href="#"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 4,
+                    background: "var(--surface)",
+                    border: "1px solid var(--outline-variant)",
+                    color: "var(--on-surface)",
+                    padding: "4px 12px",
+                    borderRadius: 4,
+                    fontFamily: "var(--font-label)",
+                    fontSize: "0.6875rem",
+                    fontWeight: 700,
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    textDecoration: "none",
+                    transition: "border-color 0.15s",
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.borderColor = "var(--primary)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.borderColor = "var(--outline-variant)")
+                  }
+                >
+                  Start Run
+                  <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                    arrow_forward
+                  </span>
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Terminal Execution Preview */}
+        <div className="terminal-window">
+          <div className="terminal-topbar">
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div className="terminal-dots">
+                <span
+                  className="terminal-dot"
+                  style={{ background: "#f87171" }}
+                />
+                <span
+                  className="terminal-dot"
+                  style={{ background: "#fbbf24" }}
+                />
+                <span
+                  className="terminal-dot"
+                  style={{ background: "#34d399" }}
+                />
+              </div>
+              <span
+                style={{
+                  marginLeft: 8,
+                  fontFamily: "var(--font-label)",
+                  fontSize: "0.6875rem",
+                  color: "#cbd5e1",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.1em",
+                  fontWeight: 600,
+                }}
+              >
+                Sandbox Runner Terminal (Judge0 Core #339)
+              </span>
+            </div>
+            <span
+              style={{
+                color: "#34d399",
+                fontWeight: 700,
+                fontSize: "0.6875rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+              }}
+            >
+              Active Test Harness
+            </span>
+          </div>
+
+          <div className="terminal-body">
+            {terminalLines.map((line, i) => (
+              <div
+                key={i}
+                style={{
+                  color: line.color || "#e2e8f0",
+                  fontWeight: line.bold ? 600 : 400,
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 8,
+                }}
+              >
+                <span>{line.text}</span>
+                {line.suffix && (
+                  <span style={{ color: line.suffixColor, fontWeight: 700 }}>
+                    {line.suffix}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-
-      <style>{`
-        @media (max-width: 768px) {
-          .courses-grid { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
     </section>
   );
 }
