@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import Logo from "./Logo";
 import { GoogleLogin } from "@react-oauth/google";
 import { X, LogIn, UserPlus, AlertCircle, Eye, EyeOff } from "lucide-react";
 
@@ -142,23 +143,8 @@ export default function AuthModal() {
 
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "24px" }}>
-          <div
-            style={{
-              width: "44px",
-              height: "44px",
-              borderRadius: "10px",
-              background: "var(--primary)",
-              color: "#ffffff",
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontWeight: 900,
-              fontSize: "1.25rem",
-              marginBottom: "12px",
-              boxShadow: "0 2px 8px rgba(5, 150, 105, 0.25)",
-            }}
-          >
-            S
+          <div style={{ display: "inline-flex", justifyContent: "center", marginBottom: "12px" }}>
+            <Logo iconSize={48} showText={false} />
           </div>
           <h3 style={{ fontSize: "1.65rem", marginBottom: "6px", color: "var(--text-primary)" }}>
             {isLogin ? "Welcome back" : "Create your account"}

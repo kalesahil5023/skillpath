@@ -1,4 +1,5 @@
 import React from "react";
+import Logo from "./Logo";
 
 export default function Footer({ onOpenLegal }) {
   return (
@@ -24,30 +25,7 @@ export default function Footer({ onOpenLegal }) {
         }}>
           {/* Brand */}
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <div style={{
-              width: "28px",
-              height: "28px",
-              borderRadius: "5px",
-              backgroundColor: "var(--primary)",
-              color: "#ffffff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontFamily: "var(--font-headline)",
-              fontWeight: 700,
-              fontSize: "0.9375rem",
-            }}>
-              S
-            </div>
-            <span style={{
-              fontFamily: "var(--font-headline)",
-              fontSize: "1.125rem",
-              fontWeight: 700,
-              color: "var(--on-surface)",
-              letterSpacing: "-0.02em",
-            }}>
-              SkillSprint
-            </span>
+            <Logo iconSize={30} theme="light" />
             <span style={{
               fontFamily: "var(--font-mono)",
               fontSize: "0.625rem",

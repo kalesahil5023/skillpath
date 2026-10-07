@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
+import Logo from "./Logo";
 import { LogOut, Menu, X, Search, Terminal, ExternalLink, Trophy, Users, Briefcase, LayoutDashboard } from "lucide-react";
 
 export default function Navbar({ onOpenLegal, onOpenSearch, onNavigate }) {
@@ -125,7 +126,7 @@ export default function Navbar({ onOpenLegal, onOpenSearch, onNavigate }) {
             justifyContent: "space-between",
             height: "64px",
           }}>
-            {/* Logo */}
+            {/* Brand Logo on Left-Hand Side */}
             <div style={{ display: "flex", alignItems: "center", gap: "28px" }}>
               <a
                 href="#"
@@ -133,35 +134,11 @@ export default function Navbar({ onOpenLegal, onOpenSearch, onNavigate }) {
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "8px",
                   textDecoration: "none",
                 }}
+                aria-label="SkillSprint Home"
               >
-                <div style={{
-                  width: "32px",
-                  height: "32px",
-                  borderRadius: "6px",
-                  backgroundColor: "var(--primary)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#ffffff",
-                  fontFamily: "var(--font-headline)",
-                  fontWeight: 700,
-                  fontSize: "1.125rem",
-                  boxShadow: "0 2px 4px rgba(51, 102, 204, 0.25)",
-                }}>
-                  S
-                </div>
-                <span style={{
-                  fontFamily: "var(--font-headline)",
-                  fontSize: "1.3125rem",
-                  fontWeight: 700,
-                  color: "var(--on-surface)",
-                  letterSpacing: "-0.02em",
-                }}>
-                  SkillSprint
-                </span>
+                <Logo iconSize={36} theme="light" />
               </a>
 
               {/* Desktop Nav Links */}
