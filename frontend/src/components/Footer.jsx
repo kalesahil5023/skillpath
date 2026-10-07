@@ -1,222 +1,144 @@
-import React, { useState } from "react";
-import { ShieldCheck, Mail, ArrowRight, CheckCircle2 } from "lucide-react";
+import React from "react";
 
 export default function Footer({ onOpenLegal }) {
-  const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleSubscribe = (e) => {
-    e.preventDefault();
-    if (email.trim()) {
-      setSubscribed(true);
-      setEmail("");
-    }
-  };
-
   return (
-    <footer
-      style={{
-        backgroundColor: "#ffffff",
-        borderTop: "1px solid var(--border)",
-        padding: "80px 0 40px",
-      }}
-    >
-      <div className="container">
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.5fr 1fr 1fr 1.3fr",
-            gap: "48px",
-            marginBottom: "56px",
-          }}
-          className="footer-grid"
-        >
-          {/* Brand Info */}
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-              <div
-                style={{
-                  width: "34px",
-                  height: "34px",
-                  borderRadius: "8px",
-                  backgroundColor: "var(--primary)",
-                  color: "#ffffff",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontWeight: 900,
-                  fontSize: "1.1rem",
-                  boxShadow: "0 2px 6px rgba(5, 150, 105, 0.25)",
-                }}
-              >
-                S
-              </div>
-              <span
-                style={{
-                  fontSize: "1.25rem",
-                  fontWeight: 800,
-                  fontFamily: "var(--font-heading)",
-                  letterSpacing: "-0.03em",
-                  color: "var(--text-primary)",
-                }}
-              >
-                Skill<span style={{ color: "var(--primary)" }}>Sprint</span>
-              </span>
+    <footer style={{
+      width: "100%",
+      background: "var(--surface)",
+      borderTop: "1px solid var(--outline-variant)",
+      padding: "36px 0 28px",
+    }}>
+      <div className="ss-container" style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "24px",
+      }}>
+        <div style={{
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "20px",
+          borderBottom: "1px solid var(--outline-variant)",
+          paddingBottom: "24px",
+        }}>
+          {/* Brand */}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div style={{
+              width: "28px",
+              height: "28px",
+              borderRadius: "5px",
+              backgroundColor: "var(--primary)",
+              color: "#ffffff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontFamily: "var(--font-headline)",
+              fontWeight: 700,
+              fontSize: "0.9375rem",
+            }}>
+              S
             </div>
-
-            <p style={{ maxWidth: "340px", fontSize: "0.92rem", color: "var(--text-muted)", lineHeight: 1.6, marginBottom: "20px" }}>
-              A serious, modern learning platform combining structured curricula, algorithmic practice, and production portfolio projects to launch sustainable careers.
-            </p>
-
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "var(--primary-text)", fontSize: "0.84rem", fontWeight: 600 }}>
-              <ShieldCheck size={16} color="var(--primary)" />
-              <span>React 18 + Django 5 + PostgreSQL Cloud Architecture</span>
-            </div>
+            <span style={{
+              fontFamily: "var(--font-headline)",
+              fontSize: "1.125rem",
+              fontWeight: 700,
+              color: "var(--on-surface)",
+              letterSpacing: "-0.02em",
+            }}>
+              SkillSprint
+            </span>
+            <span style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.625rem",
+              color: "var(--outline)",
+              background: "var(--surface-container)",
+              padding: "2px 6px",
+              borderRadius: "3px",
+              marginLeft: "6px",
+            }}>
+              DIGITAL SIMULATOR
+            </span>
           </div>
 
-          {/* Platform Links */}
-          <div>
-            <h4 style={{ fontSize: "0.95rem", fontWeight: 700, marginBottom: "18px", color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
-              Platform
-            </h4>
-            <div style={{ display: "grid", gap: "11px", fontSize: "0.9rem" }}>
-              <a href="#popular-courses" style={{ color: "var(--text-muted)", transition: "color 0.15s" }} onMouseEnter={(e) => (e.target.style.color = "var(--primary)")} onMouseLeave={(e) => (e.target.style.color = "var(--text-muted)")}>
-                Courses
-              </a>
-              <a href="#path-finder" style={{ color: "var(--text-muted)", transition: "color 0.15s" }} onMouseEnter={(e) => (e.target.style.color = "var(--primary)")} onMouseLeave={(e) => (e.target.style.color = "var(--text-muted)")}>
-                Practice &amp; PathFinder
-              </a>
-              <a href="#skill-roadmaps" style={{ color: "var(--text-muted)", transition: "color 0.15s" }} onMouseEnter={(e) => (e.target.style.color = "var(--primary)")} onMouseLeave={(e) => (e.target.style.color = "var(--text-muted)")}>
-                Milestone Roadmaps
-              </a>
-              <a href="#my-plan" style={{ color: "var(--text-muted)", transition: "color 0.15s" }} onMouseEnter={(e) => (e.target.style.color = "var(--primary)")} onMouseLeave={(e) => (e.target.style.color = "var(--text-muted)")}>
-                7-Day Starter Plan
-              </a>
-              <a href="#builders" style={{ color: "var(--text-muted)", transition: "color 0.15s" }} onMouseEnter={(e) => (e.target.style.color = "var(--primary)")} onMouseLeave={(e) => (e.target.style.color = "var(--text-muted)")}>
-                Project &amp; Portfolio Builder
-              </a>
-            </div>
-          </div>
-
-          {/* Company & Legal */}
-          <div>
-            <h4 style={{ fontSize: "0.95rem", fontWeight: 700, marginBottom: "18px", color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
-              Company &amp; Legal
-            </h4>
-            <div style={{ display: "grid", gap: "11px", fontSize: "0.9rem" }}>
-              <button
-                type="button"
-                onClick={() => onOpenLegal("about")}
-                style={{ background: "none", border: "none", color: "var(--text-muted)", textAlign: "left", cursor: "pointer", fontSize: "inherit", fontFamily: "inherit" }}
-              >
-                About SkillSprint
-              </button>
-              <button
-                type="button"
-                onClick={() => onOpenLegal("privacy")}
-                style={{ background: "none", border: "none", color: "var(--text-muted)", textAlign: "left", cursor: "pointer", fontSize: "inherit", fontFamily: "inherit" }}
-              >
-                Privacy Policy
-              </button>
-              <button
-                type="button"
-                onClick={() => onOpenLegal("terms")}
-                style={{ background: "none", border: "none", color: "var(--text-muted)", textAlign: "left", cursor: "pointer", fontSize: "inherit", fontFamily: "inherit" }}
-              >
-                Terms of Service
-              </button>
-              <button
-                type="button"
-                onClick={() => onOpenLegal("affiliate")}
-                style={{ background: "none", border: "none", color: "var(--text-muted)", textAlign: "left", cursor: "pointer", fontSize: "inherit", fontFamily: "inherit" }}
-              >
-                FTC Transparency Standards
-              </button>
-            </div>
-          </div>
-
-          {/* Newsletter: Stay in the Loop */}
-          <div>
-            <h4 style={{ fontSize: "0.95rem", fontWeight: 700, marginBottom: "18px", color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
-              Stay in the loop
-            </h4>
-            <p style={{ fontSize: "0.88rem", color: "var(--text-muted)", lineHeight: 1.5, marginBottom: "14px" }}>
-              Receive weekly curated engineering challenges, case study blueprints, and hiring updates.
-            </p>
-
-            {subscribed ? (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "10px 14px",
-                  background: "var(--primary-light)",
-                  border: "1px solid var(--primary-border)",
-                  borderRadius: "var(--radius-sm)",
-                  color: "var(--primary-text)",
-                  fontSize: "0.86rem",
-                  fontWeight: 600,
-                }}
-              >
-                <CheckCircle2 size={16} />
-                <span>You're subscribed! Welcome aboard.</span>
-              </div>
-            ) : (
-              <form onSubmit={handleSubscribe} style={{ display: "flex", gap: "8px" }}>
-                <input
-                  type="email"
-                  placeholder="name@workemail.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="form-input"
-                  style={{ padding: "9px 12px", fontSize: "0.88rem" }}
-                />
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  style={{ padding: "9px 14px", flexShrink: 0 }}
-                  title="Subscribe"
-                >
-                  <ArrowRight size={16} />
-                </button>
-              </form>
-            )}
+          {/* Links */}
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "20px",
+            fontFamily: "var(--font-label)",
+            fontSize: "0.6875rem",
+            fontWeight: 600,
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            color: "var(--on-surface-variant)",
+            flexWrap: "wrap",
+          }}>
+            <a href="#simulator-preview" style={{ transition: "color 0.15s" }}>Simulations</a>
+            <a href="#skill-graph" style={{ transition: "color 0.15s" }}>Skill Graph</a>
+            <a href="#roadmaps" style={{ transition: "color 0.15s" }}>Roadmaps</a>
+            <a href="#project-lab" style={{ transition: "color 0.15s" }}>Project Lab</a>
+            <a href="#passport" style={{ transition: "color 0.15s" }}>Skill Passport</a>
+            <button
+              type="button"
+              onClick={() => onOpenLegal?.("privacy")}
+              style={{
+                fontFamily: "inherit",
+                fontSize: "inherit",
+                fontWeight: "inherit",
+                letterSpacing: "inherit",
+                textTransform: "inherit",
+                color: "inherit",
+                cursor: "pointer",
+              }}
+            >
+              Privacy
+            </button>
+            <button
+              type="button"
+              onClick={() => onOpenLegal?.("terms")}
+              style={{
+                fontFamily: "inherit",
+                fontSize: "inherit",
+                fontWeight: "inherit",
+                letterSpacing: "inherit",
+                textTransform: "inherit",
+                color: "inherit",
+                cursor: "pointer",
+              }}
+            >
+              Terms
+            </button>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div
-          style={{
-            paddingTop: "28px",
-            borderTop: "1px solid var(--border-subtle)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "16px",
-            fontSize: "0.84rem",
-            color: "var(--text-muted)",
-          }}
-        >
-          <div>
-            &copy; {new Date().getFullYear()} SkillSprint Global Inc. All rights reserved.
+        {/* Bottom Bar with Engine Status & Build Hash */}
+        <div style={{
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "16px",
+          fontFamily: "var(--font-mono)",
+          fontSize: "0.6875rem",
+          color: "var(--on-surface-variant)",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "var(--tertiary)" }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--tertiary)" }} />
+              ALL SIMULATION NODES HEALTHY
+            </span>
+            <span style={{ color: "var(--outline-variant)" }}>·</span>
+            <span style={{ color: "var(--outline)" }}>
+              BUILD: #9f8a32d · DETERMINISTIC ENGINE V4.2
+            </span>
           </div>
-          <div>
-            Domain: <strong style={{ color: "var(--text-primary)" }}>skillsprint.online</strong>
+
+          <div style={{ color: "var(--outline)" }}>
+            © {new Date().getFullYear()} SkillSprint. Verified engineering competence.
           </div>
         </div>
       </div>
-
-      <style>{`
-        @media (max-width: 960px) {
-          .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
-        }
-        @media (max-width: 560px) {
-          .footer-grid { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
     </footer>
   );
 }

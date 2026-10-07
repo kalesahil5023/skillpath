@@ -1,370 +1,564 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
-import { User, LogIn, LogOut, Menu, X, Search } from "lucide-react";
+import { LogOut, Menu, X, Search, Terminal, ExternalLink, Trophy, Users, Briefcase, LayoutDashboard } from "lucide-react";
 
-export default function Navbar({ onOpenLegal, onOpenSearch }) {
+export default function Navbar({ onOpenLegal, onOpenSearch, onNavigate }) {
   const { user, isLoggedIn, logout, openAuthModal } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const menuRef = useRef(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Close user dropdown if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const navLinks = [
-    { label: "Courses", href: "#popular-courses" },
-    { label: "Practice", href: "#path-finder" },
-    { label: "Roadmaps", href: "#skill-roadmaps" },
-    { label: "Projects", href: "#builders" },
-    { label: "Resources", href: "#resources" },
+    { label: "SIMULATOR", page: "lesson" },
+    { label: "DASHBOARD", page: "dashboard" },
+    { label: "LEADERBOARD", page: "leaderboard" },
+    { label: "STUDY SQUAD", page: "squad" },
+    { label: "PORTFOLIO", page: "portfolio" },
   ];
 
+  const handleLinkClick = (e, link) => {
+    e.preventDefault();
+    if (link.page) {
+      onNavigate?.(link.page);
+    } else {
+      onNavigate?.("landing");
+    }
+    setMobileMenuOpen(false);
+  };
+
   return (
-    <header
-      style={{
+    <>
+      {/* ── Top System Ticker ── */}
+      <div style={{
+        background: "#0f172a",
+        color: "#94a3b8",
+        fontSize: "0.6875rem",
+        fontFamily: "var(--font-mono)",
+        borderBottom: "1px solid #1e293b",
+        padding: "6px 0",
         position: "sticky",
         top: 0,
+        zIndex: 101,
+      }}>
+        <div className="ss-container" style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "8px",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "var(--tertiary)", fontWeight: 600 }}>
+              <span style={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                background: "var(--tertiary)",
+                display: "inline-block",
+                animation: "ping 1.2s cubic-bezier(0,0,0.2,1) infinite",
+              }} />
+              KERNEL: DETERMINISTIC CLUSTER ACTIVE
+            </span>
+            <span style={{ color: "#334155" }}>/</span>
+            <span className="hide-mobile" style={{ color: "#cbd5e1" }}>
+              SANDBOX RUNNER: JUDGE-0-V4 PROD
+            </span>
+            <span className="hide-mobile" style={{ color: "#334155" }}>/</span>
+            <span style={{ color: "#94a3b8" }}>SYS LOAD: 0.18</span>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <span className="hide-mobile" style={{ color: "#94a3b8" }}>
+              EVALUATION METRIC: SHA-256 VERIFIED
+            </span>
+            <span style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "4px",
+              background: "rgba(51, 102, 204, 0.15)",
+              color: "#93c5fd",
+              padding: "2px 8px",
+              borderRadius: "4px",
+              fontSize: "0.625rem",
+              fontWeight: 600,
+            }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 13, color: "#60a5fa" }}>verified</span>
+              1,842 AUDITS TODAY
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Main Navigation Header ── */}
+      <header style={{
+        position: "sticky",
+        top: "33px",
         zIndex: 100,
-        backgroundColor: "#ffffff",
-        borderBottom: `1px solid ${scrolled ? "var(--border)" : "var(--border-subtle)"}`,
-        boxShadow: scrolled ? "0 2px 10px rgba(15, 23, 42, 0.04)" : "none",
-        transition: "all 0.2s ease",
-      }}
-    >
-      <div className="container">
-        <div
-          style={{
+        background: "rgba(255, 255, 255, 0.97)",
+        backdropFilter: "blur(12px)",
+        borderBottom: "1px solid var(--outline-variant)",
+        transition: "box-shadow 0.2s ease",
+        boxShadow: scrolled ? "var(--shadow-sm)" : "none",
+      }}>
+        <div className="ss-container">
+          <div style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            height: "72px",
-          }}
-        >
-          {/* Brand Logo */}
-          <a
-            href="#"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              fontSize: "1.25rem",
-              fontWeight: 800,
-              fontFamily: "var(--font-heading)",
-              letterSpacing: "-0.03em",
-              color: "var(--text-primary)",
-            }}
-          >
-            <div
-              style={{
-                width: "34px",
-                height: "34px",
-                borderRadius: "8px",
-                backgroundColor: "var(--primary)",
-                color: "#ffffff",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontWeight: 900,
-                fontSize: "1.1rem",
-                boxShadow: "0 2px 6px rgba(5, 150, 105, 0.3)",
-              }}
-            >
-              S
-            </div>
-            <span>
-              Skill<span style={{ color: "var(--primary)" }}>Sprint</span>
-            </span>
-          </a>
-
-          {/* Desktop Navigation Links */}
-          <nav
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "28px",
-            }}
-            className="desktop-nav"
-            aria-label="Main Navigation"
-          >
-            {navLinks.map((link) => (
+            height: "64px",
+          }}>
+            {/* Logo */}
+            <div style={{ display: "flex", alignItems: "center", gap: "28px" }}>
               <a
-                key={link.label}
-                href={link.href}
+                href="#"
+                onClick={(e) => { e.preventDefault(); onNavigate?.("landing"); }}
                 style={{
-                  fontFamily: "var(--font-heading)",
-                  fontSize: "0.92rem",
-                  fontWeight: 600,
-                  color: "var(--text-secondary)",
-                  transition: "color 0.15s ease",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  textDecoration: "none",
                 }}
-                onMouseEnter={(e) => (e.target.style.color = "var(--primary)")}
-                onMouseLeave={(e) => (e.target.style.color = "var(--text-secondary)")}
               >
-                {link.label}
+                <div style={{
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "6px",
+                  backgroundColor: "var(--primary)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#ffffff",
+                  fontFamily: "var(--font-headline)",
+                  fontWeight: 700,
+                  fontSize: "1.125rem",
+                  boxShadow: "0 2px 4px rgba(51, 102, 204, 0.25)",
+                }}>
+                  S
+                </div>
+                <span style={{
+                  fontFamily: "var(--font-headline)",
+                  fontSize: "1.3125rem",
+                  fontWeight: 700,
+                  color: "var(--on-surface)",
+                  letterSpacing: "-0.02em",
+                }}>
+                  SkillSprint
+                </span>
               </a>
-            ))}
-          </nav>
 
-          {/* Right Action Area */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
-            className="desktop-actions"
-          >
-            {/* Search Button */}
-            <button
-              type="button"
-              onClick={onOpenSearch}
-              title="Search (⌘K)"
-              aria-label="Search"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                padding: "8px 12px",
-                background: "var(--bg-subtle)",
-                border: "1px solid var(--border)",
-                borderRadius: "var(--radius-sm)",
-                color: "var(--text-muted)",
-                fontSize: "0.84rem",
-                fontWeight: 500,
-                cursor: "pointer",
-                fontFamily: "var(--font-body)",
-                transition: "all 0.15s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "var(--primary)";
-                e.currentTarget.style.color = "var(--text-primary)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "var(--border)";
-                e.currentTarget.style.color = "var(--text-muted)";
-              }}
-            >
-              <Search size={15} />
-              <span className="search-label">Search</span>
-              <kbd style={{
-                padding: "2px 5px",
-                background: "#ffffff",
-                border: "1px solid var(--border)",
-                borderRadius: "4px",
-                fontSize: "0.68rem",
-                fontFamily: "monospace",
-                color: "var(--text-muted)",
-              }}>⌘K</kbd>
-            </button>
-
-            {isLoggedIn ? (
-              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    padding: "6px 12px",
-                    background: "var(--bg-subtle)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "var(--radius-full)",
-                  }}
-                >
-                  <div
+              {/* Desktop Nav Links */}
+              <nav className="hide-mobile" style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+                <div style={{ width: 1, height: 16, background: "var(--outline-variant)" }} />
+                {navLinks.map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    onClick={(e) => handleLinkClick(e, link)}
                     style={{
-                      width: "24px",
-                      height: "24px",
+                      fontFamily: "var(--font-label)",
+                      fontSize: "0.6875rem",
+                      fontWeight: 700,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      color: link.active ? "var(--primary)" : "var(--on-surface-variant)",
+                      padding: "8px 0",
+                      position: "relative",
+                      transition: "color 0.15s ease",
+                      textDecoration: "none",
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = "var(--primary)"}
+                    onMouseLeave={(e) => {
+                      if (!link.active) e.currentTarget.style.color = "var(--on-surface-variant)";
+                    }}
+                  >
+                    {link.label}
+                    {link.active && (
+                      <span style={{
+                        position: "absolute",
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        height: 2,
+                        backgroundColor: "var(--primary)",
+                      }} />
+                    )}
+                  </a>
+                ))}
+              </nav>
+            </div>
+
+            {/* Right Controls */}
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              {/* Engine Status Badge */}
+              <div className="status-online hide-mobile">
+                <span className="status-dot" />
+                <span>ENGINE: ONLINE</span>
+              </div>
+
+              {/* Search button */}
+              <button
+                type="button"
+                onClick={onOpenSearch}
+                aria-label="Search"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "34px",
+                  height: "34px",
+                  borderRadius: "4px",
+                  border: "1px solid var(--outline-variant)",
+                  background: "var(--surface)",
+                  color: "var(--on-surface-variant)",
+                  cursor: "pointer",
+                  transition: "border-color 0.15s ease",
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.borderColor = "var(--primary)"}
+                onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--outline-variant)"}
+              >
+                <Search size={15} />
+              </button>
+
+              {/* Launch Simulator CTA */}
+              <button
+                type="button"
+                onClick={() => onNavigate?.("lesson")}
+                className="btn-primary"
+                style={{ fontSize: "0.6875rem" }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 15 }}>terminal</span>
+                <span>LAUNCH SIMULATOR</span>
+              </button>
+
+              {/* User Avatar & Dropdown Menu */}
+              {isLoggedIn ? (
+                <div ref={menuRef} style={{ position: "relative" }}>
+                  <button
+                    type="button"
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    style={{
+                      width: "34px",
+                      height: "34px",
                       borderRadius: "50%",
-                      background: "var(--primary)",
-                      color: "#ffffff",
+                      backgroundColor: "var(--primary-container)",
+                      color: "var(--primary)",
+                      fontWeight: 700,
+                      fontSize: "0.875rem",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: "0.75rem",
-                      fontWeight: 700,
+                      border: "1px solid var(--outline-variant)",
+                      cursor: "pointer",
                     }}
+                    title={user?.displayName || user?.username || user?.email}
                   >
-                    {(user.displayName || user.username || "U")[0].toUpperCase()}
-                  </div>
-                  <span
-                    style={{
-                      fontSize: "0.85rem",
-                      fontWeight: 600,
-                      color: "var(--text-primary)",
-                    }}
-                  >
-                    {user.displayName || user.username}
-                  </span>
-                </div>
+                    {(user?.displayName?.[0] || user?.username?.[0] || "U").toUpperCase()}
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={logout}
-                  className="btn btn-ghost"
-                  style={{ padding: "8px 12px", fontSize: "0.85rem" }}
-                  title="Sign out of account"
-                >
-                  <LogOut size={15} />
-                  <span>Logout</span>
-                </button>
-              </div>
-            ) : (
-              <>
+                  {/* Dropdown Menu */}
+                  {userMenuOpen && (
+                    <div style={{
+                      position: "absolute",
+                      right: 0,
+                      top: "44px",
+                      width: "220px",
+                      background: "var(--surface)",
+                      border: "1px solid var(--outline-variant)",
+                      borderRadius: "8px",
+                      boxShadow: "var(--shadow-lg)",
+                      zIndex: 200,
+                      padding: "8px 0",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}>
+                      <div style={{
+                        padding: "10px 16px",
+                        borderBottom: "1px solid var(--outline-variant)",
+                      }}>
+                        <div style={{
+                          fontFamily: "var(--font-headline)",
+                          fontWeight: 700,
+                          fontSize: "0.875rem",
+                          color: "var(--on-surface)",
+                        }}>
+                          {user?.displayName || user?.username || "Learner"}
+                        </div>
+                        <div style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "0.6875rem",
+                          color: "var(--outline)",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}>
+                          {user?.email}
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onNavigate?.("dashboard");
+                          setUserMenuOpen(false);
+                        }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          padding: "10px 16px",
+                          fontSize: "0.8125rem",
+                          color: "var(--on-surface)",
+                          cursor: "pointer",
+                          textAlign: "left",
+                          background: "none",
+                          border: "none",
+                          transition: "background 0.15s",
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = "var(--surface-subtle)"}
+                        onMouseLeave={(e) => e.currentTarget.style.background = "none"}
+                      >
+                        <LayoutDashboard size={15} color="var(--primary)" />
+                        <span>Dashboard</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onNavigate?.("leaderboard");
+                          setUserMenuOpen(false);
+                        }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          padding: "10px 16px",
+                          fontSize: "0.8125rem",
+                          color: "var(--on-surface)",
+                          cursor: "pointer",
+                          textAlign: "left",
+                          background: "none",
+                          border: "none",
+                          transition: "background 0.15s",
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = "var(--surface-subtle)"}
+                        onMouseLeave={(e) => e.currentTarget.style.background = "none"}
+                      >
+                        <Trophy size={15} color="var(--amber)" />
+                        <span>Leaderboard</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onNavigate?.("squad");
+                          setUserMenuOpen(false);
+                        }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          padding: "10px 16px",
+                          fontSize: "0.8125rem",
+                          color: "var(--on-surface)",
+                          cursor: "pointer",
+                          textAlign: "left",
+                          background: "none",
+                          border: "none",
+                          transition: "background 0.15s",
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = "var(--surface-subtle)"}
+                        onMouseLeave={(e) => e.currentTarget.style.background = "none"}
+                      >
+                        <Users size={15} color="var(--tertiary)" />
+                        <span>Study Squad</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onNavigate?.("portfolio");
+                          setUserMenuOpen(false);
+                        }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          padding: "10px 16px",
+                          fontSize: "0.8125rem",
+                          color: "var(--on-surface)",
+                          cursor: "pointer",
+                          textAlign: "left",
+                          background: "none",
+                          border: "none",
+                          transition: "background 0.15s",
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = "var(--surface-subtle)"}
+                        onMouseLeave={(e) => e.currentTarget.style.background = "none"}
+                      >
+                        <Briefcase size={15} color="var(--primary)" />
+                        <span>Public Portfolio</span>
+                      </button>
+
+                      <div style={{ borderTop: "1px solid var(--outline-variant)", margin: "4px 0" }} />
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          logout();
+                          setUserMenuOpen(false);
+                        }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          padding: "10px 16px",
+                          fontSize: "0.8125rem",
+                          color: "var(--error)",
+                          cursor: "pointer",
+                          textAlign: "left",
+                          background: "none",
+                          border: "none",
+                          transition: "background 0.15s",
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = "var(--error-container)"}
+                        onMouseLeave={(e) => e.currentTarget.style.background = "none"}
+                      >
+                        <LogOut size={15} color="var(--error)" />
+                        <span>Sign Out</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
                 <button
                   type="button"
                   onClick={() => openAuthModal("login")}
                   style={{
-                    fontFamily: "var(--font-heading)",
-                    fontSize: "0.92rem",
-                    fontWeight: 600,
-                    color: "var(--text-primary)",
-                    padding: "8px 14px",
-                    transition: "color 0.15s",
-                    background: "none",
-                    border: "none",
+                    width: "34px",
+                    height: "34px",
+                    borderRadius: "50%",
+                    border: "1px solid var(--outline-variant)",
+                    background: "var(--surface)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "var(--outline)",
                     cursor: "pointer",
                   }}
+                  title="Sign In"
                 >
-                  Log In
+                  <span className="material-symbols-outlined" style={{ fontSize: 18 }}>person</span>
                 </button>
+              )}
 
-                <button
-                  type="button"
-                  onClick={() => openAuthModal("register")}
-                  className="btn btn-primary"
-                  style={{ padding: "9px 18px", fontSize: "0.9rem" }}
-                >
-                  Get Started
-                </button>
-              </>
-            )}
+              {/* Mobile Menu Toggle */}
+              <button
+                type="button"
+                className="show-mobile-only"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "var(--on-surface)",
+                  cursor: "pointer",
+                  padding: "4px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+              </button>
+            </div>
           </div>
-
-          {/* Mobile Hamburger Toggle */}
-          <button
-            type="button"
-            className="mobile-toggle"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            style={{
-              padding: "8px",
-              color: "var(--text-primary)",
-              display: "none",
-            }}
-            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
         </div>
 
-        {/* Mobile Drawer Menu */}
+        {/* Mobile Dropdown */}
         {mobileMenuOpen && (
-          <div
-            style={{
-              padding: "18px 0 24px",
-              borderTop: "1px solid var(--border)",
-              display: "flex",
-              flexDirection: "column",
-              gap: "16px",
-            }}
-          >
-            {/* Mobile Search */}
-            <button
-              type="button"
-              onClick={() => { onOpenSearch(); setMobileMenuOpen(false); }}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                padding: "10px 14px",
-                background: "var(--bg-subtle)",
-                border: "1px solid var(--border)",
-                borderRadius: "var(--radius-sm)",
-                color: "var(--text-muted)",
-                fontSize: "0.92rem",
-                cursor: "pointer",
-                fontFamily: "var(--font-body)",
-              }}
-            >
-              <Search size={16} />
-              <span>Search courses, tasks, resources...</span>
-            </button>
-
+          <div style={{
+            background: "var(--surface)",
+            borderTop: "1px solid var(--outline-variant)",
+            padding: "16px 20px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "12px",
+          }}>
             {navLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={(e) => handleLinkClick(e, link)}
                 style={{
-                  fontFamily: "var(--font-heading)",
-                  fontSize: "1rem",
-                  fontWeight: 600,
-                  color: "var(--text-primary)",
-                  padding: "8px 0",
+                  fontFamily: "var(--font-label)",
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  letterSpacing: "0.08em",
+                  color: link.active ? "var(--primary)" : "var(--on-surface)",
+                  padding: "6px 0",
                 }}
               >
                 {link.label}
               </a>
             ))}
 
-            <div style={{ paddingTop: "12px", borderTop: "1px solid var(--border)", display: "flex", gap: "10px", flexWrap: "wrap" }}>
-              {isLoggedIn ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    logout();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="btn btn-secondary"
-                  style={{ flex: 1 }}
-                >
-                  <LogOut size={16} />
-                  <span>Log Out ({user.displayName || user.username})</span>
-                </button>
-              ) : (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      openAuthModal("login");
-                      setMobileMenuOpen(false);
-                    }}
-                    className="btn btn-secondary"
-                    style={{ flex: 1 }}
-                  >
-                    Log In
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      openAuthModal("register");
-                      setMobileMenuOpen(false);
-                    }}
-                    className="btn btn-primary"
-                    style={{ flex: 1 }}
-                  >
-                    Get Started
-                  </button>
-                </>
-              )}
+            <div style={{ paddingTop: "8px", borderTop: "1px solid var(--outline-variant)", display: "flex", flexDirection: "column", gap: "8px" }}>
+              <button
+                type="button"
+                onClick={() => {
+                  onNavigate?.(isLoggedIn ? "dashboard" : "landing");
+                  setMobileMenuOpen(false);
+                }}
+                className="btn-primary"
+                style={{ width: "100%", justifyContent: "center" }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 15 }}>terminal</span>
+                LAUNCH SIMULATOR
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  onNavigate?.("leaderboard");
+                  setMobileMenuOpen(false);
+                }}
+                className="btn-outline"
+                style={{ width: "100%", justifyContent: "center" }}
+              >
+                LEADERBOARD
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  onNavigate?.("portfolio");
+                  setMobileMenuOpen(false);
+                }}
+                className="btn-outline"
+                style={{ width: "100%", justifyContent: "center" }}
+              >
+                PUBLIC PORTFOLIO
+              </button>
             </div>
           </div>
         )}
-      </div>
-
-      <style>{`
-        @media (max-width: 880px) {
-          .desktop-nav { display: none !important; }
-          .desktop-actions { display: none !important; }
-          .mobile-toggle { display: block !important; }
-        }
-        @media (max-width: 1100px) {
-          .search-label { display: none; }
-        }
-      `}</style>
-    </header>
+      </header>
+    </>
   );
 }

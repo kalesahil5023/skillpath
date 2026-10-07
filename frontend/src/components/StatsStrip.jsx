@@ -107,27 +107,27 @@ export default function StatsStrip() {
   const stats = [
     {
       icon: Users,
-      value: "42,000+",
-      label: "Active Learners",
-      description: "Building skills daily across 80+ countries",
-    },
-    {
-      icon: BookOpen,
-      value: "65+",
-      label: "Structured Courses",
-      description: "Curated paths with real project briefs",
+      value: "4,218+",
+      label: "Active Squads",
+      description: "Study groups learning together right now",
     },
     {
       icon: Code2,
-      value: "1,800+",
-      label: "Practice Problems",
-      description: "From syntax drills to system design",
+      value: "12,847+",
+      label: "Missions Completed Today",
+      description: "Across all tracks and sprints globally",
     },
     {
       icon: Award,
-      value: "94%",
-      label: "Course Completion",
-      description: "Industry-leading student retention rate",
+      value: "18+",
+      label: "Avg Score Gain/Sprint",
+      description: "Career Readiness Score points per 14-day sprint",
+    },
+    {
+      icon: BookOpen,
+      value: "91%",
+      label: "Streak Retention",
+      description: "Learners who keep their streak past day 7",
     },
   ];
 
