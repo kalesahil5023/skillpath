@@ -85,8 +85,10 @@ function AppShell() {
 }
 
 export default function App() {
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "skillsprint-dev-client-id.apps.googleusercontent.com";
+
   return (
-    <GoogleOAuthProvider clientId="dummy-client-id">
+    <GoogleOAuthProvider clientId={googleClientId}>
       <AuthProvider>
         <SprintProvider>
           <ToastProvider>
