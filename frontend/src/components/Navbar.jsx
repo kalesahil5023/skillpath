@@ -47,66 +47,7 @@ export default function Navbar({ onOpenLegal, onOpenSearch, onNavigate }) {
 
   return (
     <>
-      {/* ── Top System Ticker ── */}
-      <div style={{
-        background: "#0f172a",
-        color: "#94a3b8",
-        fontSize: "0.6875rem",
-        fontFamily: "var(--font-mono)",
-        borderBottom: "1px solid #1e293b",
-        padding: "6px 0",
-        position: "sticky",
-        top: 0,
-        zIndex: 101,
-      }}>
-        <div className="ss-container" style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: "8px",
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "var(--tertiary)", fontWeight: 600 }}>
-              <span style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: "var(--tertiary)",
-                display: "inline-block",
-                animation: "ping 1.2s cubic-bezier(0,0,0.2,1) infinite",
-              }} />
-              KERNEL: DETERMINISTIC CLUSTER ACTIVE
-            </span>
-            <span style={{ color: "#334155" }}>/</span>
-            <span className="hide-mobile" style={{ color: "#cbd5e1" }}>
-              SANDBOX RUNNER: JUDGE-0-V4 PROD
-            </span>
-            <span className="hide-mobile" style={{ color: "#334155" }}>/</span>
-            <span style={{ color: "#94a3b8" }}>SYS LOAD: 0.18</span>
-          </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <span className="hide-mobile" style={{ color: "#94a3b8" }}>
-              EVALUATION METRIC: SHA-256 VERIFIED
-            </span>
-            <span style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "4px",
-              background: "rgba(51, 102, 204, 0.15)",
-              color: "#93c5fd",
-              padding: "2px 8px",
-              borderRadius: "4px",
-              fontSize: "0.625rem",
-              fontWeight: 600,
-            }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 13, color: "#60a5fa" }}>verified</span>
-              1,842 AUDITS TODAY
-            </span>
-          </div>
-        </div>
-      </div>
 
       {/* ── Main Navigation Header ── */}
       <header style={{
