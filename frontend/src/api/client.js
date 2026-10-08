@@ -133,6 +133,13 @@ export const authApi = {
   
   // Fetch currently authenticated user profile
   getMe: () => apiClient.get("/auth/me/"),
+
+  // Update authenticated user profile details (displayName, email)
+  updateProfile: (payload) => apiClient.patch("/auth/me/", payload),
+
+  // BlackSMS API endpoints for mobile OTP authentication
+  sendSmsOtp: (payload) => apiClient.post("/auth/sms/send-otp/", payload),
+  verifySmsOtp: (payload) => apiClient.post("/auth/sms/verify-otp/", payload),
 };
 
 // ── 6. User Plans API Endpoints ─────────────────────────────────────────────
