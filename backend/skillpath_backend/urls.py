@@ -14,6 +14,7 @@ urlpatterns = [
     path("api/plans/", include("plans.urls")),
     path("api/roadmaps/", include("roadmaps.urls")),
     path("api/portfolio/", include("portfolio.urls")),
+    path("api/interviews/", include("interviews.urls")),
     path("loaderio-a37a474237226bab687033f87649c45e.txt", loaderio_view),
     path("loaderio-a37a474237226bab687033f87649c45e/", loaderio_view),
     path("loaderio-a37a474237226bab687033f87649c45e", loaderio_view),

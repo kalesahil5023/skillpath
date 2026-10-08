@@ -1,93 +1,95 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { useSprint } from "../context/SprintContext";
-import { Trophy, TrendingUp, TrendingDown, Minus, Flame, Zap, BarChart2, Users, Star } from "lucide-react";
 
-const TABS = ["Global", "Squad", "Career Score"];
+const TABS = ["Global", "Squad", "This Week"];
+const AVATAR_COLORS = ["#3366cc","#059669","#7c3aed","#d97706","#e11d48","#0891b2","#be185d","#65a30d"];
+const CROWN_COLORS = ["#FFD700","#C0C0C0","#CD7F32"];
+const GLOW_COLORS = ["rgba(255,215,0,0.3)","rgba(192,192,192,0.2)","rgba(205,127,50,0.2)"];
 
-function RankChange({ change }) {
-  if (change > 0) return (
-    <span style={{ display: "flex", alignItems: "center", gap: "2px", color: "#059669", fontSize: "0.75rem", fontWeight: 700 }}>
-      <TrendingUp size={11} />+{change}
-    </span>
-  );
-  if (change < 0) return (
-    <span style={{ display: "flex", alignItems: "center", gap: "2px", color: "#e11d48", fontSize: "0.75rem", fontWeight: 700 }}>
-      <TrendingDown size={11} />{change}
-    </span>
-  );
-  return <Minus size={11} color="#94a3b8" />;
+function RankBadge({ rank }) {
+  if (rank === 1) return <span style={{ fontSize: "1.4rem" }}>🥇</span>;
+  if (rank === 2) return <span style={{ fontSize: "1.4rem" }}>🥈</span>;
+  if (rank === 3) return <span style={{ fontSize: "1.4rem" }}>🥉</span>;
+  return <span style={{ fontWeight: 800, fontSize: "0.9rem", color: "#94a3b8" }}>#{rank}</span>;
 }
-
-const AVATAR_COLORS = ["#059669","#2563eb","#7c3aed","#d97706","#e11d48","#0891b2","#be185d","#65a30d"];
 
 export default function Leaderboard({ standalone = true }) {
   const { globalLeaderboard, squad } = useSprint();
   const [tab, setTab] = useState("Global");
 
   const squadEntries = squad
-    .map((m, i) => ({
-      rank: i + 1, name: m.name, avatar: m.avatar,
-      score: m.score, streak: m.streak, change: 0,
-      isYou: m.name === "Sahil Khan"
-    }))
+    .map((m, i) => ({ rank: i + 1, name: m.name, avatar: m.avatar, score: m.score, streak: m.streak, change: 0, isYou: m.name === "Sahil Khan" }))
     .sort((a, b) => b.score - a.score)
     .map((e, i) => ({ ...e, rank: i + 1 }));
 
-  const entries = tab === "Global" ? globalLeaderboard : tab === "Squad" ? squadEntries : globalLeaderboard;
+  const entries = tab === "Squad" ? squadEntries : globalLeaderboard;
 
-  const wrapper = (
-    <div style={{ background: "var(--bg-canvas)", minHeight: standalone ? "80vh" : "auto", padding: standalone ? "48px 0" : "0" }}>
-      <div className={standalone ? "container" : ""} style={{ maxWidth: standalone ? "800px" : "100%" }}>
+  return (
+    <div style={{ background: "linear-gradient(180deg, #0a0f1e 0%, #0f172a 100%)", minHeight: standalone ? "80vh" : "auto", padding: standalone ? "56px 0" : "0" }}>
+      <div className={standalone ? "ss-container" : ""} style={{ maxWidth: standalone ? "860px" : "100%", margin: "0 auto" }}>
+
         {standalone && (
-          <div className="section-header" style={{ textAlign: "left", marginBottom: "32px" }}>
-            <div className="eyebrow">
-              <Trophy size={13} />
-              <span>RANKINGS</span>
+          <div style={{ marginBottom: "40px", textAlign: "center" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(255,215,0,0.1)", border: "1px solid rgba(255,215,0,0.2)", borderRadius: "9999px", padding: "6px 16px", marginBottom: "16px" }}>
+              <span style={{ fontSize: "1rem" }}>🏆</span>
+              <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#FFD700", letterSpacing: "0.05em", textTransform: "uppercase" }}>RANKINGS</span>
             </div>
-            <h2 style={{ fontSize: "2rem" }}>Sprint Leaderboard</h2>
-            <p>Compete with your squad and the global SkillSprint community. Rankings update in real-time based on Career Score, streak, and daily mission completions.</p>
+            <h2 style={{ fontSize: "clamp(1.8rem, 4vw, 2.5rem)", fontWeight: 800, color: "#fff", marginBottom: "12px" }}>Sprint Leaderboard</h2>
+            <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.9375rem", maxWidth: "480px", margin: "0 auto" }}>
+              Compete with your squad and the global community. Live rankings based on Career Score, streak, and missions.
+            </p>
           </div>
         )}
 
         {/* Tabs */}
-        <div className="tabs-container" style={{ marginBottom: "24px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "32px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "12px", padding: "6px" }}>
           {TABS.map((t) => (
-            <button key={t} onClick={() => setTab(t)} className={`tab-btn ${tab === t ? "active" : ""}`}>{t}</button>
+            <button key={t} type="button" onClick={() => setTab(t)}
+              style={{
+                flex: 1, padding: "8px 16px", borderRadius: "8px", border: "none", cursor: "pointer",
+                fontSize: "0.875rem", fontWeight: 600,
+                background: tab === t ? "rgba(255,255,255,0.12)" : "transparent",
+                color: tab === t ? "#fff" : "rgba(255,255,255,0.45)",
+                transition: "all 0.2s ease",
+              }}>
+              {t}
+            </button>
           ))}
         </div>
 
         {/* Top 3 Podium */}
         {entries.length >= 3 && (
-          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "center", gap: "12px", marginBottom: "32px" }}>
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "center", gap: "16px", marginBottom: "40px", padding: "0 16px" }}>
             {[entries[1], entries[0], entries[2]].map((e, pIdx) => {
-              const heights = ["120px", "148px", "104px"];
-              const medals = ["🥈","🥇","🥉"];
-              const bgColors = ["#f1f5f9","linear-gradient(135deg,#fef3c7,#fffbeb)","#fef2f2"];
-              const borderColors = ["#cbd5e1","#d97706","#fca5a5"];
+              const podiumH = ["120px", "156px", "100px"];
+              const rankOrder = [2, 1, 3];
+              const rank = rankOrder[pIdx];
               return (
-                <div key={e.rank} style={{
-                  display: "flex", flexDirection: "column", alignItems: "center", flex: 1, maxWidth: "180px"
-                }}>
-                  <div style={{ fontSize: "1.5rem", marginBottom: "6px" }}>{medals[pIdx]}</div>
+                <div key={e?.rank ?? pIdx} style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, maxWidth: "200px" }}>
+                  <div style={{ fontSize: "1.8rem", marginBottom: "8px" }}>{rank === 1 ? "🥇" : rank === 2 ? "🥈" : "🥉"}</div>
                   <div style={{
-                    width: "52px", height: "52px", borderRadius: "50%",
-                    background: AVATAR_COLORS[e.rank % AVATAR_COLORS.length],
+                    width: "56px", height: "56px", borderRadius: "50%",
+                    background: `linear-gradient(135deg, ${AVATAR_COLORS[e?.rank % AVATAR_COLORS.length]}, ${AVATAR_COLORS[(e?.rank + 2) % AVATAR_COLORS.length]})`,
                     color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
-                    fontWeight: 800, fontSize: "0.9rem", marginBottom: "8px",
-                    border: pIdx === 1 ? "3px solid #d97706" : "2px solid var(--border)",
-                    boxShadow: pIdx === 1 ? "0 0 0 4px #fef3c7" : "none"
-                  }}>{e.avatar}</div>
-                  <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "4px", textAlign: "center" }}>
-                    {e.name} {e.isYou && "(you)"}
-                  </div>
+                    fontWeight: 800, fontSize: "1rem", marginBottom: "10px",
+                    border: `3px solid ${CROWN_COLORS[rank - 1]}`,
+                    boxShadow: `0 0 20px ${GLOW_COLORS[rank - 1]}, 0 0 40px ${GLOW_COLORS[rank - 1]}`,
+                  }}>{e?.avatar}</div>
+                  <div style={{ fontSize: "0.875rem", fontWeight: 700, color: "#fff", marginBottom: "6px", textAlign: "center" }}>{e?.name} {e?.isYou && <span style={{ color: "#5b8def", fontSize: "0.7rem" }}>(you)</span>}</div>
                   <div style={{
-                    width: "100%", height: heights[pIdx], background: bgColors[pIdx],
-                    border: `2px solid ${borderColors[pIdx]}`, borderRadius: "10px 10px 0 0",
+                    width: "100%", height: podiumH[pIdx],
+                    background: rank === 1
+                      ? "linear-gradient(180deg, rgba(255,215,0,0.2), rgba(255,215,0,0.08))"
+                      : rank === 2
+                      ? "linear-gradient(180deg, rgba(192,192,192,0.15), rgba(192,192,192,0.05))"
+                      : "linear-gradient(180deg, rgba(205,127,50,0.15), rgba(205,127,50,0.05))",
+                    border: `1px solid ${CROWN_COLORS[rank - 1]}40`,
+                    borderRadius: "12px 12px 0 0",
                     display: "flex", flexDirection: "column", alignItems: "center",
-                    justifyContent: "center", gap: "4px"
+                    justifyContent: "center", gap: "4px",
                   }}>
-                    <span style={{ fontSize: "1.6rem", fontWeight: 800, color: "var(--text-primary)" }}>{e.score}</span>
-                    <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", fontWeight: 600 }}>SCORE</span>
+                    <span style={{ fontSize: "1.75rem", fontWeight: 900, color: "#fff" }}>{e?.score}</span>
+                    <span style={{ fontSize: "0.65rem", fontWeight: 700, color: CROWN_COLORS[rank - 1], letterSpacing: "0.08em" }}>SCORE</span>
                   </div>
                 </div>
               );
@@ -95,51 +97,62 @@ export default function Leaderboard({ standalone = true }) {
           </div>
         )}
 
-        {/* Full Rankings Table */}
-        <div className="card" style={{ overflow: "hidden" }}>
-          <div style={{ padding: "14px 20px", borderBottom: "1px solid var(--border)", display: "grid", gridTemplateColumns: "40px 1fr 80px 80px 60px 50px", gap: "8px", fontSize: "0.73rem", fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.05em" }}>
-            <span>#</span><span>PLAYER</span><span style={{ textAlign: "center" }}>SCORE</span>
-            <span style={{ textAlign: "center" }}>STREAK</span><span style={{ textAlign: "center" }}>XP</span><span style={{ textAlign: "center" }}>ΔRANK</span>
+        {/* Rankings Table */}
+        <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", overflow: "hidden" }}>
+          <div style={{ padding: "14px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "grid", gridTemplateColumns: "48px 1fr 90px 90px 70px 60px", gap: "8px", fontSize: "0.7rem", fontWeight: 700, color: "rgba(255,255,255,0.35)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+            <span>#</span><span>Player</span><span style={{ textAlign: "center" }}>Score</span>
+            <span style={{ textAlign: "center" }}>Streak</span><span style={{ textAlign: "center" }}>XP</span><span style={{ textAlign: "center" }}>Trend</span>
           </div>
           {entries.map((e, i) => (
             <div key={i} style={{
-              padding: "12px 20px", display: "grid",
-              gridTemplateColumns: "40px 1fr 80px 80px 60px 50px", gap: "8px",
-              alignItems: "center", background: e.isYou ? "#f0fdf4" : i % 2 === 0 ? "#fff" : "var(--bg-subtle)",
-              borderBottom: "1px solid var(--border-subtle)", transition: "background 0.15s"
-            }}>
-              <span style={{ fontWeight: 800, fontSize: "0.9rem", color: i < 3 ? "#d97706" : "var(--text-muted)" }}>
-                {i < 3 ? ["🥇","🥈","🥉"][i] : `#${e.rank}`}
-              </span>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              padding: "14px 20px", display: "grid",
+              gridTemplateColumns: "48px 1fr 90px 90px 70px 60px",
+              gap: "8px", alignItems: "center",
+              background: e.isYou ? "rgba(51,102,204,0.12)" : "transparent",
+              borderBottom: "1px solid rgba(255,255,255,0.04)",
+              transition: "background 0.15s",
+              borderLeft: e.isYou ? "3px solid #3366cc" : "3px solid transparent",
+            }}
+            onMouseEnter={(el) => { if (!e.isYou) el.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
+            onMouseLeave={(el) => { if (!e.isYou) el.currentTarget.style.background = "transparent"; }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}><RankBadge rank={i + 1} /></div>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                 <div style={{
-                  width: "34px", height: "34px", borderRadius: "50%",
-                  background: AVATAR_COLORS[e.rank % AVATAR_COLORS.length],
+                  width: "38px", height: "38px", borderRadius: "50%", flexShrink: 0,
+                  background: `linear-gradient(135deg, ${AVATAR_COLORS[e.rank % AVATAR_COLORS.length]}, ${AVATAR_COLORS[(e.rank + 3) % AVATAR_COLORS.length]})`,
                   color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: "0.72rem", fontWeight: 700, flexShrink: 0
+                  fontSize: "0.75rem", fontWeight: 700,
+                  boxShadow: i < 3 ? `0 0 12px ${GLOW_COLORS[i]}` : "none",
                 }}>{e.avatar}</div>
                 <div>
-                  <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "var(--text-primary)" }}>
-                    {e.name} {e.isYou && <span style={{ color: "var(--primary)", fontSize: "0.72rem", fontWeight: 700 }}>(you)</span>}
+                  <div style={{ fontSize: "0.875rem", fontWeight: 700, color: "#fff" }}>
+                    {e.name} {e.isYou && <span style={{ color: "#5b8def", fontSize: "0.7rem", fontWeight: 600 }}>(you)</span>}
                   </div>
-                  <div style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>Web Dev Track</div>
+                  <div style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.4)" }}>Web Dev Track</div>
                 </div>
               </div>
-              <div style={{ textAlign: "center", fontWeight: 800, fontSize: "0.95rem", color: "var(--text-primary)" }}>{e.score}</div>
-              <div style={{ textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
-                <Flame size={13} fill="#ea580c" color="#ea580c" />
-                <span style={{ fontWeight: 700, fontSize: "0.88rem", color: "#ea580c" }}>{e.streak}</span>
+              <div style={{ textAlign: "center" }}>
+                <span style={{ fontSize: "0.95rem", fontWeight: 800, color: "#fff" }}>{e.score}</span>
+                <div style={{ height: "3px", background: "rgba(255,255,255,0.1)", borderRadius: "2px", marginTop: "4px", overflow: "hidden" }}>
+                  <div style={{ height: "100%", width: `${Math.min((e.score / 100) * 100, 100)}%`, background: "linear-gradient(90deg, #3366cc, #5b8def)", borderRadius: "2px" }} />
+                </div>
               </div>
-              <div style={{ textAlign: "center", fontSize: "0.82rem", color: "#7c3aed", fontWeight: 600 }}>
+              <div style={{ textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
+                <span style={{ fontSize: "1rem" }}>🔥</span>
+                <span style={{ fontWeight: 700, fontSize: "0.875rem", color: "#ea580c" }}>{e.streak}</span>
+              </div>
+              <div style={{ textAlign: "center", fontSize: "0.8rem", color: "#a78bfa", fontWeight: 600 }}>
                 {((e.score * 52) + 480).toLocaleString()}
               </div>
-              <div style={{ textAlign: "center" }}><RankChange change={e.change || 0} /></div>
+              <div style={{ textAlign: "center" }}>
+                {(e.change || 0) > 0 ? <span style={{ color: "#10b981", fontSize: "0.8rem", fontWeight: 700 }}>↑{e.change}</span>
+                  : (e.change || 0) < 0 ? <span style={{ color: "#ef4444", fontSize: "0.8rem", fontWeight: 700 }}>↓{Math.abs(e.change)}</span>
+                  : <span style={{ color: "#64748b", fontSize: "0.8rem" }}>–</span>}
+              </div>
             </div>
           ))}
         </div>
       </div>
     </div>
   );
-
-  return wrapper;
 }

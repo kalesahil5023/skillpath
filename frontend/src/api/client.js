@@ -191,4 +191,16 @@ export const portfolioApi = {
   deleteProject: (id) => apiClient.delete(`/portfolio/projects/${id}/`),
 };
 
+// ── 9. Interview Prep API Endpoints ─────────────────────────────────────────
+export const interviewsApi = {
+  // Fetch curated questions for HR and Technical tracks
+  getQuestions: () => apiClient.get("/interviews/questions/"),
+
+  // Fetch current user's practiced interview questions
+  getPractices: () => apiClient.get("/interviews/practice/"),
+
+  // Mark/update practice question progress
+  savePractice: (payload) => apiClient.post("/interviews/practice/", payload),
+};
+
 export default apiClient;

@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "plans",                       # User recommendations & 7-day checklist
     "roadmaps",                    # 6 skill roadmaps & milestone task progress
     "portfolio",                   # Case study generator & project briefs
+    "interviews",                  # HR & Technical interview preparation
 ]
 
 # ── 3. Middleware Pipeline ──────────────────────────────────────────────────
