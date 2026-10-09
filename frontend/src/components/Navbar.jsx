@@ -4,13 +4,14 @@ import Logo from "./Logo";
 import { LogOut, Menu, X, Search } from "lucide-react";
 
 const NAV_LINKS = [
-  { label: "Explore", page: "landing", icon: "explore" },
+  { label: "Home", page: "landing", icon: "home" },
   { label: "Courses", page: "dashboard", icon: "school" },
   { label: "Practice", page: "interview", icon: "psychology" },
   { label: "Roadmap", page: "roadmap", icon: "map" },
 ];
 
 const DROPDOWN_ITEMS = [
+  { icon: "home", label: "Home (Landing)", page: "landing" },
   { icon: "person", label: "My Profile", page: "profile" },
   { icon: "dashboard", label: "Courses & Missions", page: "dashboard" },
   { icon: "psychology", label: "Interview Prep", page: "interview" },
@@ -20,13 +21,15 @@ const DROPDOWN_ITEMS = [
   { icon: "work", label: "Portfolio", page: "portfolio" },
 ];
 
-export default function Navbar({ onOpenLegal, onOpenSearch, onNavigate }) {
+export default function Navbar({ onOpenLegal, onOpenSearch, onNavigate, currentPage }) {
   const { user, isLoggedIn, logout, openAuthModal } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activePage, setActivePage] = useState("landing");
   const menuRef = useRef(null);
+
+  const currentActive = currentPage || activePage;
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -72,7 +75,7 @@ export default function Navbar({ onOpenLegal, onOpenSearch, onNavigate }) {
               </a>
               <nav className="hide-mobile" style={{ display: "flex", alignItems: "center", gap: "2px" }}>
                 {NAV_LINKS.map((link) => {
-                  const isActive = activePage === link.page;
+                  const isActive = currentActive === link.page;
                   return (
                     <button key={link.label} type="button" onClick={() => handleNav(link.page)}
                       style={{

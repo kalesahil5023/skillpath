@@ -186,7 +186,7 @@ function AppShell() {
   if (page === "lesson") {
     return (
       <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-        <Navbar onNavigate={navigate} />
+        <Navbar currentPage={page} onNavigate={navigate} />
         <LessonPlayer
           onBack={() => navigate("landing")}
           onComplete={() => navigate("dashboard")}
@@ -199,6 +199,7 @@ function AppShell() {
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <Navbar
+        currentPage={page}
         onOpenLegal={(t) => setLegalTopic(t)}
         onOpenSearch={() => setSearchOpen(true)}
         onNavigate={navigate}
