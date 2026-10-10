@@ -67,9 +67,10 @@ export default function AuthModal() {
   const isRegister = authModalMode === "register";
   const passwordStrength = getPasswordStrength(password);
 
-  // Reset form state every time modal opens or mode switches
+  // Lock body scroll and reset form state every time modal opens or mode switches
   useEffect(() => {
     if (authModalOpen) {
+      document.body.style.overflow = "hidden";
       setUsername("");
       setEmail("");
       setPassword("");
@@ -81,8 +82,25 @@ export default function AuthModal() {
       setSmsStep(1);
       setDevOtpHint("");
       setSmsSuccessMessage("");
+    } else {
+      document.body.style.overflow = "unset";
     }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
   }, [authModalOpen, authModalMode]);
+
+  // Dismiss modal on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && authModalOpen) {
+        closeAuthModal();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [authModalOpen, closeAuthModal]);
 
   // Resend Countdown Timer
   useEffect(() => {
