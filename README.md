@@ -37,7 +37,28 @@ skillpath/
 
 ---
 
-## Getting Started Locally
+## Quickstart with Docker (Recommended)
+
+The entire full-stack application (PostgreSQL + Django API + React SPA via Nginx) can be launched with a single Docker command:
+
+```bash
+docker compose up --build
+```
+
+- Web UI: [http://localhost](http://localhost) (or port configured in `.env`)
+- Django REST API: [http://localhost:8000/api/](http://localhost:8000/api/)
+- Django Admin: [http://localhost/admin/](http://localhost/admin/)
+
+For development mode with live code reloading:
+```bash
+docker compose -f docker-compose.dev.yml up --build
+```
+
+See [DOCKER.md](file:///c:/Users/sahil/skillpath/DOCKER.md) for full containerization details and troubleshooting.
+
+---
+
+## Getting Started Locally (Without Docker)
 
 ### 1. Start the Django Backend
 

@@ -1,0 +1,91 @@
+services:
+  # ── PostgreSQL Database ────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: skillsprint-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-skillsprint}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-skillsprint}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - skillpath-network
+
+  # ── Django REST Framework Backend ──────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: skillsprint-backend
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-skillsprint}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-skillpath-super-secret-key-for-container-deployment-change-in-prod}
+      - DEBUG=${DEBUG:-False}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
+      - DB_SSL_REQUIRE=${DB_SSL_REQUIRE:-False}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost,http://localhost:80,http://localhost:3000,http://127.0.0.1,http://127.0.0.1:80,http://127.0.0.1:3000}
+      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS:-http://localhost,http://localhost:80,http://localhost:3000,http://127.0.0.1,http://127.0.0.1:80,http://127.0.0.1:3000}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - BLACKSMS_API_KEY=${BLACKSMS_API_KEY:-}
+      - BLACKSMS_API_URL=${BLACKSMS_API_URL:-https://blacksms.in/api/v1/bulk-sms}
+      - BLACKSMS_SENDER_ID=${BLACKSMS_SENDER_ID:-}
+      - BLACKSMS_DLT_TEMPLATE_ID=${BLACKSMS_DLT_TEMPLATE_ID:-}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - backend_staticfiles:/app/staticfiles
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - skillpath-network
+
+  # ── React Vite Frontend (Nginx Reverse Proxy) ──────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=
+        - VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID:-}
+    container_name: skillsprint-frontend
+    restart: unless-stopped
+    ports:
+      - "${PORT:-80}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - skillpath-network
+
+volumes:
+  postgres_data:
+    name: skillsprint_postgres_data
+  backend_staticfiles:
+    name: skillsprint_backend_staticfiles
+
+networks:
+  skillpath-network:
+    name: skillsprint_network
+    driver: bridge

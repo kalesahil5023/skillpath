@@ -101,12 +101,17 @@ WSGI_APPLICATION = "skillpath_backend.wsgi.application"
 # In Development: Seamlessly defaults to local SQLite db.sqlite3 without configuration.
 DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL:
-    is_localhost = "localhost" in DATABASE_URL or "127.0.0.1" in DATABASE_URL
+    db_ssl_require_env = os.getenv("DB_SSL_REQUIRE")
+    if db_ssl_require_env is not None:
+        ssl_require = db_ssl_require_env.lower() in ("true", "1", "yes")
+    else:
+        is_local_or_docker = any(host in DATABASE_URL for host in ("localhost", "127.0.0.1", "@db:", "@postgres:", "@db/", "@postgres/"))
+        ssl_require = not is_local_or_docker
     DATABASES = {
         "default": dj_database_url.parse(
             DATABASE_URL,
             conn_max_age=600,
-            ssl_require=not is_localhost,
+            ssl_require=ssl_require,
         )
     }
 else:
@@ -180,6 +185,16 @@ else:
         if origin.strip()
     ]
 CORS_ALLOW_CREDENTIALS = True
+
+# CSRF Trusted Origins for reverse proxies and cross-origin authentication
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv(
+        "CSRF_TRUSTED_ORIGINS",
+        "http://localhost,http://localhost:80,http://localhost:3000,http://localhost:5173,http://127.0.0.1,http://127.0.0.1:80,http://127.0.0.1:3000,http://127.0.0.1:5173,https://www.skillsprint.online,https://skillsprint.online"
+    ).split(",")
+    if origin.strip()
+]
 
 # ── 10. Google OAuth2 Configuration ─────────────────────────────────────────
 # Used in accounts.views.GoogleAuthView to verify the Google ID token's audience

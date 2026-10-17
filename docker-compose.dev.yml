@@ -1,0 +1,71 @@
+services:
+  # ── PostgreSQL Database ────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: skillsprint-dev-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: skillsprint
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d skillsprint"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - skillpath-dev-network
+
+  # ── Django Backend (Hot-Reloading via runserver) ───────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: skillsprint-dev-backend
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/app
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/skillsprint
+      - DJANGO_SECRET_KEY=skillpath-local-dev-secret-key-1234567890
+      - DEBUG=True
+      - ALLOWED_HOSTS=*
+      - DB_SSL_REQUIRE=False
+      - CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000
+      - CSRF_TRUSTED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - skillpath-dev-network
+
+  # ── React Frontend (Vite HMR Dev Server) ───────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: skillsprint-dev-frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_DEV_BACKEND_URL=http://backend:8000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - skillpath-dev-network
+
+volumes:
+  postgres_dev_data:
+
+networks:
+  skillpath-dev-network:
+    driver: bridge
