@@ -12,6 +12,7 @@ def health_check(request):
     return JsonResponse({"status": "healthy", "service": "skillpath-backend"})
 
 urlpatterns = [
+    path("", include("django_prometheus.urls")),
     path("healthz", health_check),
     path("api/health/", health_check),
     path("admin/", admin.site.urls),

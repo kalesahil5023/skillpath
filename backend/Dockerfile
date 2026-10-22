@@ -45,5 +45,5 @@ HEALTHCHECK --interval=20s --timeout=5s --start-period=15s --retries=3 \
 # Set entrypoint to run migrations and collectstatic before starting
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
 
-# Default start command using Gunicorn WSGI server
-CMD ["gunicorn", "skillpath_backend.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "120"]
+# Default start command using Gunicorn WSGI server with multi-worker & multi-thread concurrency
+CMD ["gunicorn", "skillpath_backend.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "4", "--threads", "2", "--worker-class", "gthread", "--worker-tmp-dir", "/dev/shm", "--timeout", "120"]

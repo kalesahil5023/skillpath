@@ -1,0 +1,9 @@
+tunnel: e17bdc58-367f-4848-8ba5-c4f16859de4b
+credentials-file: C:\Users\sahil\.cloudflared\e17bdc58-367f-4848-8ba5-c4f16859de4b.json
+
+ingress:
+  - hostname: skillsprint.online
+    service: http://localhost:80
+  - hostname: www.skillsprint.online
+    service: http://localhost:80
+  - service: http_status:404

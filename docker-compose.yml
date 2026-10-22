@@ -72,10 +72,110 @@ services:
       backend:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/healthz"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1/healthz"]
       interval: 10s
       timeout: 3s
       retries: 3
+    networks:
+      - skillpath-network
+
+  # ── Cloudflare Tunnel (Secure Public Ingress with Edge Caching) ────────────
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: skillsprint-tunnel
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      frontend:
+        condition: service_healthy
+    networks:
+      - skillpath-network
+    profiles:
+      - tunnel
+
+  # ── Prometheus (Metrics Scraper & Time-Series DB) ──────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: skillsprint-prometheus
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/prometheus/alert_rules.yml:/etc/prometheus/alert_rules.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - skillpath-network
+
+  # ── Grafana (Real-Time Visual Dashboards & Analytics) ──────────────────────
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: skillsprint-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "${GRAFANA_PORT:-3001}:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - skillpath-network
+
+  # ── PostgreSQL Prometheus Exporter ─────────────────────────────────────────
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: skillsprint-postgres-exporter
+    restart: unless-stopped
+    environment:
+      - DATA_SOURCE_NAME=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-skillsprint}?sslmode=disable
+    ports:
+      - "9187:9187"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - skillpath-network
+
+  # ── Nginx Prometheus Exporter ──────────────────────────────────────────────
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:1.1.0
+    container_name: skillsprint-nginx-exporter
+    restart: unless-stopped
+    command:
+      - -nginx.scrape-uri=http://frontend:80/stub_status
+    ports:
+      - "9113:9113"
+    depends_on:
+      frontend:
+        condition: service_healthy
+    networks:
+      - skillpath-network
+
+  # ── Locust Load Testing Suite ─────────────────────────────────────────────
+  locust:
+    image: locustio/locust:2.32.0
+    container_name: skillsprint-locust
+    restart: unless-stopped
+    ports:
+      - "8089:8089"
+    volumes:
+      - ./locustfile.py:/mnt/locust/locustfile.py
+    command: -f /mnt/locust/locustfile.py --host http://frontend:80
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1024M
     networks:
       - skillpath-network
 
@@ -84,6 +184,10 @@ volumes:
     name: skillsprint_postgres_data
   backend_staticfiles:
     name: skillsprint_backend_staticfiles
+  prometheus_data:
+    name: skillsprint_prometheus_data
+  grafana_data:
+    name: skillsprint_grafana_data
 
 networks:
   skillpath-network:

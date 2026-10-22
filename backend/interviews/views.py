@@ -1,3 +1,14 @@
+"""
+=============================================================================
+Interview Preparation & Practice API Views (Django REST Framework)
+=============================================================================
+Provides endpoints for:
+ 1. GET /api/interviews/questions/ — Public catalog of HR and Technical interview prompts
+ 2. GET /api/interviews/practice/ — Authenticated user's practiced questions and notes
+ 3. POST /api/interviews/practice/ — Mark question as practiced, save user answer notes
+=============================================================================
+"""
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions

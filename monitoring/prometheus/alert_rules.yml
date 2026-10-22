@@ -1,0 +1,59 @@
+groups:
+  - name: skillsprint_alerts
+    rules:
+      # Alert when HTTP 5xx error rate exceeds 1% of total requests
+      - alert: BackendHighHttpErrorRate
+        expr: >-
+          (sum(rate(django_http_responses_total_by_status_total{status=~"5.."}[2m])) or vector(0))
+          /
+          (sum(rate(django_http_responses_total_by_status_total[2m])) > 0)
+          * 100 > 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "SkillSprint backend HTTP 5xx error rate exceeds 1%"
+          description: "Over 1% of backend responses are HTTP 5xx server errors in the last 2 minutes."
+
+      # Alert when average latency exceeds 500ms
+      - alert: BackendHighHttpLatency
+        expr: >-
+          sum(rate(django_http_requests_latency_seconds_by_view_method_sum[2m]))
+          /
+          sum(rate(django_http_requests_latency_seconds_by_view_method_count[2m])) > 0.5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "SkillSprint backend high latency (> 500ms)"
+          description: "Average API request response latency has exceeded 500ms for more than 2 minutes."
+
+      # Alert when PostgreSQL active client connections exceed 50
+      - alert: PostgresHighConnections
+        expr: pg_stat_database_numbackends{datname="skillsprint"} > 50
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PostgreSQL active connections high (> 50)"
+          description: "Database connection pool is near capacity with {{ $value }} active connections."
+
+      # Alert if PostgreSQL exporter reports database is down
+      - alert: PostgresDown
+        expr: pg_up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL database instance is down"
+          description: "Postgres exporter cannot connect to skillsprint database."
+
+      # Alert if any scrape target goes down
+      - alert: ServiceTargetDown
+        expr: up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Monitoring target {{ $labels.job }} is down"
+          description: "Prometheus has been unable to scrape {{ $labels.instance }} (job {{ $labels.job }}) for 30s."

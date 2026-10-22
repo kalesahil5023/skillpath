@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     
     # Third-party extensions
+    "django_prometheus",           # Prometheus metrics exporter
     "rest_framework",              # REST API toolkit
     "rest_framework_simplejwt",    # JSON Web Token authentication
     "corsheaders",                 # Cross-Origin Resource Sharing headers
@@ -65,6 +66,7 @@ INSTALLED_APPS = [
 # ── 3. Middleware Pipeline ──────────────────────────────────────────────────
 # Note: CorsMiddleware MUST precede CommonMiddleware to attach headers to all responses.
 MIDDLEWARE = [
+    "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",  # High-performance static file serving
@@ -74,6 +76,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
 ROOT_URLCONF = "skillpath_backend.urls"
@@ -105,7 +108,7 @@ if DATABASE_URL:
     if db_ssl_require_env is not None:
         ssl_require = db_ssl_require_env.lower() in ("true", "1", "yes")
     else:
-        is_local_or_docker = any(host in DATABASE_URL for host in ("localhost", "127.0.0.1", "@db:", "@postgres:", "@db/", "@postgres/"))
+        is_local_or_docker = any(host in DATABASE_URL for host in ("localhost", "127.0.0.1", "@db:", "@postgres:", "@db/", "@postgres/", "cloudsql"))
         ssl_require = not is_local_or_docker
     DATABASES = {
         "default": dj_database_url.parse(
