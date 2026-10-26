@@ -41,13 +41,17 @@ else:
     print("==> DATABASE_URL unset or SQLite detected. Proceeding...")
 EOF
 
-# Run database migrations
-echo "==> Applying database migrations..."
-python manage.py migrate --noinput
+if [ "$SKIP_MIGRATIONS" != "true" ]; then
+    # Run database migrations
+    echo "==> Applying database migrations..."
+    python manage.py migrate --noinput
 
-# Collect static files for WhiteNoise
-echo "==> Collecting static assets..."
-python manage.py collectstatic --noinput
+    # Collect static files for WhiteNoise
+    echo "==> Collecting static assets..."
+    python manage.py collectstatic --noinput
+else
+    echo "==> Skipping migrations and collectstatic (handled by migration runner)..."
+fi
 
 echo "==> Backend ready. Starting server: $@"
 exec "$@"

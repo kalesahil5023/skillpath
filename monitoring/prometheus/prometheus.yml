@@ -18,7 +18,7 @@ scrape_configs:
     metrics_path: "/metrics"
     scrape_timeout: 4s
     static_configs:
-      - targets: ["backend:8000"]
+      - targets: ["backend-1:8000", "backend-2:8000", "backend-3:8000"]
 
   # ── 3. Scrape PostgreSQL Database Metrics ──────────────────────────────────
   - job_name: "skillsprint-postgres"

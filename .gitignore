@@ -27,3 +27,7 @@ staticfiles/
 # OS metadata
 .DS_Store
 Thumbs.db
+
+# Agent & IDE scratch
+.agents/
+.archify/

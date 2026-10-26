@@ -115,6 +115,7 @@ if DATABASE_URL:
             DATABASE_URL,
             conn_max_age=600,
             ssl_require=ssl_require,
+            engine="django_prometheus.db.backends.postgresql",
         )
     }
 else:

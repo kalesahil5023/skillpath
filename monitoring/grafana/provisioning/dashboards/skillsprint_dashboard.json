@@ -133,7 +133,7 @@
         {
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "editorMode": "code",
-          "expr": "sum by (vendor) (rate(django_db_query_duration_seconds_count[1m]))",
+          "expr": "sum by (vendor) (rate(django_db_execute_total[1m])) or sum by (vendor) (rate(django_db_query_duration_seconds_count[1m])) or vector(0)",
           "legendFormat": "DB Queries ({{vendor}})",
           "range": true,
           "refId": "A"
@@ -195,7 +195,7 @@
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "editorMode": "code",
           "expr": "rate(process_cpu_seconds_total{job=\"skillsprint-backend\"}[1m]) * 100",
-          "legendFormat": "Backend CPU %",
+          "legendFormat": "{{instance}}",
           "range": true,
           "refId": "A"
         }
@@ -222,7 +222,7 @@
           "datasource": { "type": "prometheus", "uid": "Prometheus" },
           "editorMode": "code",
           "expr": "process_resident_memory_bytes{job=\"skillsprint-backend\"} / 1024 / 1024",
-          "legendFormat": "Resident RAM (MB)",
+          "legendFormat": "{{instance}}",
           "range": true,
           "refId": "A"
         }

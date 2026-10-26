@@ -20,31 +20,112 @@ services:
     networks:
       - skillpath-network
 
-  # ── Django REST Framework Backend ──────────────────────────────────────────
-  backend:
+  # ── Backend Migration & Static Files One-off Runner ────────────────────────
+  backend-migration:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: skillsprint-backend
-    restart: unless-stopped
-    environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-skillsprint}
-      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-skillpath-super-secret-key-for-container-deployment-change-in-prod}
-      - DEBUG=${DEBUG:-False}
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
-      - DB_SSL_REQUIRE=${DB_SSL_REQUIRE:-False}
-      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost,http://localhost:80,http://localhost:3000,http://127.0.0.1,http://127.0.0.1:80,http://127.0.0.1:3000}
-      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS:-http://localhost,http://localhost:80,http://localhost:3000,http://127.0.0.1,http://127.0.0.1:80,http://127.0.0.1:3000}
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
-      - BLACKSMS_API_KEY=${BLACKSMS_API_KEY:-}
-      - BLACKSMS_API_URL=${BLACKSMS_API_URL:-https://blacksms.in/api/v1/bulk-sms}
-      - BLACKSMS_SENDER_ID=${BLACKSMS_SENDER_ID:-}
-      - BLACKSMS_DLT_TEMPLATE_ID=${BLACKSMS_DLT_TEMPLATE_ID:-}
-    ports:
-      - "8000:8000"
+    container_name: skillsprint-backend-migration
+    environment: &backend-env
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-skillsprint}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-skillpath-super-secret-key-for-container-deployment-change-in-prod}
+      DEBUG: ${DEBUG:-False}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-*}
+      DB_SSL_REQUIRE: ${DB_SSL_REQUIRE:-False}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost,http://localhost:80,http://localhost:3000,http://127.0.0.1,http://127.0.0.1:80,http://127.0.0.1:3000}
+      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:-http://localhost,http://localhost:80,http://localhost:3000,http://127.0.0.1,http://127.0.0.1:80,http://127.0.0.1:3000}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      BLACKSMS_API_KEY: ${BLACKSMS_API_KEY:-}
+      BLACKSMS_API_URL: ${BLACKSMS_API_URL:-https://blacksms.in/api/v1/bulk-sms}
+      BLACKSMS_SENDER_ID: ${BLACKSMS_SENDER_ID:-}
+      BLACKSMS_DLT_TEMPLATE_ID: ${BLACKSMS_DLT_TEMPLATE_ID:-}
+      SKIP_MIGRATIONS: "false"
+    command: ["sh", "-c", "echo '==> Running migrations...' && python manage.py migrate --noinput && python manage.py collectstatic --noinput && echo '==> Migrations complete.'"]
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - backend_staticfiles:/app/staticfiles
+    networks:
+      - skillpath-network
+    restart: "no"
+
+  # ── Django REST Framework Backend (Node 1) ─────────────────────────────────
+  backend-1:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: skillsprint-backend-1
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+      SKIP_MIGRATIONS: "true"
+      BACKEND_NODE: backend-1
+    expose:
+      - "8000"
+    ports:
+      - "8001:8000"
+    depends_on:
+      backend-migration:
+        condition: service_completed_successfully
+    volumes:
+      - backend_staticfiles:/app/staticfiles
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - skillpath-network
+
+  # ── Django REST Framework Backend (Node 2) ─────────────────────────────────
+  backend-2:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: skillsprint-backend-2
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+      SKIP_MIGRATIONS: "true"
+      BACKEND_NODE: backend-2
+    expose:
+      - "8000"
+    ports:
+      - "8002:8000"
+    depends_on:
+      backend-migration:
+        condition: service_completed_successfully
+    volumes:
+      - backend_staticfiles:/app/staticfiles
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - skillpath-network
+
+  # ── Django REST Framework Backend (Node 3) ─────────────────────────────────
+  backend-3:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: skillsprint-backend-3
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+      SKIP_MIGRATIONS: "true"
+      BACKEND_NODE: backend-3
+    expose:
+      - "8000"
+    ports:
+      - "8003:8000"
+    depends_on:
+      backend-migration:
+        condition: service_completed_successfully
     volumes:
       - backend_staticfiles:/app/staticfiles
     healthcheck:
@@ -69,7 +150,11 @@ services:
     ports:
       - "${PORT:-80}:80"
     depends_on:
-      backend:
+      backend-1:
+        condition: service_healthy
+      backend-2:
+        condition: service_healthy
+      backend-3:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1/healthz"]
